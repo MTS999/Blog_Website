@@ -174,6 +174,106 @@ app.get("/blogs", verifyToken, async (request, response) => {
         response.status(500).send("Internal Server Error");
     }
 })
+
+app.get("/recent-blogs", verifyToken, async (request, response) => {
+    try {
+        // Directly find and return the 5 most recent blog posts
+        let result = await BlogPost.find({})
+            .sort({ createdAt: -1 }) // Ensure sorting by createdAt in descending order
+            .limit(5); // Limit the results to 5
+
+        // Send results or a no content message
+        if (result.length > 0) {
+            response.send(result);
+        } else {
+            response.send("No recent blogs found");
+        }
+    } catch (error) {
+        console.error('Error fetching recent blogs:', error);
+        response.status(500).send("Internal Server Error");
+    }
+});
+
+
+app.post("/like/:postId", verifyToken, async (request, response) => {
+    try {
+        const postId = request.params.postId
+        const userId = request.user.id
+
+        const blogPost = await BlogPost.findById(postId)
+        if (!blogPost) {
+            return response.status(404).json({ message: "Blog Post not found" })
+        }
+
+
+        const likedIndex = blogPost.likes.indexOf(userId);
+        const dislikedIndex = blogPost.dislikes.indexOf(userId)
+
+        if (likedIndex !== -1) {
+            blogPost.likes.splice(likedIndex, 1)
+        }
+        else {
+
+            if (dislikedIndex !== -1) {
+                blogPost.dislikes.splice(dislikedIndex, 1)
+            }
+
+            blogPost.likes.push(userId)
+        }
+
+        await blogPost.save()
+
+        // Fetch the updated blog post after saving changes
+        const updatedBlogPost = await BlogPost.findById(postId);
+
+        response.status(200).json({ message: "Post updated successfully", blogPost: updatedBlogPost });
+    }
+    catch (error) {
+        console.error("Error liking blog post:", error);
+        response.status(500).json({ message: "Internal server error" });
+    }
+})
+
+app.post("/dislike/:postId", verifyToken, async (request, response) => {
+    try {
+        const postId = request.params.postId
+        const userId = request.user.id
+
+        const blogPost = await BlogPost.findById(postId)
+
+        if (!blogPost) {
+            return response.status(404).json({ messege: "Blog post is not found" })
+        }
+        const dislikedIndex = blogPost.dislikes.indexOf(userId)
+        const likedIndex = blogPost.likes.indexOf(userId)
+
+        if (dislikedIndex !== -1) {
+            blogPost.dislikes.splice(dislikedIndex, 1)
+        }
+
+        else {
+            if (likedIndex !== -1){
+                blogPost.likes.splice(likedIndex, 1)
+
+            }
+
+            blogPost.dislikes.push(userId)
+        }
+
+        await blogPost.save()
+        const updatedBlogPost = await BlogPost.findById(postId);
+
+        response.status(200).json({ message: "Post updated successfully", blogPost: updatedBlogPost });
+        // response.status(200).json({ message: "Post updated successfully" });
+
+
+    }
+
+    catch(error){
+        console.error("Error liking blog post:", error);
+        response.status(500).json({ message: "Internal server error" });
+    }
+})
 app.get("/user-role", verifyToken, async (request, response) => {
     try {
         const role = request.user.role
@@ -276,14 +376,14 @@ app.delete(`/comment/:commentId`, verifyToken, async (request, response) => {
         const commentId = request.params.commentId
 
         const comments = await CommentPost.deleteOne({ _id: commentId });
-         response.send(comments)
-    } 
+        response.send(comments)
+    }
 
-    catch(error){
+    catch (error) {
         response.status(500).json({ message: error.message });
 
     }
-    
+
 })
 app.put(`/commentedit/:commentId`, verifyToken, async (request, response) => {
     try {
@@ -292,15 +392,16 @@ app.put(`/commentedit/:commentId`, verifyToken, async (request, response) => {
         const content = request.body.content
 
         const comments = await CommentPost.updateOne({ _id: commentId });
-         response.send(comments)
-    } 
+        response.send(comments)
+    }
 
-    catch(error){
+    catch (error) {
         response.status(500).json({ message: error.message });
 
     }
-    
+
 })
+
 
 
 

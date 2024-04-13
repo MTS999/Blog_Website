@@ -30,7 +30,15 @@ const blogPostSchema = new mongoose.Schema({
     tags: {
         type: [String],
         default: []
-    }
+    },
+    likes:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User"
+    }],
+    dislikes:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User"
+    }]
 }, {
     timestamps: true // Automatically manage createdAt and updatedAt fields
 });

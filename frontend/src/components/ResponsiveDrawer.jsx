@@ -23,7 +23,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
 import { useEffect } from 'react';
-import  axios  from 'axios';
+import axios from 'axios';
 import { Outlet } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import useCategory from "../CategoryContext";
@@ -106,14 +106,26 @@ function ResponsiveDrawer(props) {
       <Divider />
       <List>
         {
-          userRole==="author"  &&
+          userRole === "author" &&
 
           <ListItem key={"myblogs"} disablePadding>
             <ListItemButton onClick={() => navigate(`/?blog=${"myblog"}`)}>
               <ListItemIcon>
-                 <InboxIcon /> 
+                <InboxIcon />
               </ListItemIcon>
               <ListItemText primary={"myblog"} />
+            </ListItemButton>
+          </ListItem>
+        }
+        {
+
+
+          <ListItem key={"home"} disablePadding>
+            <ListItemButton onClick={() => navigate(`/`)}>
+              <ListItemIcon>
+                <InboxIcon />
+              </ListItemIcon>
+              <ListItemText primary={"Home"} />
             </ListItemButton>
           </ListItem>
         }
@@ -141,10 +153,12 @@ function ResponsiveDrawer(props) {
       <AppBar
         position="fixed"
         sx={{
+          // width:"100vw",
           // width: { sm: `calc(100% - ${drawerWidth}px)` },
           ml: { sm: `${drawerWidth}px` },
           zIndex: 1234,
-          backgroundColor: "green"
+          backgroundColor: "green",
+
 
         }}
       >
@@ -154,7 +168,7 @@ function ResponsiveDrawer(props) {
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }}
+            sx={{ mr: 2, display: { md: 'none' } }}
           >
             <MenuIcon />
           </IconButton>
@@ -162,7 +176,7 @@ function ResponsiveDrawer(props) {
             Blog
           </Typography>
 
-         
+
           <div>
             <Stack ml={2} direction="row" spacing={2} onClick={handleClick}
             >
@@ -187,7 +201,7 @@ function ResponsiveDrawer(props) {
       </AppBar>
       <Box
         component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+        sx={{ width: { md: drawerWidth }, flexShrink: { sm: 0 } }}
         aria-label="mailbox folders"
       >
         {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
@@ -201,7 +215,7 @@ function ResponsiveDrawer(props) {
             keepMounted: true, // Better open performance on mobile.
           }}
           sx={{
-            display: { xs: 'block', sm: 'none' },
+            display: { xs: 'block', md: 'none' },
             '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
           }}
         >
@@ -210,7 +224,7 @@ function ResponsiveDrawer(props) {
         <Drawer
           variant="permanent"
           sx={{
-            display: { xs: 'none', sm: 'block' },
+            display: { xs: 'none', md: 'block' },
             '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
           }}
           open
@@ -218,7 +232,7 @@ function ResponsiveDrawer(props) {
           {drawer}
         </Drawer>
       </Box>
-      <Box
+      {/* <Box
         component="main"
         sx={{
           flexGrow: 1,
@@ -227,8 +241,10 @@ function ResponsiveDrawer(props) {
         }}
       >
         <Toolbar />
-        <Outlet />
-      </Box>
+      </Box> */}
+      {/* <Toolbar /> */}
+
+      <Outlet />
     </Box>
   );
 }

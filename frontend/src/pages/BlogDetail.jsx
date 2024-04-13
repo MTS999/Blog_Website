@@ -5,17 +5,54 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
+import IconButton from '@mui/material/IconButton'
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import Grid from '@mui/material/Grid';
+import { Divider } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
+// import Button from '@mui/material/Button';
+// import Typography from '@mui/material/Typography';
 
+
+const MAX_LINES = 2; // Maximum number of lines for content
+
+const TruncatedContent = ({ content }) => {
+  const style = {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    display: '-webkit-box',
+    WebkitLineClamp: MAX_LINES,
+    WebkitBoxOrient: 'vertical',
+  };
+
+  return (
+    <Typography variant="body2" color="text.secondary" style={style}>
+      {/* {content} */}
+      <div dangerouslySetInnerHTML={{ __html: content }} />
+
+    </Typography>
+  );
+};
 
 export const BlogDetail = () => {
-  const [Blog, setBlog] = React.useState({})
+  const [Blog, setBlog] = React.useState(null)
   const [comments, setComments] = React.useState([]);
   const [content, setAddComment] = React.useState("");
-  console.log(comments);
+  const [recentBlogs, setRecentBlogs] = React.useState([]);
+
+  console.log(recentBlogs);
   const params = useParams()
   // console.log(Blog);
   const token = localStorage.getItem("token")
   const userId = localStorage.getItem("userId")
+
+
   const fetchCommentsForPost = async () => {
     try {
       const response = await axios.get(`http://localhost:5003/comments/${params.id}`, {
@@ -35,6 +72,8 @@ export const BlogDetail = () => {
       console.error('Error fetching comments:', error.response ? error.response.data : error.message);
     }
   };
+
+  //get blog  
   useEffect(() => {
 
 
@@ -46,7 +85,7 @@ export const BlogDetail = () => {
 
           }
         })
-
+        // console.log(response.data);
         setBlog(response.data)
 
       }
@@ -57,9 +96,38 @@ export const BlogDetail = () => {
     }
     if (token) {
       fetchData()
-      fetchCommentsForPost()
     }
   }, [params.id])
+
+  useEffect(() => {
+    if (token) {
+      fetchCommentsForPost()
+    }
+  }, [content, token])
+
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    const fetchRecentBlogs = async () => {
+      try {
+        // Make the HTTP request using Axios to get recent blogs
+        const response = await axios.get('http://localhost:5003/recent-blogs', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        // Update state with fetched blogs
+        setRecentBlogs(response.data);
+      } catch (error) {
+        console.error('Error fetching recent blogs:', error);
+        // setBlogs([]); // Optionally handle error state
+      }
+    };
+
+    fetchRecentBlogs();
+  }, []);
 
   async function handleAddComment() {
     try {
@@ -72,12 +140,13 @@ export const BlogDetail = () => {
       }
       );
 
-      console.log("mtssss", response);
+      // console.log("mtssss", response);
+      setAddComment(''); // Clear the content state after adding comment
+
     } catch (error) {
       console.error('Error fetching comments:', error.response ? error.response.data : error.message);
     }
   }
-
 
   async function handleDelete(postId) {
     try {
@@ -87,8 +156,11 @@ export const BlogDetail = () => {
 
         }
 
+
+
       }
       );
+      fetchCommentsForPost();
 
       console.log("mtssss", response);
     } catch (error) {
@@ -97,7 +169,7 @@ export const BlogDetail = () => {
   }
   async function handleEdit(postId) {
     try {
-      const response = await axios.delete(`http://localhost:5003/commentedit/${postId}`,{content}, {
+      const response = await axios.delete(`http://localhost:5003/commentedit/${postId}`, { content }, {
         headers: {
           authorization: `Bearer ${token}`
 
@@ -111,60 +183,268 @@ export const BlogDetail = () => {
       console.error('Error fetching comments:', error.response ? error.response.data : error.message);
     }
   }
-  return (
 
-    <>
-      <Box>
-        <Typography variant="h4" color="initial">{Blog.title}</Typography>
-        <div>
-          <img src={Blog.image} alt="Description of your image" />
-        </div>
-      </Box>
-      <Typography variant="body1" color="initial"> Wrriten by :{Blog.user_name}</Typography>
-      <Typography variant="body1" color="initial"> {Blog.updatedAt !== Blog.createdAt ? `updatedAt :${Blog.updatedAt}` : `createdAt :${Blog.createdAt}`}</Typography>
+  async function handleLike(postId) {
+    const token = localStorage.getItem("token");
 
-      <Typography variant="body1" color="initial">{Blog.content}</Typography>
+    try {
 
+      const response = await axios.post(`http://localhost:5003/like/${postId}`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
 
-
-      <TextField
-        id="addcomment"
-        label="addcomment"
-        value={content}
-        onChange={(e) => setAddComment(e.target.value)}
-
-      />
-
-      <Button onClick={handleAddComment}>Add comment</Button>
-      {comments.map((comment) => {
-
-        return (
-          <>
-            <Box>
-
-              <Typography variant="h4" color="initial">{comment.author}</Typography>
-              <Typography variant="h4" color="initial">{comment.content}</Typography>
-
-              {userId === comment.authorId &&
-                <>
-
-                  <Button variant='contained' onClick={() => handleDelete(comment._id)} >delete</Button>
-                  <Button variant='contained' onClick={() => handleEdit(comment._id)} >Edit</Button>
-
-                  {/* edit content is pending */}
-                </>
-
-              }
-
-            </Box>
-          </>
-
-        )
       })
 
- 
+      console.log(response.data.blogPost);
+      setBlog(response.data.blogPost);
+      // Update the state with the updated Blogs array
+
+
+    }
+    catch (error) {
+      console.error('Error liking post:', error);
+
+    }
+  }
+
+
+  async function handleDislike(postId) {
+    const token = localStorage.getItem("token");
+
+    try {
+
+      const response = await axios.post(`http://localhost:5003/dislike/${postId}`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+
+
+      setBlog(response.data.blogPost);
+
+      console.log(response);
+    }
+    catch (error) {
+      console.error('Error disliking:', error);
+
+    }
+  }
+
+  const calculateTimeDifference = (timestamp) => {
+    const currentTime = new Date();
+    const createdAtTime = new Date(timestamp);
+    const difference = currentTime - createdAtTime;
+    const seconds = Math.floor(difference / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) {
+      return `${days} days ago`;
+    } else if (hours > 0) {
+      return `${hours} hours ago`;
+    } else if (minutes > 0) {
+      return `${minutes} minutes ago`;
+    } else {
+      return `${seconds} seconds ago`;
+    }
+  };
+  return (
+    <>
+      {Blog &&
+        <Box mt={14} sx={{ width: '100%', overflowX: 'hidden' }}>
+          <Grid container>
+
+
+            <Grid item lg={8} xs={12} p={3} >
+
+              <Box mb={3}>
+
+                <Divider />
+                <div style={{ width: '100%', }}>
+                  <img src={Blog.image} alt="Description of your image" style={{ width: '100%', height: 'auto', borderRadius: "10px" }} />
+                </div>
+                <Divider />
+                <Typography mt={3} mb={3} variant="h4" color="initial" textAlign={"center"} fontWeight={"bold"}>{Blog.title}</Typography>
+
+              </Box>
+              <Typography variant="body1" color="initial"> <strong>Author :{Blog.user_name}</strong> </Typography>
+              {/* <Typography variant="body1" color="initial"> {Blog.updatedAt !== Blog.createdAt ? `updatedAt :${Blog.updatedAt}` : `createdAt :${Blog.createdAt}`}</Typography> */}
+              <Typography mb={3} variant="body1" color="initial">
+                {Blog.updatedAt !== Blog.createdAt ?
+                  `updatedAt: ${new Date(Blog.updatedAt).toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    timeZoneName: 'short'
+                  })}` :
+                  `createdAt: ${new Date(Blog.createdAt).toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    timeZoneName: 'short'
+                  })}`
+                }
+              </Typography>
+
+
+
+              <Typography mb={3} variant="h6" color="initial" sx={{ width: '100%', backgroundColor: "#EAEAEA" }} dangerouslySetInnerHTML={{ __html: Blog.content }} />
+              <Box mb={3} >
+
+                {Blog && (<>
+                  <IconButton sx={{
+                    color: Blog.likes.includes(userId) ? "green" : "inherit"
+                  }} aria-label="add to favorites"
+                    onClick={() => handleLike(Blog._id)}
+                  >
+                    <ThumbUpIcon /> {Blog.likes.length}
+                  </IconButton>
+                  <IconButton aria-label="add to dislike"
+                    onClick={() => handleDislike(Blog._id)}
+                    sx={{
+                      color: Blog.dislikes.includes(userId) ? "red" : "inherit"
+                    }} >
+                    <ThumbDownIcon /> {Blog.dislikes.length}
+                  </IconButton>
+                </>)
+                }
+              </Box>
+
+              <Box display={"flex"} textAlign={"center"} flexWrap={"wrap"} mb={2}>
+
+                <TextField
+                  id="addcomment"
+                  label="addcomment"
+                  value={content}
+                  onChange={(e) => setAddComment(e.target.value)}
+                //  fullWidth
+
+                />
+                <Box ml={3} display="flex"
+                  alignItems="center" >
+
+                  <Button ml={2} variant='contained' size='small' onClick={handleAddComment}>Add comment</Button>
+                </Box>
+              </Box>
+
+              <Typography variant="h6" color="initial"> All Comments ({comments.length})</Typography>
+
+              <Box backgroundColor="#f2fafc" border={"2px solid #EAEAEA"} borderRadius={3} p={2}>
+
+                {comments.map((comment) => {
+
+                  return (
+                    <>
+                      <Box key={comment._id} borderBottom={"2px solid #EAEAEA"} mb={2} >
+                        <Box display="flex" alignItems={"center"} mb={2} >
+
+                          {/* <Avatar sx={{ width: 50, height: 50, marginRight: "10px" }}
+                            display="inline-block" >{comment.author.charAt(0).toUpperCase()}  </Avatar> */}
+
+                          <Box>
+
+                            <Typography variant="h6" color="initial" fontWeight={"bold"}>mts</Typography>
+                            {/* <Typography variant="body1" color="initial">{calculateTimeDifference(comment.createdAt)}</Typography> */}
+                          </Box>
+                        </Box>
+                        <Typography variant="body1" color="initial">{comment.content}</Typography>
+                        <Box mt={2}>
+
+                          {userId === comment.authorId &&
+                            <>
+                              <IconButton onClick={() => handleDelete(comment._id)}><DeleteIcon /></IconButton>
+                              {/* <Button variant='contained' onClick={() => handleDelete(comment._id)} >delete</Button> */}
+                              {/* <Button variant='contained' onClick={() => handleEdit(comment._id)} >Edit</Button> */}
+
+                              {/* edit content is pending */}
+                            </>
+
+                          }
+                        </Box>
+
+                      </Box>
+                    </>
+
+                  )
+                })
+
+
+                }
+              </Box>
+            </Grid>
+
+
+            <Grid item lg={4} xs={12} p={3}>
+
+            <Typography variant="h3" color="initial">Recent Posts</Typography>
+            {recentBlogs.length > 0 &&
+
+              recentBlogs.map((blog) => {
+                return (
+                  <Card key={blog._id} sx={{
+                    width: "100%", maxWidth: 870, marginBottom: "20px",
+                    //  backgroundColor: "green",
+                    padding: "15px",
+                    boxShadow: "0px 0px 10px rgba(0, 0, 0, .3)" // Black boxShadow
+
+                  }}
+                    display={"flex"} flexDirection={"column"} justifyContent={"center"} alignItems={"center"}
+                  >
+                    <Typography variant="h5" color="red" fontWeight={"bold"} mb={1}>{blog.category}</Typography>
+
+                    <Typography variant="h5" color="initial" fontWeight={"600"} mb={2}>
+                                            <TruncatedContent content={blog.title} />
+
+                      {/* {blog.title} */}
+                      </Typography>
+                    <CardMedia
+                      component="img"
+                      alt="green iguana"
+                      height="100"
+                      width="100%"
+                      image={blog.image || "/static/images/cards/default-image.jpg"}
+                    />
+                    <CardContent>
+
+                      {/* <TruncatedContent content={blog.content} /> */}
+
+
+                    </CardContent>
+                    <CardActions>
+                      <IconButton sx={{
+                        color: blog.likes.includes(userId) ? "green" : "inherit"
+                      }} aria-label="add to favorites" onClick={() => handleLike(blog._id)}>
+                        <ThumbUpIcon /> {blog.likes.length}
+                      </IconButton>
+                      <IconButton aria-label="add to dislike" onClick={() => handleDislike(blog._id)}
+                        sx={{
+                          color: blog.dislikes.includes(userId) ? "red" : "inherit"
+                        }} >
+                        <ThumbDownIcon /> {blog.dislikes.length}
+                      </IconButton>
+                      <Button size="small" variant="contained" onClick={() => navigate(`/blog/${blog._id}`)}>Read </Button>
+
+                      {userId === blog.authorId  && <Button size="small" variant="contained"
+                        onClick={() => navigate(`/addblog`, { state: blog })}
+                      >Edit</Button>}
+
+
+                    </CardActions>
+                  </Card>
+                )
+              }
+              )
+            }
+            </Grid>
+          </Grid>
+        </Box >
       }
     </>
-
   )
 }

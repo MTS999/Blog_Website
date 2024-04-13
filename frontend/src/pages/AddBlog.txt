@@ -7,9 +7,6 @@ import MenuItem from '@mui/material/MenuItem';
 import { Button } from '@mui/material';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css'; // Import Quill styles
-
 
 export const AddBlog = () => {
   const { category, setCategory } = useCategory();
@@ -50,29 +47,29 @@ export const AddBlog = () => {
   }, [location.state])
 
   async function handleAdd() {
+    
+      const token = localStorage.getItem("token");
+      const updatedData = { ...blogData }
+      if (image) {
+        const uploadedImageUrl = await handleClick();
+        updatedData.image = uploadedImageUrl
+      }
 
-    const token = localStorage.getItem("token");
-    const updatedData = { ...blogData }
-    if (image) {
-      const uploadedImageUrl = await handleClick();
-      updatedData.image = uploadedImageUrl
-    }
-
-    try {
-      const apiUrl = location.state ? `http://localhost:5003/update/${location.state._id}` : 'http://localhost:5003/addblog';
-      const method = location.state ? 'put' : 'post';
-
-      const response = await axios({
-        method,
-        url: apiUrl,
-        data: updatedData,
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      console.log(response);
-    } catch (error) {
-      console.log(error);
-    }
+      try {
+        const apiUrl = location.state ? `http://localhost:5003/update/${location.state._id}` : 'http://localhost:5003/addblog';
+        const method = location.state ? 'put' : 'post';
+  
+        const response = await axios({
+          method,
+          url: apiUrl,
+          data: updatedData,
+          headers: { Authorization: `Bearer ${token}` }
+        });
+  
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+      }
 
 
 
@@ -113,7 +110,7 @@ export const AddBlog = () => {
   return (
 
     <>
-      <Container maxWidth="lg" sx={{ marginTop: "100px" }}>
+      <Container maxWidth="lg" sx={{marginTop:"100px"}}>
 
         <TextField
           id="title"
@@ -146,7 +143,7 @@ export const AddBlog = () => {
           <input type="file" name="image" id="image" onChange={(e) => setImage(e.target.files[0])} />
         </div>
 
-        {/* <TextField
+        <TextField
           id="content"
           name='content'
           onChange={handleChange}
@@ -156,16 +153,7 @@ export const AddBlog = () => {
           rows={20}
           fullWidth
         // defaultValue="Default Value"
-        /> */}
-        <ReactQuill
-          id="content"
-          value={blogData.content}
-          onChange={(value) => setBlogData({ ...blogData, content: value })}
-          modules={{ toolbar: true }}
-          formats={['bold', 'italic', 'underline', 'list', 'bullet']}
-          
         />
-
 
         <Button variant='contained' onClick={handleAdd}>  {location.state ? "Update" : "Add"}</Button>
       </Container>
