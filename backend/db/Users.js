@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-const {Schema}=mongoose
+const { Schema } = mongoose
 
 const usersSchema = new Schema({
     first_name: {
@@ -12,21 +12,39 @@ const usersSchema = new Schema({
     },
     user_name: {
         type: String,
-        required: true
+        required: true,
+        unique: true  // Set the unique property to true
+
     },
     email: {
         type: String,
-        required: true
+        required: true,
+        unique: true  // Set the unique property to true
+
     },
     password: {
         type: String,
-        required: true
+        required: true,
     },
     role: {
         type: String,
         required: true
     },
- 
+    followers: [{
+        type: Schema.Types.ObjectId,
+        ref: 'users'
+    }],
+    following: [{
+        type: Schema.Types.ObjectId,
+        ref: 'users'
+    }],
+
+    reading_list:[
+        {
+            type:Schema.Types.ObjectId,
+            ref:"blogPost"
+        }
+    ],
     createdAt: {
         type: Date,
         default: Date.now
@@ -35,9 +53,11 @@ const usersSchema = new Schema({
         type: Date,
         default: Date.now
 
-    }
+    },
+
+
 });
 
-const User=mongoose.model("users",usersSchema,"users")
+const User = mongoose.model("users", usersSchema, "users")
 
 export default User

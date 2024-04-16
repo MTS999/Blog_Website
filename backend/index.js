@@ -156,11 +156,50 @@ app.get("/blogs", verifyToken, async (request, response) => {
         }
         if (request.query.blog === "myblog") {
             const id = request.user.id
-            console.log(id);
 
             // Add author ID to the query
             query.authorId = id;
         }
+        if (request.query.blog === "reading-list") {
+            const userId = request.user.id;
+
+            // Find the current user
+            const currentUser = await Users.findById(userId);
+
+            if (!currentUser) {
+                return response.status(404).json({ message: "User not found" });
+            }
+
+            // Retrieve the reading list of the current user
+            const readingList = currentUser.reading_list;
+
+            // Query all blog posts in the reading list
+            const readingListBlogs = await BlogPost.find({ _id: { $in: readingList } });
+
+            // Return the blogs from the reading list
+            return response.send(readingListBlogs);
+        }
+
+        if (request.query.feed === "following") {
+            const userId = request.user.id;
+
+            // Find the current user's information
+            const currentUser = await Users.findById(userId);
+
+            if (!currentUser) {
+                return response.status(404).json({ message: "User not found" });
+            }
+
+            // Retrieve the list of users that the current user is following
+            const followingUsers = currentUser.following;
+
+            // Query all blog posts from the following users
+            const followingBlogs = await BlogPost.find({ authorId: { $in: followingUsers } });
+
+            // Return the blogs from following users
+            return response.send(followingBlogs)
+        }
+
         // Find blog posts based on the query
         let result = await BlogPost.find(query);
 
@@ -175,6 +214,37 @@ app.get("/blogs", verifyToken, async (request, response) => {
     }
 })
 
+
+// Assuming you have already defined your Express app and imported necessary modules
+
+// Endpoint to get all blogs from following users
+app.get("/following-blogs", verifyToken, async (request, response) => {
+    try {
+        console.log("MTS");
+        // Get the current user's ID from the request
+        const userId = request.user.id;
+
+        // Find the current user's information
+        const currentUser = await Users.findById(userId);
+
+        if (!currentUser) {
+            return response.status(404).json({ message: "User not found" });
+        }
+
+        // Retrieve the list of users that the current user is following
+        const followingUsers = currentUser.following;
+
+        // Query all blog posts from the following users
+        const followingBlogs = await BlogPost.find({ authorId: { $in: followingUsers } });
+
+        // Return the blogs from following users
+        response.json(followingBlogs);
+    } catch (error) {
+        console.error("Error fetching following blogs:", error);
+        response.status(500).json({ message: "Internal server error" });
+    }
+});
+
 app.get("/recent-blogs", verifyToken, async (request, response) => {
     try {
         // Directly find and return the 5 most recent blog posts
@@ -188,6 +258,35 @@ app.get("/recent-blogs", verifyToken, async (request, response) => {
         } else {
             response.send("No recent blogs found");
         }
+    } catch (error) {
+        console.error('Error fetching recent blogs:', error);
+        response.status(500).send("Internal Server Error");
+    }
+});
+
+app.post("/search", async (request, response) => {
+    try {
+        const searchData = request.body;
+        console.log("mtsss", request.body);
+        let query
+
+
+        if (searchData.title) {
+
+            query = {
+                title: { $regex: searchData.title, $options: 'i' } // Constructing a regex to match the search term in the `content` field
+            };
+        }
+
+        else if (searchData.user_name) {
+            query = {
+                user_name: { $regex: searchData.user_name, $options: 'i' }
+            }
+        }
+        console.log(query);
+        const blogs = await BlogPost.find(query);
+        // console.log(blogs);
+        response.json(blogs); // Send the found blogs as JSON response
     } catch (error) {
         console.error('Error fetching recent blogs:', error);
         response.status(500).send("Internal Server Error");
@@ -252,7 +351,7 @@ app.post("/dislike/:postId", verifyToken, async (request, response) => {
         }
 
         else {
-            if (likedIndex !== -1){
+            if (likedIndex !== -1) {
                 blogPost.likes.splice(likedIndex, 1)
 
             }
@@ -269,7 +368,7 @@ app.post("/dislike/:postId", verifyToken, async (request, response) => {
 
     }
 
-    catch(error){
+    catch (error) {
         console.error("Error liking blog post:", error);
         response.status(500).json({ message: "Internal server error" });
     }
@@ -329,7 +428,7 @@ app.put("/update/:id", verifyToken, async (request, response) => {
     }
 })
 
-/////
+
 app.delete("/delete/:id", async (request, response) => {
     let result = await BlogPost.deleteOne({ _id: request.params.id })
 
@@ -401,6 +500,73 @@ app.put(`/commentedit/:commentId`, verifyToken, async (request, response) => {
     }
 
 })
+
+app.post("/follow/:id", verifyToken, async (request, response) => {
+
+    try {
+        const userId = request.user.id
+        const follwId = request.params.id
+
+        const userData = await Users.findById(userId)
+
+        if (!userData) {
+            return response.status(404).json({ messege: "user not found" })
+        }
+        const blogIdIndex = userData.following.indexOf(follwId)
+
+        if (blogIdIndex !== -1) {
+            userData.following.splice(blogIdIndex, 1)
+        }
+        else {
+            userData.following.push(follwId)
+        }
+        await userData.save()
+        const updatedUserData = await Users.findById(userId)
+        response.status(200).json({ mesege: "updated succesfully", userData: updatedUserData })
+
+
+    }
+
+    catch (error) {
+        console.error(error);
+        response.status(500).json({ message: "Internal server error" });
+
+    }
+})
+
+app.post("/reading-list/:id", verifyToken, async (request, response) => {
+
+    try {
+        const userId = request.user.id
+        const postId = request.params.id
+
+        const userData = await Users.findById(userId)
+
+        if (!userData) {
+            return response.status(404).json({ messege: "user not found" })
+        }
+        const blogIdIndex = userData.reading_list.indexOf(postId)
+
+        if (blogIdIndex !== -1) {
+            userData.reading_list.splice(blogIdIndex, 1)
+        }
+        else {
+            userData.reading_list.push(postId)
+        }
+        await userData.save()
+        const updatedUserData = await Users.findById(userId)
+        response.status(200).json({ mesege: "updated succesfully", userData: updatedUserData })
+
+
+    }
+
+    catch (error) {
+        console.error(error);
+        response.status(500).json({ message: "Internal server error" });
+
+    }
+})
+
 
 
 

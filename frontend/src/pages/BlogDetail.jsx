@@ -16,8 +16,10 @@ import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
-// import Button from '@mui/material/Button';
-// import Typography from '@mui/material/Typography';
+import Drawer from '@mui/material/Drawer';
+import CommentIcon from '@mui/icons-material/Comment';
+
+
 
 
 const MAX_LINES = 2; // Maximum number of lines for content
@@ -41,14 +43,38 @@ const TruncatedContent = ({ content }) => {
 };
 
 export const BlogDetail = () => {
+
+  const [open, setOpen] = React.useState(false);
+  const toggleDrawer = (newOpen) => () => {
+    setOpen(newOpen);
+  };
+  const [state, setState] = React.useState("");
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 600) {
+        setState("right");
+      } else {
+        setState("bottom");
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    // Initial check
+    handleResize();
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  const [userData, setUserData] = React.useState(null)
   const [Blog, setBlog] = React.useState(null)
   const [comments, setComments] = React.useState([]);
   const [content, setAddComment] = React.useState("");
   const [recentBlogs, setRecentBlogs] = React.useState([]);
 
-  console.log(recentBlogs);
+  // console.log(recentBlogs);
   const params = useParams()
-  // console.log(Blog);
+  // console.log(userData);
   const token = localStorage.getItem("token")
   const userId = localStorage.getItem("userId")
 
@@ -74,6 +100,31 @@ export const BlogDetail = () => {
   };
 
   //get blog  
+  useEffect(() => {
+
+
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5003/userdata`, {
+          headers: {
+            authorization: `Bearer ${token}`
+
+          }
+        })
+        // console.log(response.data);
+        setUserData(response.data)
+
+      }
+
+      catch (error) {
+        console.error('Error fetching data   mts:', error);
+      }
+    }
+    if (token) {
+      fetchData()
+    }
+  }, [userId, token])
+
   useEffect(() => {
 
 
@@ -230,7 +281,30 @@ export const BlogDetail = () => {
 
     }
   }
+  async function handleFollow(postId) {
+    const token = localStorage.getItem("token");
 
+    try {
+
+      const response = await axios.post(`http://localhost:5003/follow/${postId}`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+
+      })
+
+      console.log(response.data);
+      setUserData(response.data.userData)
+      // setBlog(response.data.blogPost);
+      // Update the state with the updated Blogs array
+
+
+    }
+    catch (error) {
+      console.error('Error liking post:', error);
+
+    }
+  }
   const calculateTimeDifference = (timestamp) => {
     const currentTime = new Date();
     const createdAtTime = new Date(timestamp);
@@ -258,189 +332,218 @@ export const BlogDetail = () => {
 
 
             <Grid item lg={8} xs={12} p={3} >
+              <Box maxWidth={680}>
 
-              <Box mb={3}>
+                <Box mb={3}>
 
-                <Divider />
-                <div style={{ width: '100%', }}>
-                  <img src={Blog.image} alt="Description of your image" style={{ width: '100%', height: 'auto', borderRadius: "10px" }} />
-                </div>
-                <Divider />
-                <Typography mt={3} mb={3} variant="h4" color="initial" textAlign={"center"} fontWeight={"bold"}>{Blog.title}</Typography>
+                  <Divider />
+                  <div style={{ width: '100%', }}>
+                    <img src={Blog.image} alt="Description of your image" style={{ width: '100%', height: 'auto', borderRadius: "10px" }} />
+                  </div>
+                  <Divider />
+                  <Typography mt={3} mb={3} variant="h4" color="initial" textAlign={"center"} fontWeight={"bold"}>{Blog.title}</Typography>
 
-              </Box>
-              <Typography variant="body1" color="initial"> <strong>Author :{Blog.user_name}</strong> </Typography>
-              {/* <Typography variant="body1" color="initial"> {Blog.updatedAt !== Blog.createdAt ? `updatedAt :${Blog.updatedAt}` : `createdAt :${Blog.createdAt}`}</Typography> */}
-              <Typography mb={3} variant="body1" color="initial">
-                {Blog.updatedAt !== Blog.createdAt ?
-                  `updatedAt: ${new Date(Blog.updatedAt).toLocaleString('en-US', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    timeZoneName: 'short'
-                  })}` :
-                  `createdAt: ${new Date(Blog.createdAt).toLocaleString('en-US', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    timeZoneName: 'short'
-                  })}`
-                }
-              </Typography>
-
-
-
-              <Typography mb={3} variant="h6" color="initial" sx={{ width: '100%', backgroundColor: "#EAEAEA" }} dangerouslySetInnerHTML={{ __html: Blog.content }} />
-              <Box mb={3} >
-
-                {Blog && (<>
-                  <IconButton sx={{
-                    color: Blog.likes.includes(userId) ? "green" : "inherit"
-                  }} aria-label="add to favorites"
-                    onClick={() => handleLike(Blog._id)}
-                  >
-                    <ThumbUpIcon /> {Blog.likes.length}
-                  </IconButton>
-                  <IconButton aria-label="add to dislike"
-                    onClick={() => handleDislike(Blog._id)}
-                    sx={{
-                      color: Blog.dislikes.includes(userId) ? "red" : "inherit"
-                    }} >
-                    <ThumbDownIcon /> {Blog.dislikes.length}
-                  </IconButton>
-                </>)
-                }
-              </Box>
-
-              <Box display={"flex"} textAlign={"center"} flexWrap={"wrap"} mb={2}>
-
-                <TextField
-                  id="addcomment"
-                  label="addcomment"
-                  value={content}
-                  onChange={(e) => setAddComment(e.target.value)}
-                //  fullWidth
-
-                />
-                <Box ml={3} display="flex"
-                  alignItems="center" >
-
-                  <Button ml={2} variant='contained' size='small' onClick={handleAddComment}>Add comment</Button>
                 </Box>
-              </Box>
+                <Typography variant="body1" color="initial"> <strong>Author :{Blog.user_name}</strong>
 
-              <Typography variant="h6" color="initial"> All Comments ({comments.length})</Typography>
+                  {userId !== Blog.authorId && <Button variant='contained' onClick={() => handleFollow(Blog.authorId)}>
+                    {userData.following.includes(Blog.authorId) ?"Following":"Follow"}
+                  </Button>}
 
-              <Box backgroundColor="#f2fafc" border={"2px solid #EAEAEA"} borderRadius={3} p={2}>
+                </Typography>
+                {/* <Typography variant="body1" color="initial"> {Blog.updatedAt !== Blog.createdAt ? `updatedAt :${Blog.updatedAt}` : `createdAt :${Blog.createdAt}`}</Typography> */}
+                <Typography mb={3} variant="body1" color="initial">
+                  {Blog.updatedAt !== Blog.createdAt ?
+                    `updatedAt: ${new Date(Blog.updatedAt).toLocaleString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      timeZoneName: 'short'
+                    })}` :
+                    `createdAt: ${new Date(Blog.createdAt).toLocaleString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      timeZoneName: 'short'
+                    })}`
+                  }
+                </Typography>
 
-                {comments.map((comment) => {
 
-                  return (
-                    <>
-                      <Box key={comment._id} borderBottom={"2px solid #EAEAEA"} mb={2} >
-                        <Box display="flex" alignItems={"center"} mb={2} >
 
-                          {/* <Avatar sx={{ width: 50, height: 50, marginRight: "10px" }}
-                            display="inline-block" >{comment.author.charAt(0).toUpperCase()}  </Avatar> */}
+                <Typography mb={3} variant="h6" color="initial" sx={{ width: '100%', backgroundColor: "#EAEAEA" }} dangerouslySetInnerHTML={{ __html: Blog.content }} />
+                <Box mb={3} >
 
-                          <Box>
+                  {Blog && (<>
+                    <IconButton sx={{
+                      color: Blog.likes.includes(userId) ? "green" : "inherit"
+                    }} aria-label="add to favorites"
+                      onClick={() => handleLike(Blog._id)}
+                    >
+                      <ThumbUpIcon /> {Blog.likes.length}
+                    </IconButton>
+                    <IconButton aria-label="add to dislike"
+                      onClick={() => handleDislike(Blog._id)}
+                      sx={{
+                        color: Blog.dislikes.includes(userId) ? "red" : "inherit"
+                      }} >
+                      <ThumbDownIcon /> {Blog.dislikes.length}
+                    </IconButton>
+                    <IconButton aria-label="add to dislike"
+                      onClick={toggleDrawer(true)}
+                    >
+                      <CommentIcon /> {comments.length}
+                    </IconButton>
+                  </>
+                  )
+                  }
+                </Box>
 
-                            <Typography variant="h6" color="initial" fontWeight={"bold"}>mts</Typography>
-                            {/* <Typography variant="body1" color="initial">{calculateTimeDifference(comment.createdAt)}</Typography> */}
-                          </Box>
+
+
+                <div >
+                  <Drawer
+                    sx={{
+                      '& .MuiDrawer-paper': {
+                        top: "100px",// This adds space at the top
+                        height: 'calc(100% - 100px)' // Adjusts height if necessary
+                      }
+                    }}
+                    anchor={state} open={open} onClose={toggleDrawer(false)}>
+                    <Box padding={3} >
+                      <Box display={"flex"} textAlign={"center"} justifyContent={"space-between"} flexWrap={"wrap"} mb={2}>
+
+                        <TextField
+                          id="addcomment"
+                          label="addcomment"
+                          value={content}
+                          onChange={(e) => setAddComment(e.target.value)}
+                          fullWidth
+
+                        />
+                        <Box display="flex"
+                          alignItems="center" >
+
+                          <Button variant='contained' size='small' onClick={handleAddComment}>Add </Button>
                         </Box>
-                        <Typography variant="body1" color="initial">{comment.content}</Typography>
-                        <Box mt={2}>
+                      </Box>
+                      <Typography variant="h6" color="initial"> All Comments ({comments.length})</Typography>
 
-                          {userId === comment.authorId &&
+                      <Box sx={{ width: "100%" }} backgroundColor="#f2fafc" border={"2px solid #EAEAEA"} borderRadius={3} p={2}>
+
+                        {comments.map((comment) => {
+
+                          return (
                             <>
-                              <IconButton onClick={() => handleDelete(comment._id)}><DeleteIcon /></IconButton>
-                              {/* <Button variant='contained' onClick={() => handleDelete(comment._id)} >delete</Button> */}
-                              {/* <Button variant='contained' onClick={() => handleEdit(comment._id)} >Edit</Button> */}
+                              <Box key={comment._id} borderBottom={"2px solid #EAEAEA"} mb={2} >
+                                <Box display="flex" alignItems={"center"} mb={2} >
 
-                              {/* edit content is pending */}
+                                  <Avatar sx={{ width: 50, height: 50, marginRight: "10px" }}
+                                    display="inline-block" >{comment.author?.charAt(0).toUpperCase()}  </Avatar>
+
+                                  <Box>
+
+                                    <Typography variant="h6" color="initial" fontWeight={"bold"}>{comment.author}</Typography>
+                                    <Typography variant="body1" color="initial">{calculateTimeDifference(comment.createdAt)}</Typography>
+                                  </Box>
+                                </Box>
+                                <Typography variant="body1" color="initial">{comment.content}</Typography>
+                                <Box mt={2}>
+
+                                  {userId === comment.authorId &&
+                                    <>
+                                      <IconButton onClick={() => handleDelete(comment._id)}><DeleteIcon /></IconButton>
+                                      {/* <Button variant='contained' onClick={() => handleEdit(comment._id)} >Edit</Button>
+
+              {/* edit content is pending */}
+                                    </>
+
+                                  }
+                                </Box>
+
+                              </Box>
                             </>
 
-                          }
-                        </Box>
+                          )
+                        })
 
+
+                        }
                       </Box>
-                    </>
+                    </Box>
+                  </Drawer>
+                </div>
 
-                  )
-                })
-
-
-                }
               </Box>
             </Grid>
 
+            {/* rescrnt */}
 
             <Grid item lg={4} xs={12} p={3}>
 
-            <Typography variant="h3" color="initial">Recent Posts</Typography>
-            {recentBlogs.length > 0 &&
+              <Typography variant="h3" color="initial">Recent Posts</Typography>
+              {recentBlogs.length > 0 &&
 
-              recentBlogs.map((blog) => {
-                return (
-                  <Card key={blog._id} sx={{
-                    width: "100%", maxWidth: 870, marginBottom: "20px",
-                    //  backgroundColor: "green",
-                    padding: "15px",
-                    boxShadow: "0px 0px 10px rgba(0, 0, 0, .3)" // Black boxShadow
+                recentBlogs.map((blog) => {
+                  return (
+                    <Card key={blog._id} sx={{
+                      width: "100%", maxWidth: 870, marginBottom: "20px",
+                      //  backgroundColor: "green",
+                      padding: "15px",
+                      boxShadow: "0px 0px 10px rgba(0, 0, 0, .3)" // Black boxShadow
 
-                  }}
-                    display={"flex"} flexDirection={"column"} justifyContent={"center"} alignItems={"center"}
-                  >
-                    <Typography variant="h5" color="red" fontWeight={"bold"} mb={1}>{blog.category}</Typography>
+                    }}
+                      display={"flex"} flexDirection={"column"} justifyContent={"center"} alignItems={"center"}
+                    >
+                      <Typography variant="h5" color="red" fontWeight={"bold"} mb={1}>{blog.category}</Typography>
 
-                    <Typography variant="h5" color="initial" fontWeight={"600"} mb={2}>
-                                            <TruncatedContent content={blog.title} />
+                      <Typography variant="h5" color="initial" fontWeight={"600"} mb={2}>
+                        <TruncatedContent content={blog.title} />
 
-                      {/* {blog.title} */}
+                        {/* {blog.title} */}
                       </Typography>
-                    <CardMedia
-                      component="img"
-                      alt="green iguana"
-                      height="100"
-                      width="100%"
-                      image={blog.image || "/static/images/cards/default-image.jpg"}
-                    />
-                    <CardContent>
+                      <CardMedia
+                        component="img"
+                        alt="green iguana"
+                        height="100"
+                        width="100%"
+                        image={blog.image || "/static/images/cards/default-image.jpg"}
+                      />
+                      <CardContent>
 
-                      {/* <TruncatedContent content={blog.content} /> */}
-
-
-                    </CardContent>
-                    <CardActions>
-                      <IconButton sx={{
-                        color: blog.likes.includes(userId) ? "green" : "inherit"
-                      }} aria-label="add to favorites" onClick={() => handleLike(blog._id)}>
-                        <ThumbUpIcon /> {blog.likes.length}
-                      </IconButton>
-                      <IconButton aria-label="add to dislike" onClick={() => handleDislike(blog._id)}
-                        sx={{
-                          color: blog.dislikes.includes(userId) ? "red" : "inherit"
-                        }} >
-                        <ThumbDownIcon /> {blog.dislikes.length}
-                      </IconButton>
-                      <Button size="small" variant="contained" onClick={() => navigate(`/blog/${blog._id}`)}>Read </Button>
-
-                      {userId === blog.authorId  && <Button size="small" variant="contained"
-                        onClick={() => navigate(`/addblog`, { state: blog })}
-                      >Edit</Button>}
+                        {/* <TruncatedContent content={blog.content} /> */}
 
 
-                    </CardActions>
-                  </Card>
+                      </CardContent>
+                      <CardActions>
+                        <IconButton sx={{
+                          color: blog.likes.includes(userId) ? "green" : "inherit"
+                        }} aria-label="add to favorites" onClick={() => handleLike(blog._id)}>
+                          <ThumbUpIcon /> {blog.likes.length}
+                        </IconButton>
+                        <IconButton aria-label="add to dislike" onClick={() => handleDislike(blog._id)}
+                          sx={{
+                            color: blog.dislikes.includes(userId) ? "red" : "inherit"
+                          }} >
+                          <ThumbDownIcon /> {blog.dislikes.length}
+                        </IconButton>
+                        <Button size="small" variant="contained" onClick={() => navigate(`/blog/${blog._id}`)}>Read </Button>
+
+                        {userId === blog.authorId && <Button size="small" variant="contained"
+                          onClick={() => navigate(`/addblog`, { state: blog })}
+                        >Edit</Button>}
+
+
+                      </CardActions>
+                    </Card>
+                  )
+                }
                 )
               }
-              )
-            }
             </Grid>
           </Grid>
         </Box >

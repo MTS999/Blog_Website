@@ -100,6 +100,15 @@ function ResponsiveDrawer(props) {
     }
   };
 
+
+  const handleLogout = () => {
+    // Clear token and user ID from local storage
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+    // Redirect the user to the login page or perform any other necessary action
+    navigate("/login")
+  };
+
   const drawer = (
     <div>
       <Toolbar />
@@ -129,6 +138,15 @@ function ResponsiveDrawer(props) {
             </ListItemButton>
           </ListItem>
         }
+
+        <ListItem key={"reading-list"} disablePadding>
+          <ListItemButton onClick={() => navigate(`/?blog=reading-list`)}>
+            <ListItemIcon>
+              <InboxIcon />
+            </ListItemIcon>
+            <ListItemText primary={"Reading_list"} />
+          </ListItemButton>
+        </ListItem>
         {category.map((text, index) => (
           <ListItem key={text} disablePadding>
             <ListItemButton onClick={() => navigate(`/?category=${text}`, { state: { text } })}>
@@ -194,7 +212,7 @@ function ResponsiveDrawer(props) {
             >
               <MenuItem onClick={handleClose}>Profile</MenuItem>
               <MenuItem onClick={handleClose}>My account</MenuItem>
-              <MenuItem onClick={handleClose}>Logout</MenuItem>
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
           </div>
         </Toolbar>
