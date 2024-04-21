@@ -7,6 +7,7 @@ import cors from "cors"
 import Users from "./db/Users.js";
 import BlogPost from "./db/BlogPost.js"
 import CommentPost from "./db/Comments.js"
+import User from "./db/Users.js";
 import("./db/config.js")
 
 
@@ -52,6 +53,31 @@ app.post("/signup", async (request, response) => {
     response.send(result)
 
 })
+// Assuming you have already imported necessary modules and defined your Express app
+
+// Endpoint to update user information
+app.put("/update-user/:id", verifyToken, async (request, response) => {
+    try {
+        const userId = request.params.id;
+
+
+        const updatedUser = await Users.findByIdAndUpdate(userId, request.body, { new: true });
+
+        // Check if user is found and updated successfully
+        if (!updatedUser) {
+            return response.status(404).json({ message: "User not found" });
+        }
+
+        // Send the updated user data in the response
+        response.json(updatedUser);
+    } catch (error) {
+        // Handle errors
+        console.error("Error updating user:", error);
+        response.status(500).json({ message: "Internal server error" });
+    }
+});
+
+
 app.post("/login", async (request, response) => {
 
     if (request.body.email && request.body.password) {
@@ -95,6 +121,89 @@ app.get("/getalluserdata", verifyToken, async (request, response) => {
     }
     catch (error) {
         console.error("Error fetching user data:", error);
+        response.status(500).json({ message: "Internal server error" });
+    }
+
+})
+
+app.get("/pending-request", verifyToken, async (request, response) => {
+
+    try {
+        const role=request.user.role
+        if (role !== "admin") {
+            return response.status(403).json({ message: "Unauthorized - You do not have permission to access this resource" })
+        }
+
+        const pending_users = await Users.find(
+            { role: "pending" }
+        )
+
+        response.json(pending_users)
+    }
+
+    catch(error){
+        console.error("Error fetching pending po:", error);
+        response.status(500).json({ message: "Internal server error" });
+    }
+
+})
+app.put("/pending",verifyToken,  async(request,response)=>{
+
+    try {
+
+        const userId=request.user.id
+
+   const updateuser= await Users.findByIdAndUpdate(userId,{role:"pending"},{new:true})
+      
+   
+   response.json(updateuser)
+    } catch (error) {
+        response.status(500).json({message:"interna; servert error"})
+    }
+})
+app.put("/pending-reject/:id",verifyToken,async(request,response)=>{
+
+    try {
+
+        const userId=request.params.id
+
+   const updateuser= await Users.findByIdAndUpdate(userId,{role:"reader"},{new:true})
+      
+   
+   response.json(updateuser)
+    } catch (error) {
+        response.status(500).json({message:"interna; servert error"})
+    }
+})
+app.put("/pending-accept/:id",verifyToken,  async(request,response)=>{
+
+    try {
+
+        const userId=request.params.id
+
+   const updateuser= await Users.findByIdAndUpdate(userId,{role:"author"},{new:true})
+      
+   
+   response.json(updateuser)
+    } catch (error) {
+        response.status(500).json({message:"interna; servert error"})
+    }
+})
+app.get("/getallblogdata", verifyToken, async (request, response) => {
+    try {
+
+        const role = request.user.role
+        if (role !== "admin") {
+            return response.status(403).json({ message: "Unauthorized - You do not have permission to access this resource" })
+        }
+
+        const Blog = await BlogPost.find();
+
+        // Send the user data in the response
+        response.json(Blog);
+    }
+    catch (error) {
+        console.error("Error fetching blog data:", error);
         response.status(500).json({ message: "Internal server error" });
     }
 

@@ -32,7 +32,7 @@ import { useLocation } from 'react-router-dom';
 
 
 
-const drawerWidth = 240;
+const drawerWidth = 200;
 
 function ResponsiveDrawer(props) {
   const { window } = props;
@@ -40,6 +40,7 @@ function ResponsiveDrawer(props) {
   const [isClosing, setIsClosing] = React.useState(false);
   const { category, setCategory } = useCategory();
   const [userRole, setUserRole] = React.useState('');
+  const [userData, setUserData] = React.useState(null)
 
 
   const navigate = useNavigate()
@@ -53,6 +54,32 @@ function ResponsiveDrawer(props) {
     setAnchorEl(null);
   };
 
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+
+
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5003/userdata`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+
+          }
+        })
+        // console.log(response.data);
+        setUserData(response.data)
+
+      }
+
+      catch (error) {
+        console.error('Error fetching data   mts:', error);
+      }
+    }
+    if (token) {
+      fetchData()
+    }
+  }, [token])
   //  end
   React.useEffect(() => {
     const token = localStorage.getItem("token")
@@ -115,6 +142,45 @@ function ResponsiveDrawer(props) {
       <Divider />
       <List>
         {
+          userRole === "admin" &&
+
+          <ListItem key={"dashboard"} disablePadding>
+            <ListItemButton onClick={() => navigate(`/dashboard`)}>
+              <ListItemIcon>
+              <InboxIcon />
+
+              </ListItemIcon>
+              <ListItemText primary={"Dashboard"} />
+            </ListItemButton>
+          </ListItem>
+        }
+        {
+          userRole === "admin" &&
+
+          <ListItem key={"pending request"} disablePadding>
+            <ListItemButton onClick={() => navigate(`/pending-request`)}>
+              <ListItemIcon>
+                <InboxIcon />
+
+              </ListItemIcon>
+              <ListItemText primary={"Pending "} />
+            </ListItemButton>
+          </ListItem>
+        }
+        {
+          userRole === "admin" &&
+
+          <ListItem key={"alllusers"} disablePadding>
+            <ListItemButton onClick={() => navigate(`/allusers`)}>
+              <ListItemIcon>
+                <InboxIcon />
+
+              </ListItemIcon>
+              <ListItemText primary={"AllUsers "} />
+            </ListItemButton>
+          </ListItem>
+        }
+        {
           userRole === "author" &&
 
           <ListItem key={"myblogs"} disablePadding>
@@ -162,6 +228,11 @@ function ResponsiveDrawer(props) {
     </div>
   );
 
+
+  function profileAction(){
+    handleClose()
+    navigate("/profile")
+  }
   // Remove this const when copying and pasting into your project.
   const container = window !== undefined ? () => window().document.body : undefined;
 
@@ -210,7 +281,7 @@ function ResponsiveDrawer(props) {
                 'aria-labelledby': 'basic-button',
               }}
             >
-              <MenuItem onClick={handleClose}>Profile</MenuItem>
+              <MenuItem onClick={profileAction}>Profile</MenuItem>
               <MenuItem onClick={handleClose}>My account</MenuItem>
               <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>

@@ -16,6 +16,9 @@ const usersSchema = new Schema({
         unique: true  // Set the unique property to true
 
     },
+    image_url: {
+        type: String  // Assuming the image URL will be a string
+    },
     email: {
         type: String,
         required: true,
@@ -45,17 +48,11 @@ const usersSchema = new Schema({
             ref:"blogPost"
         }
     ],
-    createdAt: {
-        type: Date,
-        default: Date.now
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now
-
-    },
 
 
+},
+{
+    timestamps: true // Automatically manage createdAt and updatedAt fields
 });
 
 const User = mongoose.model("users", usersSchema, "users")
