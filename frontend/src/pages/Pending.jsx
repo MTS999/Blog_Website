@@ -10,7 +10,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
-import { Chip } from '@mui/material';
+import { Chip, Typography ,Box} from '@mui/material';
 const columns = [
     { id: 'index', label: '#', minWidth: 50, align: 'center' },
     // { id: 'action', label: 'Action', minWidth: 170, align: 'center' },
@@ -83,7 +83,7 @@ const Pending = () => {
         }
     }
     useEffect(() => {
-       
+
 
         fetchData()
     }, [token])
@@ -91,10 +91,10 @@ const Pending = () => {
 
 
     const RequestAccept = async (id) => {
-        
-    
+
+
         try {
-            const response = await axios.put(`http://localhost:5003/pending-accept/${id}`,{}, {
+            const response = await axios.put(`http://localhost:5003/pending-accept/${id}`, {}, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -110,10 +110,10 @@ const Pending = () => {
         }
     }
     const RequestReject = async (id) => {
-        
-    
+
+
         try {
-            const response = await axios.put(`http://localhost:5003/pending-reject/${id}`, {},{
+            const response = await axios.put(`http://localhost:5003/pending-reject/${id}`, {}, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -144,9 +144,12 @@ const Pending = () => {
 
     return (
         <>
-
-            <Paper  sx={{ width: '100%', overflow: 'hidden', marginTop: "100px" }}>
+            <Paper sx={{ width: '100%', overflow: 'hidden', marginTop: "100px" }}>
                 <TableContainer sx={{ maxHeight: 440 }}>
+                    <Box textAlign={"center"}>
+
+                    <Typography variant="h4" color="initial" >Pending request</Typography>
+                    </Box>
                     <Table stickyHeader aria-label="sticky table">
                         <TableHead>
                             <TableRow>
@@ -183,9 +186,9 @@ const Pending = () => {
                                             <Chip label={"Accept"} sx={{ backgroundColor: "#E4F8DD", width: "100px", height: "45px", color: "#00A95A", fontWeight: "bold", borderRadius: "5px", fontSize: "16px" }} /></Button>
                                     </TableCell>
                                     <TableCell align="center" style={{ minWidth: columns[6].minWidth, fontSize: "18px" }}>
-                                        <Button onClick={()=>RequestReject(user._id)}>
+                                        <Button onClick={() => RequestReject(user._id)}>
 
-                                        <Chip label={"Reject"} sx={{ backgroundColor: "#E4F8DD", width: "100px", height: "45px", color: "#00A95A", fontWeight: "bold", borderRadius: "5px", fontSize: "16px" }} />
+                                            <Chip label={"Reject"} sx={{ backgroundColor: "#E4F8DD", width: "100px", height: "45px", color: "#00A95A", fontWeight: "bold", borderRadius: "5px", fontSize: "16px" }} />
                                         </Button>
                                     </TableCell>
                                 </TableRow>

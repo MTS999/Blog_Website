@@ -4,7 +4,6 @@ import { useEffect } from 'react'
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton'
@@ -18,15 +17,16 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Grid from '@mui/material/Grid';
 import { Divider } from "@mui/material";
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
-import HomeIcon from '@mui/icons-material/Home';
-import BookmarkIcon from '@mui/icons-material/Bookmark';
-
-
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
+import Avatar from "@mui/material/Avatar";
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
+import UserProfileAvatar from "../components/UserProfileAvatar"
 
+
+
+import Chip from "@mui/material/Chip";
 
 const MAX_LINES = 2; // Maximum number of lines for content
 
@@ -53,15 +53,16 @@ const Blogs = () => {
   const handleChange = (event) => {
     setSearchBy(event.target.value);
   };
+  const [allUserData, setAllUserData] = React.useState([])
 
-    const [userData, setUserData] = React.useState(null)
+  const [userData, setUserData] = React.useState(null)
   const [Search, setSearch] = React.useState("")
   const [Blogs, setBlogs] = React.useState([])
   const location = useLocation()
-  const [selectedCategory, setSelectedCategory] = React.useState("");
+  // const [selectedCategory, setSelectedCategory] = React.useState("");
   const [userRole, setUserRole] = React.useState('');
   const [recentBlogs, setRecentBlogs] = React.useState([]);
-  // console.log(Blogs);
+  console.log(allUserData);
   const navigate = useNavigate()
 
   console.log(Search);
@@ -70,13 +71,37 @@ const Blogs = () => {
   const blogParam = queryParams.get('blog');
   const qcategory = queryParams.get('category');
   const following = queryParams.get('feed');
-  // console.log(blogParam);
-  // console.log(qcategory);
 
-  // console.log("blog",blogParam);
-  // console.log("category",qcategory);
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("userId")
+
+  const fetchUserData = async () => {
+    // setLoader(true)
+    try {
+
+      const response = await axios.get("http://localhost:5003/getalluserdata", {
+        headers: {
+          Authorization: `Bearer ${token}`
+
+        }
+      })
+
+      // console.log(response.data);
+      setAllUserData(response.data)
+
+    } catch (error) {
+      console.log(error);
+    }
+    finally {
+      // setLoader(false)
+    }
+  }
+
+  useEffect(() => {
+
+    fetchUserData()
+    
+  }, [token ])
 
   useEffect(() => {
 
@@ -153,7 +178,7 @@ const Blogs = () => {
         // }
 
         else {
-          setSelectedCategory("");
+          // setSelectedCategory("");
         }
         const response = await axios.get(url, {
           headers: {
@@ -312,103 +337,148 @@ const Blogs = () => {
 
     }
   }
-
+  function getImageUrlById(userId) {
+    const user = allUserData.find(user => user._id === userId);
+    return user ? user.image_url : null;
+}
   const BlogData = Blogs.map((blog) => {
     return (
 
       <Card key={blog._id} sx={{
         width: "100%", maxWidth: 700, marginBottom: "20px",
-        //  backgroundColor: "green",
         padding: "15px",
         boxShadow: "0px 0px 10px rgba(0, 0, 0, .3)", // Black boxShadow
         display: "flex",
         justifyContent: "space-around"
-        , alignItems: "center"
+        , alignItems: "center",
       }}
-      //         display={"flex"}
-      // justifyContent={"spa "}
-      //        alignItems={"center"}
+
       >
-        <Box
-          // display={"inline-block"}
-          displayPrint={{sm:"inline-block" ,xs:"flex"}}
-        width={"100%"}
-
-        >
-
-          <Typography variant="h5" color="red" fontWeight={"bold"} mb={3}>{blog.category}</Typography>
-          <Typography variant="h5" color="initial" fontWeight={"600"} mb={3}>{blog.title}</Typography>
-
+        <Box display={"flex"} justifyContent={"space-between"}>
 
           <Box
-          display={{ sm: 'none', xs: 'inline-block' }}
-          // maxWidth={300}
-          width={"100%"}
+            // display={"inline-block"}
+            displayPrint={{ sm: "inline-block", xs: "flex" }}
+            // width={"50%"}
+            width={{ sm: "50%", xs: "99%" }}
+            textAlign={"left"}
+            display={"flex"}
+            justifyContent={"center "}
+            //  alignItems={"center"}
+            flexDirection={"column"}
           >
 
-          <img
-            src={blog.image}
-            alt="green iguana"
-            height="200"
-            width={"100%"}
+            {/* <Typography variant="body1" color="red" fontWeight={"bold"}  >{blog.category}</Typography>  */}
+
+            <Box display="flex" alignItems={"center"} mb={2} >
+
+                <UserProfileAvatar userId={blog.authorId} userName={blog.user_name}  />
+              {/* <Avatar sx={{ width: 50, height: 50, marginRight: "10px" }} display="inline-block" >
+               
+
+                
+                
+                 </Avatar> */}
+
+              <Box>
+
+                <Typography mr={1} display={"inline-block"} variant="h6" color="initial" fontWeight={"bold"}>{`${blog.user_name}  `}</Typography>
+                <Typography display={"inline-block"} variant="body1" color="initial">
+                  {new Date(blog.createdAt).toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: '2-digit',
+                    // hour: '2-digit',
+                    // minute: '2-digit',
+                    // timeZoneName: 'short'
+                  })}
+                </Typography>
+              </Box>
+            </Box>
+            <Typography variant="h5" color="initial" fontWeight={"600"} mb={1}>{blog.title}</Typography>
 
 
-          />
-        </Box>
-          <CardContent>
+            <Box
+              display={{ sm: 'none', xs: 'inline-block' }}
+              // maxWidth={300}
+              width={"100%"}
+            >
 
-            <TruncatedContent content={blog.content} />
+              <img
+                src={blog.image}
+                alt="green iguana"
+                // height="200"
+                width={"100%"}
+                height={"100%"}
 
 
-          </CardContent>
-          <CardActions>
-            <IconButton sx={{
-              color: blog.likes.includes(userId) ? "green" : "inherit"
-            }} aria-label="add to favorites" onClick={() => handleLike(blog._id)}>
-              <ThumbUpIcon /> {blog.likes.length}
-            </IconButton>
-            <IconButton aria-label="add to dislike" onClick={() => handleDislike(blog._id)}
-              sx={{
-                color: blog.dislikes.includes(userId) ? "red" : "inherit"
-              }} >
-              <ThumbDownIcon /> {blog.dislikes.length}
-            </IconButton>
+              />
+            </Box>
+            <CardContent sx={{ padding: "0px" }} >
 
-            { userData  && 
+              <TruncatedContent content={blog.content} />
 
-              <IconButton aria-label="add or delete from reading_list" onClick={() => handle_reading_list(blog._id)}
-              sx={{
-                color: userData.reading_list?.includes(blog._id) ? "brown" : "inherit"
-              }} >
-              <LibraryAddIcon />
-            </IconButton>
+
+            </CardContent>
+            <CardActions>
+              <IconButton sx={{
+                color: blog.likes.includes(userId) ? "green" : "inherit"
+              }} aria-label="add to favorites" onClick={() => handleLike(blog._id)}>
+                <ThumbUpIcon /> {blog.likes.length}
+              </IconButton>
+              <IconButton aria-label="add to dislike" onClick={() => handleDislike(blog._id)}
+                sx={{
+                  color: blog.dislikes.includes(userId) ? "red" : "inherit"
+                }} >
+                <ThumbDownIcon /> {blog.dislikes.length}
+              </IconButton>
+
+              {userData &&
+
+                <IconButton aria-label="add or delete from reading_list" onClick={() => handle_reading_list(blog._id)}
+                  sx={{
+                    color: userData.reading_list?.includes(blog._id) ? "brown" : "inherit"
+                  }} >
+                  <LibraryAddIcon />
+                </IconButton>
               }
 
 
-            <Button size="small" variant="contained" onClick={() => navigate(`/blog/${blog._id}`)}>more</Button>
+              <Button size="small" variant="contained" onClick={() => navigate(`/blog/${blog._id}`)}>Read </Button>
 
-            {userId === blog.authorId && blogParam && <Button size="small" variant="contained"
-              onClick={() => navigate(`/addblog`, { state: blog })}
-            >Edit</Button>}
+              {userId === blog.authorId && blogParam && <Button size="small" variant="contained"
+                onClick={() => navigate(`/addblog`, { state: blog })}
+              >Edit</Button>}
 
 
-          </CardActions>
-        </Box>
-        <Box
-          display={{ xs: 'none', sm: 'inline-block' }}
-          maxWidth={400}
-          minWidth={300}
+            </CardActions>
+          </Box>
+          <Box
+            display={{ xs: 'none', sm: 'inline-block' }}
+            // maxWidth={400}
+            // minWidth={300}
+            width={{ sm: "50%", xs: "100%" }}
           >
+            <Box mb={2} >
 
-          <img
-            src={blog.image}
-            alt="green iguana"
-            height="200"
-            width={"100%"}
+              <Chip size="large" label={blog.category} />
+            </Box>
+            <img
+              src={blog.image}
+              alt="green iguana"
+              height="200"
+              width={"100%"}
+              style={
+                {
+                  borderRadius: "5px"
+                }
+              }
 
 
-          />
+            />
+          </Box>
         </Box>
+
       </Card>
 
 
@@ -447,9 +517,10 @@ const Blogs = () => {
           } */}
           <TextField
             sx={{
-              maxWidth: "150px" // Adjust the width value as needed
-
+              maxWidth: "150px",
+              marginRight: "10PX"
             }}
+
             margin='normal'
             required
             id="search"
@@ -477,41 +548,48 @@ const Blogs = () => {
             }}
 
           />
-          <div>
-            <FormControl sx={{ m: 1, minWidth: 80, padding: "0px" }}>
-              <InputLabel id="demo-simple-select-autowidth-label">by</InputLabel>
-              <Select
-                labelId="demo-simple-select-autowidth-label"
-                id="demo-simple-select-autowidth"
-                value={SearchBy}
-                onChange={handleChange}
-                autoWidth
-                label="search by"
-              >
-                {/* <MenuItem value="">
-            <em>None</em>
-          </MenuItem> */}
-                <MenuItem value={"title"}>title</MenuItem>
-                <MenuItem value={"user_name"}> username</MenuItem>
-                {/* <MenuItem value={22}>Twenty one and a </MenuItem> */}
-              </Select>
-            </FormControl>
-          </div>
+          {/* <FormControl sx={{ margin: "0px 3px", minWidth: 80, padding: "0px" }}>
+            <InputLabel id="demo-simple2-select-autowidth-label">by</InputLabel>
+            <Select
+              labelId="demo-simple-select-autowidth-label"
+              id="demo-simple-select-autowidth"
+              value={SearchBy}
+              onChange={handleChange}
+              autoWidth
+              label="search by"
+            >
+      
+              <MenuItem value={"title"}>title</MenuItem>
+              <MenuItem value={"user_name"}> username</MenuItem>
+            </Select>
+          </FormControl> */}
+
+          <FormControl >
+            <RadioGroup
+
+              row
+              aria-labelledby="demo-row-radio-buttons-group-label"
+              name="row-radio-buttons-group"
+              value={SearchBy} // Set the value of radio group to SearchBy
+              onChange={handleChange} // Handle change for radio buttons
+            >
+              <FormControlLabel value="title" control={<Radio />} label="title" />
+              <FormControlLabel value="user_name" control={<Radio />} label="Author" />
+
+            </RadioGroup>
+          </FormControl>
         </Box>
-        <Box pl={6} mb={1} display={"block"} >
+        <Box pl={6} display={"block"} >
           <Button varient="contained" onClick={() => navigate(`/`)}> For You</Button>
           <Button varient="contained" onClick={() => navigate(`/?feed=${"following"}`)}> Following</Button>
 
 
         </Box>
-        <Divider
-        
-
-        />
+        <Divider/>
         <Grid container mt={4} >
 
 
-          <Divider />
+          {/* <Divider /> */}
           <Grid item
             sx={{
               padding: "10px", paddingTop: "0px", width: "100%", display: "flex",
@@ -520,12 +598,16 @@ const Blogs = () => {
             }}
             xs={12} lg={7}
           >
+            <Typography variant="body1" color="initial"></Typography>
 
+            {BlogData.length === 0 ?
+              <Typography variant="h3" color="initial">Blog no Found</Typography>
 
-            {BlogData && BlogData}
+              : BlogData}
 
           </Grid>
-
+        <Divider/>
+        
           <Grid item
             sx={{
               padding: "10px", paddingTop: "0px", width: "100%",
@@ -577,22 +659,26 @@ const Blogs = () => {
 
                       </CardContent>
                       <CardActions>
-                        <IconButton sx={{
-                        color: blog.likes.includes(userId) ? "green" : "inherit"
-                      }} aria-label="add to favorites" onClick={() => handleLike(blog._id)}>
-                        <ThumbUpIcon /> {blog.likes.length}
-                      </IconButton>
-                      <IconButton aria-label="add to dislike" onClick={() => handleDislike(blog._id)}
-                        sx={{
-                          color: blog.dislikes.includes(userId) ? "red" : "inherit"
-                        }} >
-                        <ThumbDownIcon /> {blog.dislikes.length}
-                      </IconButton>
+                        {/* <IconButton sx={{
+                          color: blog.likes.includes(userId) ? "green" : "inherit"
+                        }} aria-label="add to favorites" onClick={() => handleLike(blog._id)}>
+                          <ThumbUpIcon /> {blog.likes.length}
+                        </IconButton>
+                        <IconButton aria-label="add to dislike" onClick={() => handleDislike(blog._id)}
+                          sx={{
+                            color: blog.dislikes.includes(userId) ? "red" : "inherit"
+                          }} >
+                          <ThumbDownIcon /> {blog.dislikes.length}
+                        </IconButton> */}
                         <Button size="small" variant="contained" onClick={() => navigate(`/blog/${blog._id}`)}>Read </Button>
 
                         {userId === blog.authorId && blogParam && <Button size="small" variant="contained"
                           onClick={() => navigate(`/addblog`, { state: blog })}
                         >Edit</Button>}
+
+                        {userId === blog.authorId && blogParam && <Button size="small" variant="contained"
+                          onClick={() => navigate(`/addblog`, { state: blog })}
+                        >delete</Button>}
 
 
                       </CardActions>

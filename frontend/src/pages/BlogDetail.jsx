@@ -18,7 +18,8 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Drawer from '@mui/material/Drawer';
 import CommentIcon from '@mui/icons-material/Comment';
-
+import CloseIcon from '@mui/icons-material/Close';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -49,6 +50,8 @@ export const BlogDetail = () => {
     setOpen(newOpen);
   };
   const [state, setState] = React.useState("");
+
+  const navigate = useNavigate()
 
   React.useEffect(() => {
     const handleResize = () => {
@@ -328,29 +331,47 @@ export const BlogDetail = () => {
     <>
       {Blog &&
         <Box mt={14} sx={{ width: '100%', overflowX: 'hidden' }}>
-          <Grid container>
+          <Grid container backgroundColor="#F7F9FA">
 
 
-            <Grid item lg={8} xs={12} p={3} >
-              <Box maxWidth={680}>
+            <Grid item xs={12} p={3}
+              display={"flex"}
+              justifyContent={"center"}
+              backgroundColor="#FFFFFF"
+
+            >
+              <Box maxWidth={700}
+                // border={"2px solid red"}
+                sx={{
+                  boxShadow: "0px 0px 10px rgba(0, 0, 0, .3)"
+                }}
+                padding={4}>
 
                 <Box mb={3}>
 
+                  <Typography mt={3} mb={3} variant="h4" color="initial" textAlign={"center"} fontWeight={"bold"}>{Blog.title}</Typography>
                   <Divider />
-                  <div style={{ width: '100%', }}>
+                  <div style={{ width: '100%', padding: "50px 20px" }}>
                     <img src={Blog.image} alt="Description of your image" style={{ width: '100%', height: 'auto', borderRadius: "10px" }} />
                   </div>
                   <Divider />
-                  <Typography mt={3} mb={3} variant="h4" color="initial" textAlign={"center"} fontWeight={"bold"}>{Blog.title}</Typography>
 
                 </Box>
-                <Typography variant="body1" color="initial"> <strong>Author :{Blog.user_name}</strong>
+                <Box mb={2}>
 
-                  {userId !== Blog.authorId && <Button variant='contained' onClick={() => handleFollow(Blog.authorId)}>
-                    {userData.following.includes(Blog.authorId) ?"Following":"Follow"}
-                  </Button>}
+                  <Typography variant="body1" color="initial"> <strong>Author : {Blog.user_name}</strong>
 
-                </Typography>
+                    {userId !== Blog.authorId &&
+                      <Button
+                        sx={{ marginLeft: "10px" }}
+                        variant='contained'
+                        size='small'
+                        onClick={() => handleFollow(Blog.authorId)}>
+                        {userData.following.includes(Blog.authorId) ? "Following" : "Follow"}
+                      </Button>}
+
+                  </Typography>
+                </Box>
                 {/* <Typography variant="body1" color="initial"> {Blog.updatedAt !== Blog.createdAt ? `updatedAt :${Blog.updatedAt}` : `createdAt :${Blog.createdAt}`}</Typography> */}
                 <Typography mb={3} variant="body1" color="initial">
                   {Blog.updatedAt !== Blog.createdAt ?
@@ -360,7 +381,7 @@ export const BlogDetail = () => {
                       day: '2-digit',
                       hour: '2-digit',
                       minute: '2-digit',
-                      timeZoneName: 'short'
+                      // timeZoneName: 'short'
                     })}` :
                     `createdAt: ${new Date(Blog.createdAt).toLocaleString('en-US', {
                       year: 'numeric',
@@ -368,14 +389,14 @@ export const BlogDetail = () => {
                       day: '2-digit',
                       hour: '2-digit',
                       minute: '2-digit',
-                      timeZoneName: 'short'
+                      // timeZoneName: 'short'
                     })}`
                   }
                 </Typography>
 
 
 
-                <Typography mb={3} variant="h6" color="initial" sx={{ width: '100%', backgroundColor: "#EAEAEA" }} dangerouslySetInnerHTML={{ __html: Blog.content }} />
+                <Typography mb={3} p={2} variant="h6" color="initial" sx={{ width: '100%', backgroundColor: "#EAEAEA" }} dangerouslySetInnerHTML={{ __html: Blog.content }} />
                 <Box mb={3} >
 
                   {Blog && (<>
@@ -414,21 +435,35 @@ export const BlogDetail = () => {
                       }
                     }}
                     anchor={state} open={open} onClose={toggleDrawer(false)}>
-                    <Box padding={3} >
-                      <Box display={"flex"} textAlign={"center"} justifyContent={"space-between"} flexWrap={"wrap"} mb={2}>
+                    <Box padding={2} >
+                      <Box
+                        // display={"flex"} textAlign={"center"} justifyContent={"space-between"} flexWrap={"wrap"}
+                        mb={2}>
+                        <Box
 
-                        <TextField
-                          id="addcomment"
-                          label="addcomment"
-                          value={content}
-                          onChange={(e) => setAddComment(e.target.value)}
-                          fullWidth
+                          display={"flex"} textAlign={"center"} justifyContent={"end"}
+                          mb={2}
 
-                        />
+                        >
+                          <CloseIcon onClick={toggleDrawer(false)} />
+                        </Box>
+                        <Box>
+
+                          <TextField
+                            id="addcomment"
+                            label="addcomment"
+                            value={content}
+                            onChange={(e) => setAddComment(e.target.value)}
+                            fullWidth
+
+                          />
+                        </Box>
                         <Box display="flex"
                           alignItems="center" >
 
-                          <Button variant='contained' size='small' onClick={handleAddComment}>Add </Button>
+                          <Button
+                            sx={{ marginTop: "8px" }}
+                            variant='contained' size='small' onClick={handleAddComment}>Add </Button>
                         </Box>
                       </Box>
                       <Typography variant="h6" color="initial"> All Comments ({comments.length})</Typography>
@@ -483,67 +518,92 @@ export const BlogDetail = () => {
 
             {/* rescrnt */}
 
-            <Grid item lg={4} xs={12} p={3}>
+            <Grid item xs={12} p={3}
+              sx={{
 
-              <Typography variant="h3" color="initial">Recent Posts</Typography>
-              {recentBlogs.length > 0 &&
+                display: "flex", alignItems: "center", flexDirection: "column",
+              }}
+            >
+              <Typography variant="h3" color="initial" mb={3}>Recent Posts</Typography>
+              <Box maxWidth={700}
+                display={"flex"} justifyContent={"space-around"}
+                flexWrap={"wrap"}
 
-                recentBlogs.map((blog) => {
-                  return (
-                    <Card key={blog._id} sx={{
-                      width: "100%", maxWidth: 870, marginBottom: "20px",
-                      //  backgroundColor: "green",
-                      padding: "15px",
-                      boxShadow: "0px 0px 10px rgba(0, 0, 0, .3)" // Black boxShadow
+              >
 
-                    }}
-                      display={"flex"} flexDirection={"column"} justifyContent={"center"} alignItems={"center"}
-                    >
-                      <Typography variant="h5" color="red" fontWeight={"bold"} mb={1}>{blog.category}</Typography>
+                {recentBlogs.length > 0 &&
 
-                      <Typography variant="h5" color="initial" fontWeight={"600"} mb={2}>
-                        <TruncatedContent content={blog.title} />
+                  recentBlogs.map((blog) => {
+                    return (
+                      <Card key={blog._id} sx={{
+                    
+                        width: "100%", maxWidth: 300, marginBottom: "20px", minWidth: 200, 
+                        padding: "15px",
+                        boxShadow: "0px 0px 10px rgba(0, 0, 0, .3)", // Black boxShadow
+                        display: "inline-block"
 
-                        {/* {blog.title} */}
-                      </Typography>
-                      <CardMedia
-                        component="img"
-                        alt="green iguana"
-                        height="100"
-                        width="100%"
-                        image={blog.image || "/static/images/cards/default-image.jpg"}
-                      />
-                      <CardContent>
+                      }}
+                      >
+                        <Typography variant="h5" color="red" fontWeight={"bold"} mb={1}>{blog.category}</Typography>
 
-                        {/* <TruncatedContent content={blog.content} /> */}
+                        <Typography variant="h5" color="initial" fontWeight={"600"} mb={2}>
+                          <TruncatedContent content={blog.title} />
 
+                          {/* {blog.title} */}
+                        </Typography>
+                        <CardMedia
+                          component="img"
+                          alt="green iguana"
+                          height="100"
+                          width="100%"
+                          image={blog.image || "/static/images/cards/default-image.jpg"}
+                        />
+                        <CardContent>
 
-                      </CardContent>
-                      <CardActions>
-                        <IconButton sx={{
-                          color: blog.likes.includes(userId) ? "green" : "inherit"
-                        }} aria-label="add to favorites" onClick={() => handleLike(blog._id)}>
-                          <ThumbUpIcon /> {blog.likes.length}
-                        </IconButton>
-                        <IconButton aria-label="add to dislike" onClick={() => handleDislike(blog._id)}
-                          sx={{
-                            color: blog.dislikes.includes(userId) ? "red" : "inherit"
-                          }} >
-                          <ThumbDownIcon /> {blog.dislikes.length}
-                        </IconButton>
-                        <Button size="small" variant="contained" onClick={() => navigate(`/blog/${blog._id}`)}>Read </Button>
-
-                        {userId === blog.authorId && <Button size="small" variant="contained"
-                          onClick={() => navigate(`/addblog`, { state: blog })}
-                        >Edit</Button>}
+                          {/* <TruncatedContent content={blog.content} /> */}
 
 
-                      </CardActions>
-                    </Card>
+                        </CardContent>
+                        <CardActions>
+                          {/* <IconButton sx={{
+                            color: blog.likes.includes(userId) ? "green" : "inherit"
+                          }} aria-label="add to favorites" onClick={() => handleLike(blog._id)}>
+                            <ThumbUpIcon /> {blog.likes.length}
+                          </IconButton>
+                          <IconButton aria-label="add to dislike" onClick={() => handleDislike(blog._id)}
+                            sx={{
+                              color: blog.dislikes.includes(userId) ? "red" : "inherit"
+                            }} >
+                            <ThumbDownIcon /> {blog.dislikes.length}
+                          </IconButton> */}
+                          {/* <IconButton sx={{
+                            color: Blog.likes.includes(userId) ? "green" : "inherit"
+                          }} aria-label="add to favorites"
+                            onClick={() => handleLike(Blog._id)}
+                          >
+                            <ThumbUpIcon /> {Blog.likes.length}
+                          </IconButton>
+                          <IconButton aria-label="add to dislike"
+                            onClick={() => handleDislike(Blog._id)}
+                            sx={{
+                              color: Blog.dislikes.includes(userId) ? "red" : "inherit"
+                            }} >
+                            <ThumbDownIcon /> {Blog.dislikes.length}
+                          </IconButton> */}
+                          <Button size="small" variant="contained" onClick={() => navigate(`/blog/${blog._id}`)}>Read </Button>
+
+                          {/* {userId === blog.authorId && <Button size="small" variant="contained"
+                            onClick={() => navigate(`/addblog`, { state: blog })}
+                          >Edit</Button>} */}
+
+
+                        </CardActions>
+                      </Card>
+                    )
+                  }
                   )
                 }
-                )
-              }
+              </Box>
             </Grid>
           </Grid>
         </Box >

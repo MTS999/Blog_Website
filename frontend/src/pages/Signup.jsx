@@ -46,29 +46,28 @@ const Signup = () => {
       return
     }
 
-    setLoader(true)
+    // setLoader(true)
 
     try {
       const updatedFormData = { ...formData, role: "reader" };
 
       const response = await axios.post("http://localhost:5003/signup", updatedFormData)
 
-      console.log(response.data);
+      console.log("mts  ",response);
 
-      // if (response.data.code === 200) {
+      if (response.status === 200) {
         navigate("/login")
         console.log("mts");
-      // }
+      }
 
-      // else {
-        console.error("Login failed:", response.data.message);
-        setMessage({ text: response.data.message, type: "error" })
-      // }
+      else {
+        console.error("Login failed sdcsdcsdc:", response.data.message);
+        setMessage({ text: response.data.error, type: "error" })
+      }
 
     }
     catch (error) {
       console.error(error);
-      console.error(error.response.data.message);
       setMessage({ text: error.response.data.message, type: "error" })
 
     }
@@ -77,7 +76,7 @@ const Signup = () => {
 
   }
 
-  console.log(formData);
+  // console.log(formData);
   function handleChange(event) {
     const { name, value } = event.target
 

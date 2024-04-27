@@ -18,15 +18,8 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Drawer from '@mui/material/Drawer';
 import CommentIcon from '@mui/icons-material/Comment';
-import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
+
 
 
 const MAX_LINES = 2; // Maximum number of lines for content
@@ -51,108 +44,37 @@ const TruncatedContent = ({ content }) => {
 
 export const BlogDetail = () => {
 
-  // const [open, setOpen] = React.useState(false);
-
-  // const toggleDrawer = (newOpen) => () => {
-  //   setOpen(newOpen);
-  // };
-
-
-  //swippable
-  const [state, setState] = React.useState({
-    top: false,
-    left: false,
-    bottom: false,
-    right: false,
-  });
-
-  const toggleDrawer = (anchor, open) => (event) => {
-    if (
-      event &&
-      event.type === 'keydown' &&
-      (event.key === 'Tab' || event.key === 'Shift')
-    ) {
-      return;
-    }
-
-    setState({ ...state, [anchor]: open });
+  const [open, setOpen] = React.useState(false);
+  const toggleDrawer = (newOpen) => () => {
+    setOpen(newOpen);
   };
-  const list = (anchor) => (
-    <Box
-      sx={{ width: anchor === 'top' || anchor === 'bottom' ? 'auto' : 250 }}
-      role="presentation"
-      onClick={toggleDrawer(anchor, false)}
-      onKeyDown={toggleDrawer(anchor, false)}
-    >
-      <Box mt={10} display={"flex"} textAlign={"center"} flexWrap={"wrap"} mb={2}>
+  const [state, setState] = React.useState("");
 
-        <TextField
-          id="addcomment"
-          label="addcomment"
-          value={content}
-          onChange={(e) => setAddComment(e.target.value)}
-        //  fullWidth
+  React.useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 600) {
+        setState("right");
+      } else {
+        setState("bottom");
+      }
+    };
 
-        />
-        <Box ml={3} display="flex"
-          alignItems="center" >
+    window.addEventListener('resize', handleResize);
 
-          <Button ml={2} variant='contained' size='small' onClick={handleAddComment}>Add comment</Button>
-        </Box>
-      </Box>
-      <Typography variant="h6" color="initial"> All Comments ({comments.length})</Typography>
+    // Initial check
+    handleResize();
 
-      <Box sx={{ width: 400 }} backgroundColor="#f2fafc" border={"2px solid #EAEAEA"} borderRadius={3} p={2}>
-
-        {comments.map((comment) => {
-
-          return (
-            <>
-              <Box key={comment._id} borderBottom={"2px solid #EAEAEA"} mb={2} >
-                <Box display="flex" alignItems={"center"} mb={2} >
-
-                  <Avatar sx={{ width: 50, height: 50, marginRight: "10px" }}
-                    display="inline-block" >{comment.author?.charAt(0).toUpperCase()}  </Avatar>
-
-                  <Box>
-
-                    <Typography variant="h6" color="initial" fontWeight={"bold"}>mts</Typography>
-                    <Typography variant="body1" color="initial">{calculateTimeDifference(comment.createdAt)}</Typography>
-                  </Box>
-                </Box>
-                <Typography variant="body1" color="initial">{comment.content}</Typography>
-                <Box mt={2}>
-
-                  {userId === comment.authorId &&
-                    <>
-                      <IconButton onClick={() => handleDelete(comment._id)}><DeleteIcon /></IconButton>
-                      {/* <Button variant='contained' onClick={() => handleEdit(comment._id)} >Edit</Button>
-
-{/* edit content is pending */}
-                    </>
-
-                  }
-                </Box>
-
-              </Box>
-            </>
-
-          )
-        })
-
-
-        }
-      </Box>
-    </Box>
-  );
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  const [userData, setUserData] = React.useState(null)
   const [Blog, setBlog] = React.useState(null)
   const [comments, setComments] = React.useState([]);
   const [content, setAddComment] = React.useState("");
   const [recentBlogs, setRecentBlogs] = React.useState([]);
 
-  console.log(recentBlogs);
+  // console.log(recentBlogs);
   const params = useParams()
-  // console.log(Blog);
+  // console.log(userData);
   const token = localStorage.getItem("token")
   const userId = localStorage.getItem("userId")
 
@@ -178,6 +100,31 @@ export const BlogDetail = () => {
   };
 
   //get blog  
+  useEffect(() => {
+
+
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5003/userdata`, {
+          headers: {
+            authorization: `Bearer ${token}`
+
+          }
+        })
+        // console.log(response.data);
+        setUserData(response.data)
+
+      }
+
+      catch (error) {
+        console.error('Error fetching data   mts:', error);
+      }
+    }
+    if (token) {
+      fetchData()
+    }
+  }, [userId, token])
+
   useEffect(() => {
 
 
@@ -334,7 +281,30 @@ export const BlogDetail = () => {
 
     }
   }
+  async function handleFollow(postId) {
+    const token = localStorage.getItem("token");
 
+    try {
+
+      const response = await axios.post(`http://localhost:5003/follow/${postId}`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+
+      })
+
+      console.log(response.data);
+      setUserData(response.data.userData)
+      // setBlog(response.data.blogPost);
+      // Update the state with the updated Blogs array
+
+
+    }
+    catch (error) {
+      console.error('Error liking post:', error);
+
+    }
+  }
   const calculateTimeDifference = (timestamp) => {
     const currentTime = new Date();
     const createdAtTime = new Date(timestamp);
@@ -374,7 +344,13 @@ export const BlogDetail = () => {
                   <Typography mt={3} mb={3} variant="h4" color="initial" textAlign={"center"} fontWeight={"bold"}>{Blog.title}</Typography>
 
                 </Box>
-                <Typography variant="body1" color="initial"> <strong>Author :{Blog.user_name}</strong> </Typography>
+                <Typography variant="body1" color="initial"> <strong>Author :{Blog.user_name}</strong>
+
+                  {userId !== Blog.authorId && <Button variant='contained' onClick={() => handleFollow(Blog.authorId)}>
+                    {userData.following.includes(Blog.authorId) ?"Following":"Follow"}
+                  </Button>}
+
+                </Typography>
                 {/* <Typography variant="body1" color="initial"> {Blog.updatedAt !== Blog.createdAt ? `updatedAt :${Blog.updatedAt}` : `createdAt :${Blog.createdAt}`}</Typography> */}
                 <Typography mb={3} variant="body1" color="initial">
                   {Blog.updatedAt !== Blog.createdAt ?
@@ -427,44 +403,37 @@ export const BlogDetail = () => {
                   }
                 </Box>
 
-                <div>
-                  {['left', 'right', 'top', 'bottom'].map((anchor) => (
-                    <React.Fragment key={anchor}>
-                      <Button onClick={toggleDrawer(anchor, true)}>{anchor}</Button>
-                      <SwipeableDrawer
-                        anchor={anchor}
-                        open={state[anchor]}
-                        onClose={toggleDrawer(anchor, false)}
-                        onOpen={toggleDrawer(anchor, true)}
-                      >
-                        {list(anchor)}
-                      </SwipeableDrawer>
-                    </React.Fragment>
-                  ))}
-                </div>
+
 
                 <div >
-                  <Drawer sx={{ paddingTop: "300px" }} anchor='right' open={open} onClose={toggleDrawer(false)}>
-                    <Box padding={3}>
-                      <Box mt={10} display={"flex"} textAlign={"center"} flexWrap={"wrap"} mb={2}>
+                  <Drawer
+                    sx={{
+                      '& .MuiDrawer-paper': {
+                        top: "100px",// This adds space at the top
+                        height: 'calc(100% - 100px)' // Adjusts height if necessary
+                      }
+                    }}
+                    anchor={state} open={open} onClose={toggleDrawer(false)}>
+                    <Box padding={3} >
+                      <Box display={"flex"} textAlign={"center"} justifyContent={"space-between"} flexWrap={"wrap"} mb={2}>
 
                         <TextField
                           id="addcomment"
                           label="addcomment"
                           value={content}
                           onChange={(e) => setAddComment(e.target.value)}
-                        //  fullWidth
+                          fullWidth
 
                         />
-                        <Box ml={3} display="flex"
+                        <Box display="flex"
                           alignItems="center" >
 
-                          <Button ml={2} variant='contained' size='small' onClick={handleAddComment}>Add comment</Button>
+                          <Button variant='contained' size='small' onClick={handleAddComment}>Add </Button>
                         </Box>
                       </Box>
                       <Typography variant="h6" color="initial"> All Comments ({comments.length})</Typography>
 
-                      <Box sx={{ width: 400 }} backgroundColor="#f2fafc" border={"2px solid #EAEAEA"} borderRadius={3} p={2}>
+                      <Box sx={{ width: "100%" }} backgroundColor="#f2fafc" border={"2px solid #EAEAEA"} borderRadius={3} p={2}>
 
                         {comments.map((comment) => {
 
@@ -478,7 +447,7 @@ export const BlogDetail = () => {
 
                                   <Box>
 
-                                    <Typography variant="h6" color="initial" fontWeight={"bold"}>mts</Typography>
+                                    <Typography variant="h6" color="initial" fontWeight={"bold"}>{comment.author}</Typography>
                                     <Typography variant="body1" color="initial">{calculateTimeDifference(comment.createdAt)}</Typography>
                                   </Box>
                                 </Box>

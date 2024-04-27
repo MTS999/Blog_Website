@@ -28,10 +28,13 @@ import { Outlet } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import useCategory from "../CategoryContext";
 import { useLocation } from 'react-router-dom';
-
-
-
-
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import PendingIcon from '@mui/icons-material/Pending';
+import PeopleIcon from '@mui/icons-material/People';
+import HomeIcon from '@mui/icons-material/Home';
+import BookmarkAddIcon from '@mui/icons-material/BookmarkAdd';
+import SchoolIcon from '@mui/icons-material/School';
+import FoodBankIcon from '@mui/icons-material/FoodBank';
 const drawerWidth = 200;
 
 function ResponsiveDrawer(props) {
@@ -42,7 +45,7 @@ function ResponsiveDrawer(props) {
   const [userRole, setUserRole] = React.useState('');
   const [userData, setUserData] = React.useState(null)
 
-
+ const userId= localStorage.getItem("userId");
   const navigate = useNavigate()
   //Manu start
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -81,7 +84,7 @@ function ResponsiveDrawer(props) {
     }
   }, [token])
   //  end
-  React.useEffect(() => {
+  useEffect(() => {
     const token = localStorage.getItem("token")
 
     if (!token) {
@@ -147,7 +150,7 @@ function ResponsiveDrawer(props) {
           <ListItem key={"dashboard"} disablePadding>
             <ListItemButton onClick={() => navigate(`/dashboard`)}>
               <ListItemIcon>
-              <InboxIcon />
+                <DashboardIcon />
 
               </ListItemIcon>
               <ListItemText primary={"Dashboard"} />
@@ -160,7 +163,7 @@ function ResponsiveDrawer(props) {
           <ListItem key={"pending request"} disablePadding>
             <ListItemButton onClick={() => navigate(`/pending-request`)}>
               <ListItemIcon>
-                <InboxIcon />
+                <PendingIcon />
 
               </ListItemIcon>
               <ListItemText primary={"Pending "} />
@@ -173,7 +176,7 @@ function ResponsiveDrawer(props) {
           <ListItem key={"alllusers"} disablePadding>
             <ListItemButton onClick={() => navigate(`/allusers`)}>
               <ListItemIcon>
-                <InboxIcon />
+                <PeopleIcon />
 
               </ListItemIcon>
               <ListItemText primary={"AllUsers "} />
@@ -198,7 +201,7 @@ function ResponsiveDrawer(props) {
           <ListItem key={"home"} disablePadding>
             <ListItemButton onClick={() => navigate(`/`)}>
               <ListItemIcon>
-                <InboxIcon />
+                <HomeIcon />
               </ListItemIcon>
               <ListItemText primary={"Home"} />
             </ListItemButton>
@@ -208,11 +211,25 @@ function ResponsiveDrawer(props) {
         <ListItem key={"reading-list"} disablePadding>
           <ListItemButton onClick={() => navigate(`/?blog=reading-list`)}>
             <ListItemIcon>
-              <InboxIcon />
+              <BookmarkAddIcon />
             </ListItemIcon>
             <ListItemText primary={"Reading_list"} />
           </ListItemButton>
         </ListItem>
+
+        {
+
+          userRole === "author" &&
+
+          <ListItem key={"add-blog"} disablePadding>
+            <ListItemButton onClick={() => navigate(`/addblog`)}>
+              <ListItemIcon>
+                <BookmarkAddIcon />
+              </ListItemIcon>
+              <ListItemText primary={"AddBlog"} />
+            </ListItemButton>
+          </ListItem>
+        }
         {category.map((text, index) => (
           <ListItem key={text} disablePadding>
             <ListItemButton onClick={() => navigate(`/?category=${text}`, { state: { text } })}>
@@ -229,7 +246,7 @@ function ResponsiveDrawer(props) {
   );
 
 
-  function profileAction(){
+  function profileAction() {
     handleClose()
     navigate("/profile")
   }
@@ -288,6 +305,7 @@ function ResponsiveDrawer(props) {
           </div>
         </Toolbar>
       </AppBar>
+
       <Box
         component="nav"
         sx={{ width: { md: drawerWidth }, flexShrink: { sm: 0 } }}

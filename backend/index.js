@@ -48,9 +48,19 @@ const verifyToken = (request, response, next) => {
     }
 };
 app.post("/signup", async (request, response) => {
-    let user = new Users(request.body)
-    let result = await user.save()
-    response.send(result)
+    try{
+
+        let existingUser=await Users.findOne({$or:[{user_name:request.body.user_name}, {email:request.body.email}]})
+     if(existingUser){
+        return response.status(400).json({error:"Username or email already exists"})
+     }
+        let user = new Users(request.body)
+        let result = await user.save()
+        response.send(result)
+    }
+    catch(error){
+        response.send(error)
+    }   
 
 })
 // Assuming you have already imported necessary modules and defined your Express app
@@ -234,9 +244,9 @@ app.post("/addblog", verifyToken, async (request, response) => {
         console.log(user_name);
 
 
-        if (role !== "author") {
-            return response.status(403).json({ message: "Unauthorized - You do not have permission to perform this action" });
-        }
+        // if (role !== "author") {
+        //     return response.status(403).json({ message: "Unauthorized - You do not have permission to perform this action" });
+        // }
 
         // Create a new blog post instance with the request body
         const blog = new BlogPost({
@@ -359,7 +369,7 @@ app.get("/recent-blogs", verifyToken, async (request, response) => {
         // Directly find and return the 5 most recent blog posts
         let result = await BlogPost.find({})
             .sort({ createdAt: -1 }) // Ensure sorting by createdAt in descending order
-            .limit(5); // Limit the results to 5
+            .limit(4); // Limit the results to 5
 
         // Send results or a no content message
         if (result.length > 0) {
@@ -538,11 +548,82 @@ app.put("/update/:id", verifyToken, async (request, response) => {
 })
 
 
-app.delete("/delete/:id", async (request, response) => {
-    let result = await BlogPost.deleteOne({ _id: request.params.id })
+app.delete("/deleteblog/:id",verifyToken, async (request, response) => {
 
-    response.send(result)
+    try {
+     const role=request.user.role
+     const blogId=request.params.id
+     const userId=request.user.id
+
+     const blogPost= await BlogPost.findById(blogId)
+
+     if(!blogPost){
+        return response.status(404).json({messege:"blog not found"})
+     }
+     if(role==="admin"|| userId===blogPost.authorId){
+        const result=await BlogPost.findByIdAndDelete(blogId)
+
+        return response.json({ message: "Blog post deleted successfully", result });
+
+     }
+
+     else{
+        return response.status(403).json({ message: "Unauthorized - You are not authorized to delete this blog post" });
+
+     }
+        
+    } catch (error) {
+        console.error("Error deleting blog post:", error);
+        response.status(500).json({ message: "Internal server error" });
+    }
+
 })
+app.delete("/deleteuser/:id", verifyToken, async (request, response) => {
+    try {
+        // Check if the user making the request is an admin
+        if (request.user.role !== "admin") {
+            return response.status(403).json({ message: "Unauthorized - Only admin can delete users" });
+        }
+
+        const userId = request.params.id;
+
+        // Delete the user from the database
+        const deletedUser = await User.findByIdAndDelete(userId);
+
+        if (!deletedUser) {
+            return response.status(404).json({ message: "User not found" });
+        }
+
+        response.json({ message: "User deleted successfully", deletedUser });
+    } catch (error) {
+        console.error("Error deleting user:", error);
+        response.status(500).json({ message: "Internal server error" });
+    }
+});
+app.put("/update-role/:id", verifyToken, async (request, response) => {
+    try {
+        // Check if the user making the request is an admin
+        if (request.user.role !== "admin") {
+            return response.status(403).json({ message: "Unauthorized - Only admin can update user roles" });
+        }
+
+        const userId = request.params.id;
+
+        // Update the user's role to "author" in the database
+        const updatedUser = await User.findByIdAndUpdate(userId, { role: "author" }, { new: true });
+
+        if (!updatedUser) {
+            return response.status(404).json({ message: "User not found" });
+        }
+
+        response.json({ message: "User role updated successfully", updatedUser });
+    } catch (error) {
+        console.error("Error updating user role:", error);
+        response.status(500).json({ message: "Internal server error" });
+    }
+});
+
+
 //// add coment
 app.post("/comment/:id", verifyToken, async (request, response) => {
     try {

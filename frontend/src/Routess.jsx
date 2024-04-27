@@ -23,15 +23,16 @@ const Routess = () => {
                 <Route path='/' element={<ResponsiveDrawer />}>
                     <Route index element={<Blogs />} />
                     <Route path='blog/:id' element={<BlogDetail />} />
-                    <Route path='addblog' element={<AddBlog />} />
                     <Route path='/profile' element={<Profile />} />
                     <Route path='/dashboard' element={<Dashboard />} />
                     <Route path='/allusers' element={<AllUsers />} />
                     <Route path='/pending-request' element={<Pending />} />
                
+                    <Route path='addblog' element={<AddBlog />} />
                 </Route>
 
                 <Route path='/login' element={<Login />}/>
+                <Route path='/signup' element={<Signup />}/>
                 {/* <Route path='/mts' element={<TemporaryDrawer />}/> */}
 
             </Routes>
