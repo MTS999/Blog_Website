@@ -1,4 +1,6 @@
 import React from "react";
+import PropTypes from 'prop-types'
+
 import { useEffect } from "react";
 import Avatar from "@mui/material/Avatar";
 import axios from "axios";
@@ -6,8 +8,7 @@ function UserProfileAvatar({ userId, userName }) {
     const [allUserData, setAllUserData] = React.useState([])
     const token = localStorage.getItem("token");
     const imageUrl = getImageUrlById(userId);
-
-    console.log(allUserData);
+//   console.log(allUserData)
     const fetchUserData = async () => {
         // setLoader(true)
         try {
@@ -56,3 +57,15 @@ function UserProfileAvatar({ userId, userName }) {
 }
 
 export default UserProfileAvatar;
+
+
+
+
+
+UserProfileAvatar.propTypes = {
+
+    userId:PropTypes.string,
+    userName:PropTypes.string
+
+}
+

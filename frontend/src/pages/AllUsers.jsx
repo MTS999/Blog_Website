@@ -9,7 +9,6 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import axios from 'axios';
-import Chip from '@mui/material/Chip';
 import BasicMenu from '../components/BasicMenu';
 import Loader from '../components/Loader';
 import  Box  from '@mui/material/Box';
@@ -20,7 +19,7 @@ const columns = [
   { id: 'action', label: 'Action', minWidth: 170, align: 'center' },
   { id: 'first_name', label: 'First Name', minWidth: 170 },
   { id: 'last_name', label: 'Last Name', minWidth: 170 },
-  { id: 'email', label: 'Email', minWidth: 70 },
+  { id: 'email', label: 'Email', minWidth: 170, align:'center' },
   { id: 'role', label: 'role', minWidth: 170, align: 'center' },
   { id: 'blog', label: 'blog', minWidth: 170, align: 'center' },
   { id: 'followers', label: 'followers', minWidth: 170, align: 'center' },
@@ -179,7 +178,7 @@ export default function AllUsers() {
                   </TableCell>
                   <TableCell align="left" style={{ minWidth: columns[0].minWidth, fontSize: "18px" }}>{user.first_name}</TableCell>
                   <TableCell align="left" style={{ minWidth: columns[1].minWidth, fontSize: "18px" }}>{user.last_name}</TableCell>
-                  <TableCell align="left" style={{ minWidth: columns[2].minWidth, fontSize: "18px" }}>{user.email}</TableCell>
+                  <TableCell align="center" style={{ minWidth: columns[2].minWidth, fontSize: "18px" }}>{user.email}</TableCell>
                   <TableCell align="center" style={{ minWidth: columns[2].minWidth, fontSize: "18px" }}>{user.role}</TableCell>
                   <TableCell align="center" style={{ minWidth: columns[2].minWidth, fontSize: "18px" }}>
 

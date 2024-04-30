@@ -44,8 +44,11 @@ function ResponsiveDrawer(props) {
   const { category, setCategory } = useCategory();
   const [userRole, setUserRole] = React.useState('');
   const [userData, setUserData] = React.useState(null)
+  const [selectedCategory, setSelectedCategory] = React.useState("Home");
+  const userId = localStorage.getItem("userId");
 
- const userId= localStorage.getItem("userId");
+
+
   const navigate = useNavigate()
   //Manu start
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -244,102 +247,168 @@ function ResponsiveDrawer(props) {
 
     </div>
   );
-
-
-  function profileAction() {
-    handleClose()
-    navigate("/profile")
+  function navigatehandle(text) {
+    if (text === "Home") {
+      navigate("/")
+      setSelectedCategory("Home")
+    }
+   else if (text === "Reading_list") {
+      navigate(`/?blog=reading-list`)
+      setSelectedCategory("Reading_list")
+    }
+    else {
+      navigate(`/?category=${text}`, { state: { text } })
+      setSelectedCategory(text)
+    }
   }
-  // Remove this const when copying and pasting into your project.
-  const container = window !== undefined ? () => window().document.body : undefined;
 
-  return (
-    <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
-      <AppBar
-        position="fixed"
+
+function profileAction() {
+  handleClose()
+  navigate("/profile")
+}
+// Remove this const when copying and pasting into your project.
+const container = window !== undefined ? () => window().document.body : undefined;
+
+return (
+  <Box sx={{ display: 'flex' }}>
+    <CssBaseline />
+    <AppBar
+      position="fixed"
+      sx={{
+        // width:"100vw",
+        // width: { sm: `calc(100% - ${drawerWidth}px)` },
+        ml: { sm: `${drawerWidth}px` },
+        zIndex: 1234,
+        // backgroundColor: "white",
+        // color: "black"
+
+
+      }}
+    >
+      <Toolbar
+
         sx={{
-          // width:"100vw",
-          // width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
-          zIndex: 1234,
+
           backgroundColor: "green",
 
+        }}>
+        <IconButton
+          color="inherit"
+          aria-label="open drawer"
+          edge="start"
+          onClick={handleDrawerToggle}
+          sx={{ mr: 2, display: { md: 'none' } }}
+        >
+          <MenuIcon />
+        </IconButton>
+        <Typography variant="h6" noWrap component="div" mr={"auto"}>
+          Blog
+        </Typography>
 
+
+        <div>
+          <Stack ml={2} direction="row" spacing={2} onClick={handleClick}
+          >
+            <Avatar>H</Avatar>
+
+          </Stack>
+          <Menu
+            id="basic-menu"
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            MenuListProps={{
+              'aria-labelledby': 'basic-button',
+            }}
+          >
+            <MenuItem onClick={profileAction}>Profile</MenuItem>
+            <MenuItem onClick={handleClose}>My account</MenuItem>
+            <MenuItem onClick={handleLogout}>Logout</MenuItem>
+          </Menu>
+        </div>
+
+      </Toolbar>
+      <Box 
+      sx={{
+        display: { xs: 'none', md: 'none' },
+
+      }}>
+
+      <div>
+        <ul style={{ display: "flex", alignItems: "center", justifyContent: "center", listStyle: "none" }}>
+          <li 
+          key={"Home"}
+          onClick={() => navigatehandle("Home")}
+          style={{ 
+            borderBottom: selectedCategory === "Home" ? '3px solid green' : 'none',
+          }
+          }
+          >Home  </li>
+          <li 
+          key={"Reading_list"}
+          onClick={() => navigatehandle("Reading_list")}
+          style={{ 
+            borderBottom: selectedCategory === "Reading_list" ? '3px solid green' : 'none',
+          }
+          }
+          >Reading List  </li>
+
+          {category.map((item) => (
+
+            <li key={item} 
+            onClick={() => navigatehandle(item)} 
+            style={{
+              borderBottom: selectedCategory === item ? '3px solid green' : 'none',
+              marginBottom:"4px" }}
+
+              >{item} </li>
+              // <li key={item} onClick={() => navigatehandle(`/?category=${item}`, { state: { item } })}  >{item} </li>
+              
+              
+            ))}
+
+        </ul>
+      </div>
+            </Box>
+    </AppBar>
+
+    <Box
+      component="nav"
+      sx={{ width: { md: drawerWidth }, flexShrink: { sm: 0 } }}
+      aria-label="mailbox folders"
+    >
+      {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+      <Drawer
+        container={container}
+        variant="temporary"
+        open={mobileOpen}
+        onTransitionEnd={handleDrawerTransitionEnd}
+        onClose={handleDrawerClose}
+        ModalProps={{
+          keepMounted: true, // Better open performance on mobile.
+        }}
+        sx={{
+          display: { xs: 'block', md: 'none' },
+          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
         }}
       >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { md: 'none' } }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div" mr={"auto"}>
-            Blog
-          </Typography>
+        {drawer}
+      </Drawer>
 
-
-          <div>
-            <Stack ml={2} direction="row" spacing={2} onClick={handleClick}
-            >
-              <Avatar>H</Avatar>
-
-            </Stack>
-            <Menu
-              id="basic-menu"
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleClose}
-              MenuListProps={{
-                'aria-labelledby': 'basic-button',
-              }}
-            >
-              <MenuItem onClick={profileAction}>Profile</MenuItem>
-              <MenuItem onClick={handleClose}>My account</MenuItem>
-              <MenuItem onClick={handleLogout}>Logout</MenuItem>
-            </Menu>
-          </div>
-        </Toolbar>
-      </AppBar>
-
-      <Box
-        component="nav"
-        sx={{ width: { md: drawerWidth }, flexShrink: { sm: 0 } }}
-        aria-label="mailbox folders"
+      
+      <Drawer
+        variant="permanent"
+        sx={{
+          display: { xs: 'none', md: 'block' },
+          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+        }}
+        open
       >
-        {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-        <Drawer
-          container={container}
-          variant="temporary"
-          open={mobileOpen}
-          onTransitionEnd={handleDrawerTransitionEnd}
-          onClose={handleDrawerClose}
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
-          }}
-          sx={{
-            display: { xs: 'block', md: 'none' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-          }}
-        >
-          {drawer}
-        </Drawer>
-        <Drawer
-          variant="permanent"
-          sx={{
-            display: { xs: 'none', md: 'block' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-          }}
-          open
-        >
-          {drawer}
-        </Drawer>
-      </Box>
-      {/* <Box
+        {drawer}
+      </Drawer>
+    </Box>
+    {/* <Box
         component="main"
         sx={{
           flexGrow: 1,
@@ -349,11 +418,11 @@ function ResponsiveDrawer(props) {
       >
         <Toolbar />
       </Box> */}
-      {/* <Toolbar /> */}
+    {/* <Toolbar /> */}
 
-      <Outlet />
-    </Box>
-  );
+    <Outlet />
+  </Box>
+);
 }
 
 ResponsiveDrawer.propTypes = {

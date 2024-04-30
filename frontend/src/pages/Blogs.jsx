@@ -7,8 +7,7 @@ import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton'
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
@@ -17,12 +16,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Grid from '@mui/material/Grid';
 import { Divider } from "@mui/material";
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
-import Avatar from "@mui/material/Avatar";
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import UserProfileAvatar from "../components/UserProfileAvatar"
+import LikeDislike from "../components/LikeDislike";
+import Loader from '../components/Loader';
 
 
 
@@ -54,6 +54,7 @@ const Blogs = () => {
     setSearchBy(event.target.value);
   };
   const [allUserData, setAllUserData] = React.useState([])
+  const [loader, setLoader] = React.useState(false);
 
   const [userData, setUserData] = React.useState(null)
   const [Search, setSearch] = React.useState("")
@@ -65,8 +66,8 @@ const Blogs = () => {
   console.log(allUserData);
   const navigate = useNavigate()
 
-  console.log(Search);
-  console.log(SearchBy);
+  // console.log(Search);
+  // console.log(SearchBy);
   const queryParams = new URLSearchParams(location.search);
   const blogParam = queryParams.get('blog');
   const qcategory = queryParams.get('category');
@@ -100,8 +101,8 @@ const Blogs = () => {
   useEffect(() => {
 
     fetchUserData()
-    
-  }, [token ])
+
+  }, [token])
 
   useEffect(() => {
 
@@ -149,14 +150,16 @@ const Blogs = () => {
     };
 
     fetchRecentBlogs();
-  }, []);
+  }, [Blogs]);
 
   // fetch all blogs
   useEffect(() => {
     const token = localStorage.getItem("token");
-    console.log("mts");
+    // console.log("mts");
 
     const fetchData = async () => {
+
+      setLoader(true)
       try {
         // const textValue = location.state?.text;
 
@@ -189,6 +192,10 @@ const Blogs = () => {
         console.log(response);
       } catch (error) {
         console.error('Error fetching Blogs:', error);
+      }
+      finally {
+        setLoader(false)
+
       }
     };
 
@@ -252,70 +259,7 @@ const Blogs = () => {
 
   }, [Search, token, SearchBy])
 
-  async function handleLike(postId) {
-    const token = localStorage.getItem("token");
 
-    try {
-
-      const response = await axios.post(`http://localhost:5003/like/${postId}`, {}, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-
-      })
-      const blogIndex = Blogs.findIndex(blog => blog._id === postId);
-
-      // Update the dislike count of the corresponding blog
-      const updatedBlogs = [...Blogs];
-      updatedBlogs[blogIndex] = {
-        ...updatedBlogs[blogIndex],
-        likes: response.data.blogPost.likes,
-        dislikes: response.data.blogPost.dislikes,
-
-      };
-
-      // Update the state with the updated Blogs array
-      setBlogs(updatedBlogs);
-
-      console.log(response.data.blogPost.likes);
-    }
-    catch (error) {
-      console.error('Error liking post:', error);
-
-    }
-  }
-  async function handleDislike(postId) {
-    const token = localStorage.getItem("token");
-
-    try {
-
-      const response = await axios.post(`http://localhost:5003/dislike/${postId}`, {}, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      const blogIndex = Blogs.findIndex(blog => blog._id === postId);
-
-      // Update the dislike count of the corresponding blog
-      const updatedBlogs = [...Blogs];
-      updatedBlogs[blogIndex] = {
-        ...updatedBlogs[blogIndex],
-        dislikes: response.data.blogPost.dislikes,
-        likes: response.data.blogPost.likes
-
-      };
-
-      // Update the state with the updated Blogs array
-      setBlogs(updatedBlogs);
-
-
-      console.log(response);
-    }
-    catch (error) {
-      console.error('Error disliking:', error);
-
-    }
-  }
   async function handle_reading_list(postId) {
     const token = localStorage.getItem("token");
 
@@ -337,10 +281,22 @@ const Blogs = () => {
 
     }
   }
-  function getImageUrlById(userId) {
-    const user = allUserData.find(user => user._id === userId);
-    return user ? user.image_url : null;
-}
+
+
+//   const handleDelete = async (id) => {
+//     try {
+//         const token = localStorage.getItem("token");
+//         const response = await axios.delete(`http://localhost:5003/deleteblog/${id}`, {
+//             headers: {
+//                 Authorization: `Bearer ${token}`
+//             }
+//         });
+//         console.log(response.data);
+//         // Optionally, you can update the UI to remove the deleted blog post
+//     } catch (error) {
+//         console.error('Error deleting blog post:', error);
+//     }
+// };
   const BlogData = Blogs.map((blog) => {
     return (
 
@@ -372,7 +328,7 @@ const Blogs = () => {
 
             <Box display="flex" alignItems={"center"} mb={2} >
 
-                <UserProfileAvatar userId={blog.authorId} userName={blog.user_name}  />
+              <UserProfileAvatar userId={blog.authorId} userName={blog.user_name} />
               {/* <Avatar sx={{ width: 50, height: 50, marginRight: "10px" }} display="inline-block" >
                
 
@@ -388,9 +344,7 @@ const Blogs = () => {
                     year: 'numeric',
                     month: 'short',
                     day: '2-digit',
-                    // hour: '2-digit',
-                    // minute: '2-digit',
-                    // timeZoneName: 'short'
+                 
                   })}
                 </Typography>
               </Box>
@@ -400,14 +354,12 @@ const Blogs = () => {
 
             <Box
               display={{ sm: 'none', xs: 'inline-block' }}
-              // maxWidth={300}
               width={"100%"}
             >
 
               <img
                 src={blog.image}
                 alt="green iguana"
-                // height="200"
                 width={"100%"}
                 height={"100%"}
 
@@ -421,17 +373,9 @@ const Blogs = () => {
 
             </CardContent>
             <CardActions>
-              <IconButton sx={{
-                color: blog.likes.includes(userId) ? "green" : "inherit"
-              }} aria-label="add to favorites" onClick={() => handleLike(blog._id)}>
-                <ThumbUpIcon /> {blog.likes.length}
-              </IconButton>
-              <IconButton aria-label="add to dislike" onClick={() => handleDislike(blog._id)}
-                sx={{
-                  color: blog.dislikes.includes(userId) ? "red" : "inherit"
-                }} >
-                <ThumbDownIcon /> {blog.dislikes.length}
-              </IconButton>
+
+              <LikeDislike blog={blog} Blogs={Blogs} setBlogs={setBlogs} />
+
 
               {userData &&
 
@@ -449,14 +393,14 @@ const Blogs = () => {
               {userId === blog.authorId && blogParam && <Button size="small" variant="contained"
                 onClick={() => navigate(`/addblog`, { state: blog })}
               >Edit</Button>}
+            
 
 
             </CardActions>
           </Box>
           <Box
             display={{ xs: 'none', sm: 'inline-block' }}
-            // maxWidth={400}
-            // minWidth={300}
+
             width={{ sm: "50%", xs: "100%" }}
           >
             <Box mb={2} >
@@ -492,7 +436,8 @@ const Blogs = () => {
 
     <>
       <Box boxSizing={"border-box"}
-        mt={10} style={{
+        mt={10}
+        style={{
           width: '100%',
           // backgroundColor:"red",
           overflowX: "hidden",
@@ -585,7 +530,7 @@ const Blogs = () => {
 
 
         </Box>
-        <Divider/>
+        <Divider />
         <Grid container mt={4} >
 
 
@@ -601,13 +546,21 @@ const Blogs = () => {
             <Typography variant="body1" color="initial"></Typography>
 
             {BlogData.length === 0 ?
-              <Typography variant="h3" color="initial">Blog no Found</Typography>
+              <>
+                {/* <Typography variant="h3" color="initial">Blog no Found</Typography> */}
+
+                <Divider
+                  variant="fullWidth"
+                  orientation="horizontal"
+
+                />
+              </>
 
               : BlogData}
 
           </Grid>
-        <Divider/>
-        
+          <Divider />
+
           <Grid item
             sx={{
               padding: "10px", paddingTop: "0px", width: "100%",
@@ -635,9 +588,11 @@ const Blogs = () => {
                       display: "inline-block"
 
                     }}
-                    // display={"flex"} flexDirectionjustifyContent={"center"} alignItems={"center"}
                     >
-                      <Typography variant="h5" color="red" fontWeight={"bold"} mb={1}>{blog.category}</Typography>
+                      <Box mb={2} >
+
+                        <Chip size="large" label={blog.category} />
+                      </Box>
 
                       <Typography variant="h5" color="initial" fontWeight={"600"} mb={1}>
                         <TruncatedContent type="body" content={blog.title} />
@@ -654,32 +609,21 @@ const Blogs = () => {
                       </div>
                       <CardContent>
 
-                        {/* <TruncatedContent content={blog.content} /> */}
 
 
                       </CardContent>
                       <CardActions>
-                        {/* <IconButton sx={{
-                          color: blog.likes.includes(userId) ? "green" : "inherit"
-                        }} aria-label="add to favorites" onClick={() => handleLike(blog._id)}>
-                          <ThumbUpIcon /> {blog.likes.length}
-                        </IconButton>
-                        <IconButton aria-label="add to dislike" onClick={() => handleDislike(blog._id)}
-                          sx={{
-                            color: blog.dislikes.includes(userId) ? "red" : "inherit"
-                          }} >
-                          <ThumbDownIcon /> {blog.dislikes.length}
-                        </IconButton> */}
+                        <LikeDislike blog={blog} Blogs={Blogs} setBlogs={setBlogs} />
+
+
                         <Button size="small" variant="contained" onClick={() => navigate(`/blog/${blog._id}`)}>Read </Button>
 
                         {userId === blog.authorId && blogParam && <Button size="small" variant="contained"
                           onClick={() => navigate(`/addblog`, { state: blog })}
                         >Edit</Button>}
 
-                        {userId === blog.authorId && blogParam && <Button size="small" variant="contained"
-                          onClick={() => navigate(`/addblog`, { state: blog })}
-                        >delete</Button>}
-
+                       
+                    
 
                       </CardActions>
                     </Card>

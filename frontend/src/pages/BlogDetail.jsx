@@ -20,12 +20,11 @@ import Drawer from '@mui/material/Drawer';
 import CommentIcon from '@mui/icons-material/Comment';
 import CloseIcon from '@mui/icons-material/Close';
 import { useNavigate } from 'react-router-dom';
-
-
+import Chip from '@mui/material/Chip';
 
 const MAX_LINES = 2; // Maximum number of lines for content
 
-const TruncatedContent = ({ content }) => {
+const TruncatedContent = ({ type, content }) => {
   const style = {
     overflow: 'hidden',
     textOverflow: 'ellipsis',
@@ -35,11 +34,8 @@ const TruncatedContent = ({ content }) => {
   };
 
   return (
-    <Typography variant="body2" color="text.secondary" style={style}>
-      {/* {content} */}
-      <div dangerouslySetInnerHTML={{ __html: content }} />
+    <Typography variant={type} color="text.secondary" style={style} dangerouslySetInnerHTML={{ __html: content }} />
 
-    </Typography>
   );
 };
 
@@ -431,7 +427,8 @@ export const BlogDetail = () => {
                     sx={{
                       '& .MuiDrawer-paper': {
                         top: "100px",// This adds space at the top
-                        height: 'calc(100% - 100px)' // Adjusts height if necessary
+                        height: 'calc(100% - 100px)',
+                        // width:"50px"// Adjusts height if necessary
                       }
                     }}
                     anchor={state} open={open} onClose={toggleDrawer(false)}>
@@ -467,48 +464,49 @@ export const BlogDetail = () => {
                         </Box>
                       </Box>
                       <Typography variant="h6" color="initial"> All Comments ({comments.length})</Typography>
+                      {comments.length > 0 &&
+                        <Box sx={{ width: "100%" }} backgroundColor="#f2fafc" border={"2px solid #EAEAEA"} borderRadius={3} p={2}>
 
-                      <Box sx={{ width: "100%" }} backgroundColor="#f2fafc" border={"2px solid #EAEAEA"} borderRadius={3} p={2}>
+                          {comments.map((comment) => {
 
-                        {comments.map((comment) => {
+                            return (
+                              <>
+                                <Box key={comment._id} borderBottom={"2px solid #EAEAEA"} mb={2} >
+                                  <Box display="flex" alignItems={"center"} mb={2} >
 
-                          return (
-                            <>
-                              <Box key={comment._id} borderBottom={"2px solid #EAEAEA"} mb={2} >
-                                <Box display="flex" alignItems={"center"} mb={2} >
+                                    <Avatar sx={{ width: 50, height: 50, marginRight: "10px" }}
+                                      display="inline-block" >{comment.author?.charAt(0).toUpperCase()}  </Avatar>
 
-                                  <Avatar sx={{ width: 50, height: 50, marginRight: "10px" }}
-                                    display="inline-block" >{comment.author?.charAt(0).toUpperCase()}  </Avatar>
+                                    <Box>
 
-                                  <Box>
-
-                                    <Typography variant="h6" color="initial" fontWeight={"bold"}>{comment.author}</Typography>
-                                    <Typography variant="body1" color="initial">{calculateTimeDifference(comment.createdAt)}</Typography>
+                                      <Typography variant="h6" color="initial" fontWeight={"bold"}>{comment.author}</Typography>
+                                      <Typography variant="body1" color="initial">{calculateTimeDifference(comment.createdAt)}</Typography>
+                                    </Box>
                                   </Box>
-                                </Box>
-                                <Typography variant="body1" color="initial">{comment.content}</Typography>
-                                <Box mt={2}>
+                                  <Typography variant="body1" color="initial">{comment.content}</Typography>
+                                  <Box mt={2}>
 
-                                  {userId === comment.authorId &&
-                                    <>
-                                      <IconButton onClick={() => handleDelete(comment._id)}><DeleteIcon /></IconButton>
-                                      {/* <Button variant='contained' onClick={() => handleEdit(comment._id)} >Edit</Button>
+                                    {userId === comment.authorId &&
+                                      <>
+                                        <IconButton onClick={() => handleDelete(comment._id)}><DeleteIcon /></IconButton>
+                                        {/* <Button variant='contained' onClick={() => handleEdit(comment._id)} >Edit</Button>
 
               {/* edit content is pending */}
-                                    </>
+                                      </>
 
-                                  }
+                                    }
+                                  </Box>
+
                                 </Box>
+                              </>
 
-                              </Box>
-                            </>
-
-                          )
-                        })
+                            )
+                          })
 
 
-                        }
-                      </Box>
+                          }
+                        </Box>
+                      }
                     </Box>
                   </Drawer>
                 </div>
@@ -536,18 +534,23 @@ export const BlogDetail = () => {
                   recentBlogs.map((blog) => {
                     return (
                       <Card key={blog._id} sx={{
-                    
-                        width: "100%", maxWidth: 300, marginBottom: "20px", minWidth: 200, 
+
+                        width: "100%", maxWidth: 300, marginBottom: "20px", minWidth: 200,
                         padding: "15px",
                         boxShadow: "0px 0px 10px rgba(0, 0, 0, .3)", // Black boxShadow
                         display: "inline-block"
 
                       }}
                       >
-                        <Typography variant="h5" color="red" fontWeight={"bold"} mb={1}>{blog.category}</Typography>
+                        {/* <Typography variant="h5" color="red" fontWeight={"bold"} mb={1}>{blog.category}</Typography> */}
+                        <Box mb={2} >
+
+                          <Chip size="large" label={blog.category} />
+                        </Box>
 
                         <Typography variant="h5" color="initial" fontWeight={"600"} mb={2}>
-                          <TruncatedContent content={blog.title} />
+                          <TruncatedContent type="body" content={blog.title} />
+
 
                           {/* {blog.title} */}
                         </Typography>
@@ -565,6 +568,8 @@ export const BlogDetail = () => {
 
                         </CardContent>
                         <CardActions>
+                          {/* <LikeDislike blog={blog} Blogs={Blogs} setBlogs={setBlogs} /> */}
+
                           {/* <IconButton sx={{
                             color: blog.likes.includes(userId) ? "green" : "inherit"
                           }} aria-label="add to favorites" onClick={() => handleLike(blog._id)}>

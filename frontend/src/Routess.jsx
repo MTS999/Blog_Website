@@ -14,6 +14,7 @@ import Profile from './pages/Profile'
 import  Dashboard  from './pages/Dashboard'
 import AllUsers from './pages/AllUsers'
 import Pending from './pages/Pending'
+import Checkout from './components/Checkout'
 
 
 const Routess = () => {
@@ -33,6 +34,7 @@ const Routess = () => {
 
                 <Route path='/login' element={<Login />}/>
                 <Route path='/signup' element={<Signup />}/>
+                <Route path='/mts' element={<Checkout />}/>
                 {/* <Route path='/mts' element={<TemporaryDrawer />}/> */}
 
             </Routes>
