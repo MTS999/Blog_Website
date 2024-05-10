@@ -8,7 +8,7 @@ function UserProfileAvatar({ userId, userName }) {
     const [allUserData, setAllUserData] = React.useState([])
     const token = localStorage.getItem("token");
     const imageUrl = getImageUrlById(userId);
-//   console.log(allUserData)
+    //   console.log(allUserData)
     const fetchUserData = async () => {
         // setLoader(true)
         try {
@@ -43,15 +43,18 @@ function UserProfileAvatar({ userId, userName }) {
     }
 
     return (
-<>
+        <>
 
- <Avatar sx={{ width: 50, height: 50, marginRight: "10px" }} display="inline-block">
-            {imageUrl ? (
-                <img src={imageUrl} alt="Profile" />
-            ) : (
-                userName?.charAt(0).toUpperCase()
-            )}
-        </Avatar>
+            <Avatar sx={{
+                width: 50, height: 50, marginRight: "10px",
+                backgroundColor: "green"
+            }} display="inline-block">
+                {imageUrl ? (
+                    <img src={imageUrl} alt="Profile" />
+                ) : (
+                    userName?.charAt(0).toUpperCase()
+                )}
+            </Avatar>
         </>
     )
 }
@@ -64,8 +67,8 @@ export default UserProfileAvatar;
 
 UserProfileAvatar.propTypes = {
 
-    userId:PropTypes.string,
-    userName:PropTypes.string
+    userId: PropTypes.string,
+    userName: PropTypes.string
 
 }
 

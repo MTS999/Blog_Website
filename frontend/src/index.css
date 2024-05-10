@@ -1,4 +1,13 @@
+*{
+    margin: 0;
+    padding: 0;
+}
 li{
     margin-right: 20px;
     font-weight: bold;
+}
+
+body{
+    font-family: "Roboto", sans-serif;
+
 }

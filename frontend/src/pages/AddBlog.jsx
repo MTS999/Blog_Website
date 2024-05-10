@@ -16,12 +16,21 @@ export const AddBlog = () => {
 
   const { category, setCategory } = useCategory();
   const [image, setImage] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [imageUrl, setImageUrl] = useState('');
+
+  // const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const [blogData, setBlogData,] = React.useState({ title: "", category: "Technology", image: "https://picsum.photos/seed/picsum8/800/400", content: "" })
   const location = useLocation()
 
+
+  useEffect(() => {
+    if (image) {
+      const imageUrl = URL.createObjectURL(image);
+      setImageUrl(imageUrl);
+    }
+  }, [image]);
   // console.log("mts l,", location.state);
   // console.log(blogData);
   function handleChange(event) {
@@ -75,7 +84,7 @@ export const AddBlog = () => {
     } catch (error) {
       console.log(error);
     }
-    finally{
+    finally {
       setLoader(false)
     }
 
@@ -85,7 +94,7 @@ export const AddBlog = () => {
   }
   async function handleClick() {
     setError(null);
-   setLoader(true)
+    setLoader(true)
     try {
       const data = new FormData();
       data.append("file", image);
@@ -118,11 +127,11 @@ export const AddBlog = () => {
   return (
 
     <>
-        {
-          loader &&
+      {
+        loader &&
 
-          <Loader/>
-        }
+        <Loader />
+      }
 
 
       <Container maxWidth="md" sx={{ marginTop: "80px" }} >
@@ -177,7 +186,7 @@ export const AddBlog = () => {
 
           <Grid item xs={12} textAlign={"center"} mt={4} >
             <Box>
-              <Box>
+              {/* <Box>
 
                 <input type="file" name="image" id="image" onChange={(e) => {
                   setImage(e.target.files[0]);
@@ -186,8 +195,25 @@ export const AddBlog = () => {
                   const imageUrl = URL.createObjectURL(selectedImage);
                   document.getElementById('previewImage').src = imageUrl;
                 }} />
-              </Box>
+              </Box> */}
               {/* {image && <img id="previewImage" src="" alt="Selected" style={{ maxWidth: '100%', marginTop: '10px', borderRadius: '5px' }} />} */}
+            </Box>
+
+            <Box>
+              <input
+                type="file"
+                name="image"
+                id="image"
+                onChange={(e) => setImage(e.target.files[0])}
+              />
+              {imageUrl && (
+                <img
+                  id="previewImage"
+                  src={imageUrl}
+                  alt="Selected"
+                  style={{ maxWidth: '100%', marginTop: '10px', borderRadius: '5px' }}
+                />
+              )}
             </Box>
           </Grid>
 

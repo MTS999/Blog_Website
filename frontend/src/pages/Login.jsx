@@ -30,7 +30,7 @@ const Login = () => {
     const [showPassword, setShowPassword] = React.useState(false);
     const [message, setMessage] = React.useState({ text: "", type: "" })
     const navigate = useNavigate()
-
+    console.log("Messege", message);
 
     useEffect(() => {
         const token = localStorage.getItem("token")
@@ -66,15 +66,18 @@ const Login = () => {
               }
 
               else {
-                  console.error("Login failed:", response.data.message);
+                  
+                  console.log("Login failed:", response);
                   setMessage({ text: response.data.message, type: "error" })
-              }
+                }
+                // console.log("i am amts")
 
           }
           catch (error) {
               console.error(error);
               console.error(error.response.data.message);
               setMessage({ text: error.response.data.message, type: "error" })
+              setMessage({ text: "invalid email or password", type: "error" })
 
           }
           setLoader(false)
@@ -134,9 +137,11 @@ const Login = () => {
         <>
             {/* {loader && <Loader />} */}
 
-            <Grid container
+            <Grid
+             container
              sx={{ height: "100vh" }}
-             height={"100vh"}  >
+             height={"100vh"}
+               >
 
                 <Grid item xl={2} lg={2} md={2} sm={3} sx={{
                     display: { xs: 'none', md: 'block' },
@@ -144,7 +149,9 @@ const Login = () => {
                     <Box
 
                         component={"img"}
-                        sx={{ width: "250px", height: "auto", mt: "30px", color: "red" }}
+                        sx={{ width: "250px", height: "auto",
+                         mt: "30px",
+                          color: "red" }}
 
                         src={blogLogo}
                         alt="logo"
@@ -257,9 +264,9 @@ const Login = () => {
 
 
                             />
-                            {error.password &&
+                            {message&&
 
-                                <Typography variant="body1" color="initial" sx={{ color: "red", }}> {error.password}</Typography>}
+                                <Typography variant="body1" color="initial" sx={{ color: "red", }}> {message.text}</Typography>}
 
 
                             <Typography variant="body1" color="initial" textAlign={"end"} mb={2} mt={1}

@@ -217,22 +217,22 @@ export const BlogDetail = () => {
       console.error('Error fetching comments:', error.response ? error.response.data : error.message);
     }
   }
-  async function handleEdit(postId) {
-    try {
-      const response = await axios.delete(`http://localhost:5003/commentedit/${postId}`, { content }, {
-        headers: {
-          authorization: `Bearer ${token}`
+  // async function handleEdit(postId) {
+  //   try {
+  //     const response = await axios.delete(`http://localhost:5003/commentedit/${postId}`, { content }, {
+  //       headers: {
+  //         authorization: `Bearer ${token}`
 
-        }
+  //       }
 
-      }
-      );
+  //     }
+  //     );
 
-      console.log("mtssss", response);
-    } catch (error) {
-      console.error('Error fetching comments:', error.response ? error.response.data : error.message);
-    }
-  }
+  //     console.log("mtssss", response);
+  //   } catch (error) {
+  //     console.error('Error fetching comments:', error.response ? error.response.data : error.message);
+  //   }
+  // }
 
   async function handleLike(postId) {
     const token = localStorage.getItem("token");
@@ -465,7 +465,7 @@ export const BlogDetail = () => {
                       </Box>
                       <Typography variant="h6" color="initial"> All Comments ({comments.length})</Typography>
                       {comments.length > 0 &&
-                        <Box sx={{ width: "100%" }} backgroundColor="#f2fafc" border={"2px solid #EAEAEA"} borderRadius={3} p={2}>
+                        <Box key={"12"} sx={{ width: "100%" }} backgroundColor="#f2fafc" border={"2px solid #EAEAEA"} borderRadius={3} p={2}>
 
                           {comments.map((comment) => {
 

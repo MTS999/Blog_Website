@@ -63,9 +63,7 @@ app.post("/signup", async (request, response) => {
     }   
 
 })
-// Assuming you have already imported necessary modules and defined your Express app
 
-// Endpoint to update user information
 app.put("/update-user/:id", verifyToken, async (request, response) => {
     try {
         const userId = request.params.id;
@@ -120,9 +118,9 @@ app.get("/getalluserdata", verifyToken, async (request, response) => {
     try {
 
         const role = request.user.role
-        if (role !== "admin") {
-            return response.status(403).json({ message: "Unauthorized - You do not have permission to access this resource" })
-        }
+        // if (role !== "admin") {
+        //     return response.status(403).json({ message: "Unauthorized - You do not have permission to access this resource" })
+        // }
 
         const users = await Users.find();
 
@@ -268,7 +266,8 @@ app.post("/addblog", verifyToken, async (request, response) => {
 app.get("/blogs", verifyToken, async (request, response) => {
     try {
         let query = {};
-        console.log("mts");
+
+        console.log( "mts", request.query);
         // Check if category query parameter is present
         if (request.query.category) {
             query.category = request.query.category;
@@ -334,9 +333,6 @@ app.get("/blogs", verifyToken, async (request, response) => {
 })
 
 
-// Assuming you have already defined your Express app and imported necessary modules
-
-// Endpoint to get all blogs from following users
 app.get("/following-blogs", verifyToken, async (request, response) => {
     try {
         console.log("MTS");
@@ -386,14 +382,14 @@ app.get("/recent-blogs", verifyToken, async (request, response) => {
 app.post("/search", async (request, response) => {
     try {
         const searchData = request.body;
-        console.log("mtsss", request.body);
+        // console.log("mtsss", request.body);
         let query
 
 
         if (searchData.title) {
 
             query = {
-                title: { $regex: searchData.title, $options: 'i' } // Constructing a regex to match the search term in the `content` field
+                title: { $regex: searchData.title, $options: 'i' } 
             };
         }
 

@@ -10,7 +10,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
-import { Chip, Typography ,Box} from '@mui/material';
+import { Chip, Typography, Box } from '@mui/material';
 const columns = [
     { id: 'index', label: '#', minWidth: 50, align: 'center' },
     // { id: 'action', label: 'Action', minWidth: 170, align: 'center' },
@@ -52,7 +52,7 @@ const Pending = () => {
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [pendingUsers, setPendingUsers] = React.useState([])
 
-
+  console.log(pendingUsers);
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -144,68 +144,84 @@ const Pending = () => {
 
     return (
         <>
-            <Paper sx={{ width: '100%', overflow: 'hidden', marginTop: "100px" }}>
-                <TableContainer sx={{ maxHeight: 440 }}>
-                    <Box textAlign={"center"}>
 
-                    <Typography variant="h4" color="initial" >Pending request</Typography>
-                    </Box>
-                    <Table stickyHeader aria-label="sticky table">
-                        <TableHead>
-                            <TableRow>
-                                {columns.map((column) => (
-                                    <TableCell
-                                        key={column.id}
-                                        align={column.align}
-                                        style={{ minWidth: column.minWidth }}
-                                    >
-                                        {column.label}
-                                    </TableCell>
-                                ))}
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {pendingUsers.map((user, index) => (
-                                <TableRow hover role="checkbox" tabIndex={-1} key={index}>
-                                    <TableCell align="center" style={{ minWidth: columns[0].minWidth, fontSize: "18px" }}>{index + 1}</TableCell>
-                                    {/* <TableCell align="center" style={{ minWidth: columns[9].minWidth, fontSize: "18px" }}>
+            {
+                pendingUsers.length==0?
+                <Box width={"100%"}
+                 display={"flex"} alignItems={"center"} justifyContent={"center"}
+                  >
+
+
+                <Typography variant="h4" color="initial" mt={20}>No Request here</Typography>
+                </Box>
+
+                :
+
+                <Paper sx={{ width: '100%', overflow: 'hidden', marginTop: "100px" }}>
+                    <TableContainer sx={{ maxHeight: 440 }}>
+                        <Box textAlign={"center"}>
+
+                            <Typography variant="h4" color="initial" >Pending request</Typography>
+                        </Box>
+                        <Table stickyHeader aria-label="sticky table">
+                            <TableHead>
+                                <TableRow>
+                                    {columns.map((column) => (
+                                        <TableCell
+                                            key={column.id}
+                                            align={column.align}
+                                            style={{ minWidth: column.minWidth }}
+                                        >
+                                            {column.label}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {pendingUsers.map((user, index) => (
+                                    <TableRow hover role="checkbox" tabIndex={-1} key={index}>
+                                        <TableCell align="center" style={{ minWidth: columns[0].minWidth, fontSize: "18px" }}>{index + 1}</TableCell>
+                                        {/* <TableCell align="center" style={{ minWidth: columns[9].minWidth, fontSize: "18px" }}>
                                                 <Dialog1 userId={user.user._id} setRefreshTable={setRefreshTable} userData={user} />
                                             </TableCell> */}
-                                    <TableCell align="left" style={{ minWidth: columns[0].minWidth, fontSize: "18px" }}>{user.first_name}</TableCell>
-                                    <TableCell align="left" style={{ minWidth: columns[1].minWidth, fontSize: "18px" }}>{user.last_name}</TableCell>
-                                    <TableCell align="left" style={{ minWidth: columns[2].minWidth, fontSize: "18px" }}>{user.email}</TableCell>
+                                        <TableCell align="left" style={{ minWidth: columns[0].minWidth, fontSize: "18px" }}>{user.first_name}</TableCell>
+                                        <TableCell align="left" style={{ minWidth: columns[1].minWidth, fontSize: "18px" }}>{user.last_name}</TableCell>
+                                        <TableCell align="left" style={{ minWidth: columns[2].minWidth, fontSize: "18px" }}>{user.email}</TableCell>
 
 
 
 
-                                    <TableCell align="center" style={{ minWidth: columns[3].minWidth, fontSize: "18px" }}>{formatDate(user.createdAt)}</TableCell>
-                                    <TableCell align="left" style={{ minWidth: columns[4].minWidth, fontSize: "18px" }}>{formatDate(user.updatedAt)}</TableCell>
+                                        <TableCell align="center" style={{ minWidth: columns[3].minWidth, fontSize: "18px" }}>{formatDate(user.createdAt)}</TableCell>
+                                        <TableCell align="left" style={{ minWidth: columns[4].minWidth, fontSize: "18px" }}>{formatDate(user.updatedAt)}</TableCell>
 
-                                    <TableCell align="center" style={{ minWidth: columns[5].minWidth, fontSize: "18px" }}>
-                                        <Button onClick={() => RequestAccept(user._id)}>
-                                            <Chip label={"Accept"} sx={{ backgroundColor: "#E4F8DD", width: "100px", height: "45px", color: "#00A95A", fontWeight: "bold", borderRadius: "5px", fontSize: "16px" }} /></Button>
-                                    </TableCell>
-                                    <TableCell align="center" style={{ minWidth: columns[6].minWidth, fontSize: "18px" }}>
-                                        <Button onClick={() => RequestReject(user._id)}>
+                                        <TableCell align="center" style={{ minWidth: columns[5].minWidth, fontSize: "18px" }}>
+                                            <Button onClick={() => RequestAccept(user._id)}>
+                                                <Chip label={"Accept"} sx={{ backgroundColor: "#E4F8DD", width: "100px", height: "45px", color: "#00A95A", fontWeight: "bold", borderRadius: "5px", fontSize: "16px" }} /></Button>
+                                        </TableCell>
+                                        <TableCell align="center" style={{ minWidth: columns[6].minWidth, fontSize: "18px" }}>
+                                            <Button onClick={() => RequestReject(user._id)}>
 
-                                            <Chip label={"Reject"} sx={{ backgroundColor: "#E4F8DD", width: "100px", height: "45px", color: "#00A95A", fontWeight: "bold", borderRadius: "5px", fontSize: "16px" }} />
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-                <TablePagination
-                    rowsPerPageOptions={[10, 25, 100]}
-                    component="div"
-                    count={rows.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                />
-            </Paper>        </>
+                                                <Chip label={"Reject"} sx={{ backgroundColor: "#E4F8DD", width: "100px", height: "45px", color: "#00A95A", fontWeight: "bold", borderRadius: "5px", fontSize: "16px" }} />
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                    <TablePagination
+                        rowsPerPageOptions={[10, 25, 100]}
+                        component="div"
+                        count={rows.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                    />
+                </Paper>
+            }
+
+        </>
     )
 }
 

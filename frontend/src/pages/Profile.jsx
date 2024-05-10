@@ -12,12 +12,12 @@ import { Alert } from "@mui/material";
 
 
 export default function Profile() {
-  const [loader, setloader] = useState(false);
+  // const [loader, setloader] = useState(false);
   const [count, setCount] = useState(0)
   const [userData, setUserData] = useState(null);
   const navigate = useNavigate()
   const location = useLocation()
-  const [message, setMessage] = React.useState({ text: '', type: '' });
+  // const [message, setMessage] = React.useState({ text: '', type: '' });
 
   // console.log(location.state);
 
@@ -65,7 +65,7 @@ export default function Profile() {
     if (token) {
       fetchData()
     }
-  }, [userId, token])
+  }, [userId, token,count])
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -123,7 +123,7 @@ export default function Profile() {
 
 
         console.log(response);
-        // fetchData()
+        setCount(pre=>pre+1)
 
 
     } catch (error) {
@@ -132,14 +132,14 @@ export default function Profile() {
 }
   return (
     <>
-      <Grid container spacing={2} justifyContent={"space-around"} m={1} mt={6} mr={5} sx={{ paddingLeft: 0 }}>
+      <Grid container spacing={2} justifyContent={"space-around"} m={1} mt={10} mr={5} sx={{ paddingLeft: 0 }}>
 
 
 
         {/* {loader && <Loader />} */}
-        <Grid item xs={12}>
+        <Grid item xs={12} alignItems={"center"}>
 
-          <Typography variant="h4" color="initial">{location.state ? "Edit Admin" : "Admin Detail"}</Typography>
+          <Typography variant="h4" fontWeight={"bold"} color="initial">{location.state ? "Edit Admin" : "Profile"}</Typography>
         </Grid>
         {/* <div >
         <img  src={formData.profile_image} alt="mts" />
@@ -156,7 +156,7 @@ export default function Profile() {
 
             <img
               src={formData.profile_image}
-              alt="green iguana"
+              alt="Profile Pic"
               height="100px"
               width={"100%"}
               style={{
@@ -241,7 +241,7 @@ export default function Profile() {
             id="role"
             name="role"
             onChange={handleChange}
-            value={formData.role}
+            value={   formData.role==="pending"? "Waiting for Author":formData.role}
             InputProps={{
               readOnly: !location.state
             }} />
@@ -261,20 +261,18 @@ export default function Profile() {
             }}
           />
 
-          {
-            userData?.role==="reader" &&
-            <Button  onClick={RequestPending} variant='contained' >request for Author</Button>
-          }
+        
         </Grid>
-        {message.text && location.state &&
-          <Grid container mt={1} ml={2} spacing={2} justifyContent="space-between">
+        {
+        // message.text && location.state &&
+        //   <Grid container mt={1} ml={2} spacing={2} justifyContent="space-between">
 
-            <Box mb={1} marginRight={"auto"}>
-              <Alert severity={message.type}>
-                {message.text}
-              </Alert>
-            </Box>
-          </Grid>
+        //     <Box mb={1} marginRight={"auto"}>
+        //       <Alert severity={message.type}>
+        //         {message.text}
+        //       </Alert>
+        //     </Box>
+        //   </Grid>
         }
         <Grid container mt={1} spacing={2} justifyContent="space-between">
           <Grid item ml={2}>
@@ -289,14 +287,20 @@ export default function Profile() {
             </Button>
           </Grid>
           <Grid item>
-            <Button
+            {/* <Button
               variant="contained"
               size="small"
               sx={{ marginLeft: "8px", display: location.state ? "" : "none" }}
             // onClick={handleSave}
             >
               Save
-            </Button>
+            </Button> */}
+
+
+{
+            userData?.role==="reader" &&
+            <Button  onClick={RequestPending} variant='contained' >request for Author</Button>
+          }
           </Grid>
         </Grid>
 

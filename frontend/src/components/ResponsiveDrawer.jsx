@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
-import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
@@ -20,22 +19,23 @@ import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 
-import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
 import { useEffect } from 'react';
 import axios from 'axios';
 import { Outlet } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import useCategory from "../CategoryContext";
-import { useLocation } from 'react-router-dom';
+// import { useLocation } from 'react-router-dom';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PendingIcon from '@mui/icons-material/Pending';
 import PeopleIcon from '@mui/icons-material/People';
 import HomeIcon from '@mui/icons-material/Home';
 import BookmarkAddIcon from '@mui/icons-material/BookmarkAdd';
-import SchoolIcon from '@mui/icons-material/School';
+// import SchoolIcon from '@mui/icons-material/School';
 import FoodBankIcon from '@mui/icons-material/FoodBank';
 const drawerWidth = 200;
+// import image from "../images/blogLogo.png"
+import UserProfileAvatar from "./UserProfileAvatar"
 
 function ResponsiveDrawer(props) {
   const { window } = props;
@@ -44,9 +44,18 @@ function ResponsiveDrawer(props) {
   const { category, setCategory } = useCategory();
   const [userRole, setUserRole] = React.useState('');
   const [userData, setUserData] = React.useState(null)
+  const [pendingUsers, setPendingUsers] = React.useState([])
+  const [selectedItem, setSelectedItem] = React.useState('Home'); // Initially selected as 'dashboard'
+
+  const handleListItemClick = (itemName) => {
+    setSelectedItem(itemName);
+
+};
+
+  // console.log(pendingUsers)
   const [selectedCategory, setSelectedCategory] = React.useState("Home");
   const userId = localStorage.getItem("userId");
-
+  console.log(userData);
 
 
   const navigate = useNavigate()
@@ -61,6 +70,32 @@ function ResponsiveDrawer(props) {
   };
 
   const token = localStorage.getItem("token");
+
+  const fetchData = async () => {
+
+    try {
+
+      const response = await axios.get("http://localhost:5003/pending-request", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      console.log(response);
+      setPendingUsers(response.data)
+
+
+    }
+    catch (error) {
+
+      console.error(error);
+    }
+  }
+  useEffect(() => {
+
+
+    fetchData()
+  }, [token])
+
 
   useEffect(() => {
 
@@ -145,12 +180,32 @@ function ResponsiveDrawer(props) {
   const drawer = (
     <div>
       <Toolbar />
-      <Divider />
+      {/* <Toolbar /> */}
+      {/* <Divider /> */}
       <List>
+        {
+
+
+          <ListItem key={"home"} disablePadding
+          selected={selectedItem === 'Home'}
+          onClick={() => handleListItemClick('Home')}
+
+          >
+            <ListItemButton onClick={() => navigate(`/`)}>
+              <ListItemIcon>
+                <HomeIcon />
+              </ListItemIcon>
+              <ListItemText primary={"Home"} />
+            </ListItemButton>
+          </ListItem>
+        }
         {
           userRole === "admin" &&
 
-          <ListItem key={"dashboard"} disablePadding>
+          <ListItem key={"dashboard"}
+          selected={selectedItem === 'dashboard'}
+          onClick={() => handleListItemClick('dashboard')}
+          disablePadding>
             <ListItemButton onClick={() => navigate(`/dashboard`)}>
               <ListItemIcon>
                 <DashboardIcon />
@@ -163,20 +218,38 @@ function ResponsiveDrawer(props) {
         {
           userRole === "admin" &&
 
-          <ListItem key={"pending request"} disablePadding>
+          <ListItem key={"pending request"} disablePadding
+          selected={selectedItem === 'pending'}
+          onClick={() => handleListItemClick('pending')}
+          >
             <ListItemButton onClick={() => navigate(`/pending-request`)}>
               <ListItemIcon>
                 <PendingIcon />
 
               </ListItemIcon>
-              <ListItemText primary={"Pending "} />
+
+              <ListItemText>
+                {pendingUsers.length > 0 ?
+
+                  (
+                    <Typography sx={{ color: 'red' }}>
+                      Pending ({pendingUsers.length})
+                    </Typography>
+                  ) :
+                  (
+                    "Pending"
+                  )}
+              </ListItemText>
             </ListItemButton>
           </ListItem>
-        }
+}
         {
           userRole === "admin" &&
 
-          <ListItem key={"alllusers"} disablePadding>
+          <ListItem key={"alllusers"}
+          selected={selectedItem === 'allusers'}
+          onClick={() => handleListItemClick('allusers')}
+          disablePadding>
             <ListItemButton onClick={() => navigate(`/allusers`)}>
               <ListItemIcon>
                 <PeopleIcon />
@@ -189,7 +262,11 @@ function ResponsiveDrawer(props) {
         {
           userRole === "author" &&
 
-          <ListItem key={"myblogs"} disablePadding>
+          <ListItem key={"myblogs"}
+          selected={selectedItem === 'myblogs'}
+          onClick={() => handleListItemClick('myblogs')}
+          
+          disablePadding>
             <ListItemButton onClick={() => navigate(`/?blog=${"myblog"}`)}>
               <ListItemIcon>
                 <InboxIcon />
@@ -198,20 +275,13 @@ function ResponsiveDrawer(props) {
             </ListItemButton>
           </ListItem>
         }
-        {
 
 
-          <ListItem key={"home"} disablePadding>
-            <ListItemButton onClick={() => navigate(`/`)}>
-              <ListItemIcon>
-                <HomeIcon />
-              </ListItemIcon>
-              <ListItemText primary={"Home"} />
-            </ListItemButton>
-          </ListItem>
-        }
-
-        <ListItem key={"reading-list"} disablePadding>
+        <ListItem key={"reading-list"}
+        
+        selected={selectedItem === 'reading'}
+        onClick={() => handleListItemClick('reading')}
+        disablePadding>
           <ListItemButton onClick={() => navigate(`/?blog=reading-list`)}>
             <ListItemIcon>
               <BookmarkAddIcon />
@@ -224,7 +294,10 @@ function ResponsiveDrawer(props) {
 
           userRole === "author" &&
 
-          <ListItem key={"add-blog"} disablePadding>
+          <ListItem key={"add-blog"} 
+          selected={selectedItem === 'addblog'}
+          onClick={() => handleListItemClick('addblog')}
+          disablePadding>
             <ListItemButton onClick={() => navigate(`/addblog`)}>
               <ListItemIcon>
                 <BookmarkAddIcon />
@@ -234,10 +307,13 @@ function ResponsiveDrawer(props) {
           </ListItem>
         }
         {category.map((text, index) => (
-          <ListItem key={text} disablePadding>
+          <ListItem key={text} 
+          selected={selectedItem === `${text}`}
+          onClick={() => handleListItemClick(`${text}`)}
+          disablePadding>
             <ListItemButton onClick={() => navigate(`/?category=${text}`, { state: { text } })}>
               <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                {index % 2 === 0 ? <InboxIcon /> : <FoodBankIcon />}
               </ListItemIcon>
               <ListItemText primary={text} />
             </ListItemButton>
@@ -252,7 +328,7 @@ function ResponsiveDrawer(props) {
       navigate("/")
       setSelectedCategory("Home")
     }
-   else if (text === "Reading_list") {
+    else if (text === "Reading_list") {
       navigate(`/?blog=reading-list`)
       setSelectedCategory("Reading_list")
     }
@@ -263,152 +339,161 @@ function ResponsiveDrawer(props) {
   }
 
 
-function profileAction() {
-  handleClose()
-  navigate("/profile")
-}
-// Remove this const when copying and pasting into your project.
-const container = window !== undefined ? () => window().document.body : undefined;
+  function profileAction() {
+    handleClose()
+    navigate("/profile")
+  }
+  // Remove this const when copying and pasting into your project.
+  const container = window !== undefined ? () => window().document.body : undefined;
 
-return (
-  <Box sx={{ display: 'flex' }}>
-    <CssBaseline />
-    <AppBar
-      position="fixed"
-      sx={{
-        // width:"100vw",
-        // width: { sm: `calc(100% - ${drawerWidth}px)` },
-        ml: { sm: `${drawerWidth}px` },
-        zIndex: 1234,
-        // backgroundColor: "white",
-        // color: "black"
-
-
-      }}
-    >
-      <Toolbar
-
+  return (
+    <Box sx={{ display: 'flex' }}>
+      <CssBaseline />
+      <AppBar
+        position="fixed"
         sx={{
+          // width:"100vw",
+          // width: { sm: `calc(100% - ${drawerWidth}px)` },
+          ml: { sm: `${drawerWidth}px` },
+          zIndex: 1234,
+          // backgroundColor: "white",
+          // color: "black"
 
-          backgroundColor: "green",
 
-        }}>
-        <IconButton
-          color="inherit"
-          aria-label="open drawer"
-          edge="start"
-          onClick={handleDrawerToggle}
-          sx={{ mr: 2, display: { md: 'none' } }}
+        }}
+      >
+        <Toolbar
+
+          sx={{
+
+            backgroundColor: "#BDBDBD",
+
+          }}>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="start"
+            onClick={handleDrawerToggle}
+            sx={{ mr: 2, display: { md: 'none' } }}
+          >
+            <MenuIcon />
+          </IconButton>
+
+          {/* <img src={image} alt=""  width="60px" /> */}
+          <Typography variant="h4" noWrap component="div" mr={"auto"} color={"#000000"} fontWeight={"bold"}>
+            Blog
+          </Typography>
+
+
+          <div>
+            <Stack ml={2} direction="row" spacing={2} onClick={handleClick}
+            >
+
+              {userData &&
+
+
+                <UserProfileAvatar userId={userId} userName={userData.user_name} />
+              }
+
+
+            </Stack>
+            <Menu
+              id="basic-menu"
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              MenuListProps={{
+                'aria-labelledby': 'basic-button',
+              }}
+            >
+              <MenuItem onClick={profileAction}>Profile</MenuItem>
+              {/* <MenuItem onClick={handleClose}>My account</MenuItem> */}
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            </Menu>
+          </div>
+
+        </Toolbar>
+        <Box
+          sx={{
+            display: { xs: 'none', md: 'none' },
+
+          }}>
+
+          <div>
+            <ul style={{ display: "flex", alignItems: "center", justifyContent: "center", listStyle: "none" }}>
+              <li
+                key={"Home"}
+                onClick={() => navigatehandle("Home")}
+                style={{
+                  borderBottom: selectedCategory === "Home" ? '3px solid green' : 'none',
+                }
+                }
+              >Home  </li>
+              <li
+                key={"Reading_list"}
+                onClick={() => navigatehandle("Reading_list")}
+                style={{
+                  borderBottom: selectedCategory === "Reading_list" ? '3px solid green' : 'none',
+                }
+                }
+              >Reading List  </li>
+
+              {category.map((item) => (
+
+                <li key={item}
+                  onClick={() => navigatehandle(item)}
+                  style={{
+                    borderBottom: selectedCategory === item ? '3px solid green' : 'none',
+                    marginBottom: "4px"
+                  }}
+
+                >{item} </li>
+                // <li key={item} onClick={() => navigatehandle(`/?category=${item}`, { state: { item } })}  >{item} </li>
+
+
+              ))}
+
+            </ul>
+          </div>
+        </Box>
+      </AppBar>
+
+      <Box
+        component="nav"
+        sx={{ width: { md: drawerWidth }, flexShrink: { sm: 0 } }}
+        aria-label="mailbox folders"
+      >
+        {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+        <Drawer
+          container={container}
+          variant="temporary"
+          open={mobileOpen}
+          onTransitionEnd={handleDrawerTransitionEnd}
+          onClose={handleDrawerClose}
+          ModalProps={{
+            keepMounted: true, // Better open performance on mobile.
+          }}
+          sx={{
+            display: { xs: 'block', md: 'none' },
+            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+          }}
         >
-          <MenuIcon />
-        </IconButton>
-        <Typography variant="h6" noWrap component="div" mr={"auto"}>
-          Blog
-        </Typography>
+          {drawer}
+        </Drawer>
 
 
-        <div>
-          <Stack ml={2} direction="row" spacing={2} onClick={handleClick}
-          >
-            <Avatar>H</Avatar>
-
-          </Stack>
-          <Menu
-            id="basic-menu"
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-            MenuListProps={{
-              'aria-labelledby': 'basic-button',
-            }}
-          >
-            <MenuItem onClick={profileAction}>Profile</MenuItem>
-            <MenuItem onClick={handleClose}>My account</MenuItem>
-            <MenuItem onClick={handleLogout}>Logout</MenuItem>
-          </Menu>
-        </div>
-
-      </Toolbar>
-      <Box 
-      sx={{
-        display: { xs: 'none', md: 'none' },
-
-      }}>
-
-      <div>
-        <ul style={{ display: "flex", alignItems: "center", justifyContent: "center", listStyle: "none" }}>
-          <li 
-          key={"Home"}
-          onClick={() => navigatehandle("Home")}
-          style={{ 
-            borderBottom: selectedCategory === "Home" ? '3px solid green' : 'none',
-          }
-          }
-          >Home  </li>
-          <li 
-          key={"Reading_list"}
-          onClick={() => navigatehandle("Reading_list")}
-          style={{ 
-            borderBottom: selectedCategory === "Reading_list" ? '3px solid green' : 'none',
-          }
-          }
-          >Reading List  </li>
-
-          {category.map((item) => (
-
-            <li key={item} 
-            onClick={() => navigatehandle(item)} 
-            style={{
-              borderBottom: selectedCategory === item ? '3px solid green' : 'none',
-              marginBottom:"4px" }}
-
-              >{item} </li>
-              // <li key={item} onClick={() => navigatehandle(`/?category=${item}`, { state: { item } })}  >{item} </li>
-              
-              
-            ))}
-
-        </ul>
-      </div>
-            </Box>
-    </AppBar>
-
-    <Box
-      component="nav"
-      sx={{ width: { md: drawerWidth }, flexShrink: { sm: 0 } }}
-      aria-label="mailbox folders"
-    >
-      {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-      <Drawer
-        container={container}
-        variant="temporary"
-        open={mobileOpen}
-        onTransitionEnd={handleDrawerTransitionEnd}
-        onClose={handleDrawerClose}
-        ModalProps={{
-          keepMounted: true, // Better open performance on mobile.
-        }}
-        sx={{
-          display: { xs: 'block', md: 'none' },
-          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-        }}
-      >
-        {drawer}
-      </Drawer>
-
-      
-      <Drawer
-        variant="permanent"
-        sx={{
-          display: { xs: 'none', md: 'block' },
-          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-        }}
-        open
-      >
-        {drawer}
-      </Drawer>
-    </Box>
-    {/* <Box
+        <Drawer
+          variant="permanent"
+          sx={{
+            display: { xs: 'none', md: 'block' },
+            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+          }}
+          open
+        >
+          {drawer}
+        </Drawer>
+      </Box>
+      {/* <Box
         component="main"
         sx={{
           flexGrow: 1,
@@ -418,11 +503,11 @@ return (
       >
         <Toolbar />
       </Box> */}
-    {/* <Toolbar /> */}
+      {/* <Toolbar /> */}
 
-    <Outlet />
-  </Box>
-);
+      <Outlet />
+    </Box>
+  );
 }
 
 ResponsiveDrawer.propTypes = {

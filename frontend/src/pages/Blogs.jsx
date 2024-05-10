@@ -67,12 +67,12 @@ const Blogs = () => {
   const navigate = useNavigate()
 
   // console.log(Search);
-  // console.log(SearchBy);
   const queryParams = new URLSearchParams(location.search);
   const blogParam = queryParams.get('blog');
   const qcategory = queryParams.get('category');
   const following = queryParams.get('feed');
-
+  
+  console.log(blogParam);
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("userId")
 
@@ -189,7 +189,7 @@ const Blogs = () => {
           }
         });
         setBlogs(response.data);
-        console.log(response);
+        // console.log(response);
       } catch (error) {
         console.error('Error fetching Blogs:', error);
       }
@@ -283,20 +283,20 @@ const Blogs = () => {
   }
 
 
-//   const handleDelete = async (id) => {
-//     try {
-//         const token = localStorage.getItem("token");
-//         const response = await axios.delete(`http://localhost:5003/deleteblog/${id}`, {
-//             headers: {
-//                 Authorization: `Bearer ${token}`
-//             }
-//         });
-//         console.log(response.data);
-//         // Optionally, you can update the UI to remove the deleted blog post
-//     } catch (error) {
-//         console.error('Error deleting blog post:', error);
-//     }
-// };
+  //   const handleDelete = async (id) => {
+  //     try {
+  //         const token = localStorage.getItem("token");
+  //         const response = await axios.delete(`http://localhost:5003/deleteblog/${id}`, {
+  //             headers: {
+  //                 Authorization: `Bearer ${token}`
+  //             }
+  //         });
+  //         console.log(response.data);
+  //         // Optionally, you can update the UI to remove the deleted blog post
+  //     } catch (error) {
+  //         console.error('Error deleting blog post:', error);
+  //     }
+  // };
   const BlogData = Blogs.map((blog) => {
     return (
 
@@ -315,26 +315,20 @@ const Blogs = () => {
           <Box
             // display={"inline-block"}
             displayPrint={{ sm: "inline-block", xs: "flex" }}
-            // width={"50%"}
             width={{ sm: "50%", xs: "99%" }}
             textAlign={"left"}
             display={"flex"}
             justifyContent={"center "}
             //  alignItems={"center"}
             flexDirection={"column"}
+            flexWrap={"wrap"}
           >
 
-            {/* <Typography variant="body1" color="red" fontWeight={"bold"}  >{blog.category}</Typography>  */}
 
             <Box display="flex" alignItems={"center"} mb={2} >
 
               <UserProfileAvatar userId={blog.authorId} userName={blog.user_name} />
-              {/* <Avatar sx={{ width: 50, height: 50, marginRight: "10px" }} display="inline-block" >
-               
 
-                
-                
-                 </Avatar> */}
 
               <Box>
 
@@ -344,7 +338,7 @@ const Blogs = () => {
                     year: 'numeric',
                     month: 'short',
                     day: '2-digit',
-                 
+
                   })}
                 </Typography>
               </Box>
@@ -373,29 +367,42 @@ const Blogs = () => {
 
             </CardContent>
             <CardActions>
+              <Box
+              //  display={"flex"}
+              //  justifyContent={"center "}
+              //  alignItems={"center"}
+              //  flexDirection={"column"}
+              // alignItems="flex-start"
 
-              <LikeDislike blog={blog} Blogs={Blogs} setBlogs={setBlogs} />
+              //  flexWrap={"wrap"}
+              >
 
-
-              {userData &&
-
-                <IconButton aria-label="add or delete from reading_list" onClick={() => handle_reading_list(blog._id)}
-                  sx={{
-                    color: userData.reading_list?.includes(blog._id) ? "brown" : "inherit"
-                  }} >
-                  <LibraryAddIcon />
-                </IconButton>
-              }
+                <LikeDislike blog={blog} Blogs={Blogs} setBlogs={setBlogs} />
 
 
-              <Button size="small" variant="contained" onClick={() => navigate(`/blog/${blog._id}`)}>Read </Button>
+                {userData &&
+                  // !blogParam === "myblog" &&
 
-              {userId === blog.authorId && blogParam && <Button size="small" variant="contained"
-                onClick={() => navigate(`/addblog`, { state: blog })}
-              >Edit</Button>}
-            
+                  <IconButton aria-label="add or delete from reading_list" onClick={() => handle_reading_list(blog._id)}
+                    sx={{
+                      color: userData.reading_list?.includes(blog._id) ? "brown" : "inherit"
+                    }} >
+                    <LibraryAddIcon />
+                  </IconButton>
+                }
+
+                <Box mr={2} display={"inline-block"}>
+
+                  <Button size="small" variant="contained" onClick={() => navigate(`/blog/${blog._id}`)}>Read </Button>
+                </Box>
+
+                {userId === blog.authorId && blogParam && <Button size="small" variant="contained"
+                  onClick={() => navigate(`/addblog`, { state: blog })}
+                >Edit</Button>}
 
 
+
+              </Box>
             </CardActions>
           </Box>
           <Box
@@ -435,6 +442,11 @@ const Blogs = () => {
   return (
 
     <>
+
+      {
+        loader &&
+        <Loader />
+      }
       <Box boxSizing={"border-box"}
         mt={10}
         style={{
@@ -547,7 +559,7 @@ const Blogs = () => {
 
             {BlogData.length === 0 ?
               <>
-                {/* <Typography variant="h3" color="initial">Blog no Found</Typography> */}
+                <Typography variant="h3" color="initial">Blog no Found</Typography>
 
                 <Divider
                   variant="fullWidth"
@@ -622,8 +634,8 @@ const Blogs = () => {
                           onClick={() => navigate(`/addblog`, { state: blog })}
                         >Edit</Button>}
 
-                       
-                    
+
+
 
                       </CardActions>
                     </Card>

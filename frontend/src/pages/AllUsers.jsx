@@ -158,7 +158,8 @@ export default function AllUsers() {
                   <TableCell
                     key={column.id}
                     align={column.align}
-                    style={{ minWidth: column.minWidth }}
+                    style={{ minWidth: column.minWidth ,backgroundColor:"#BDBDBD",
+                    fontWeight:"bold" }}
                   >
                     {column.label}
                   </TableCell>
