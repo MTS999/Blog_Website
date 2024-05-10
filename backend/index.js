@@ -50,11 +50,22 @@ const verifyToken = (request, response, next) => {
 app.post("/signup", async (request, response) => {
     try{
 
-        let existingUser=await Users.findOne({$or:[{user_name:request.body.user_name}, {email:request.body.email}]})
-     if(existingUser){
-        return response.status(400).json({error:"Username or email already exists"})
-     }
+    //     let existingUser=await Users.findOne({$or:[{user_name:request.body.user_name}, {email:request.body.email}]})
+
+    //  if(existingUser){
+    //     return response.status(400).json({error:"Username or email already exists"})
+    //  }
+    let Existusername=await Users.findOne({user_name:request.body.user_name})
+    if(Existusername){
+        return response.status(400).json({error:"Username  already exists"})
+    }
+    let Existemail=await Users.findOne({email:request.body.email})
+    if(Existemail){
+        return response.status(400).json({error:"Email  already exists"})
+    }
+
         let user = new Users(request.body)
+
         let result = await user.save()
         response.send(result)
     }
@@ -106,7 +117,7 @@ app.post("/login", async (request, response) => {
 
         }
         else {
-            response.status(404).json({ message: "User not found" }); // Send error message as JSON
+            response.status(404).json({ message: "invalid email or password" }); // Send error message as JSON
 
         }
     }

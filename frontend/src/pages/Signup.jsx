@@ -14,15 +14,19 @@ import Alert from '@mui/material/Alert';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@mui/material';
 // import Loader from '../Load2er';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 import axios from 'axios';
 import { useTheme } from '@mui/material/styles';
 
 
 
+
 const Signup = () => {
   const theme = useTheme()
-  const [formData, setFormData] = React.useState({ first_name: "", last_name: "",user_name:"", email: "", password: "" })
-  const [error, setError] = React.useState({ first_name: "", last_name: "",user_name:"", email: "", password: "" });
+  const [formData, setFormData] = React.useState({ first_name: "", last_name: "", user_name: "", email: "", password: "" })
+  const [error, setError] = React.useState({ first_name: "", last_name: "", user_name: "", email: "", password: "" });
   const [loader, setLoader] = React.useState(false)
   const [showPassword, setShowPassword] = React.useState(false);
   const [message, setMessage] = React.useState({ text: "", type: "" })
@@ -53,7 +57,7 @@ const Signup = () => {
 
       const response = await axios.post("http://localhost:5003/signup", updatedFormData)
 
-      console.log("mts  ",response);
+      console.log("mts  ", response);
 
       if (response.status === 200) {
         navigate("/login")
@@ -67,8 +71,8 @@ const Signup = () => {
 
     }
     catch (error) {
-      console.error(error);
-      setMessage({ text: error.response.data.message, type: "error" })
+      console.error("mtssss", error.response.data.error);
+      setMessage({ text: error.response.data.error, type: "error" })
 
     }
     setLoader(false)
@@ -118,7 +122,7 @@ const Signup = () => {
       newError.user_name = "Last Name is required";
       isValid = false;
     }
- 
+
 
     else if (!formData.email) {
       newError.email = "Email is required"
@@ -128,9 +132,28 @@ const Signup = () => {
       newError.email = "Invalid email format";
       isValid = false;
     }
- else   if (!formData.password) {
+    else if (!formData.password) {
       newError.password = "Password is required";
       isValid = false;
+    }
+    else {
+      // Check password conditions
+      if (!/[a-z]/.test(formData.password)) {
+        newError.password = "Password must contain at least one lowercase character";
+        isValid = false;
+      }
+    else  if (!/[A-Z]/.test(formData.password)) {
+        newError.password = "Password must contain at least one uppercase character";
+        isValid = false;
+      }
+     else if (!/\d/.test(formData.password)) {
+        newError.password = "Password must contain at least one number";
+        isValid = false;
+      }
+     else if (formData.password.length < 8) {
+        newError.password = "Password must be at least 8 characters long";
+        isValid = false;
+      }
     }
 
 
@@ -341,11 +364,25 @@ const Signup = () => {
 
 
               />
-              {error.password &&
 
+              <FormGroup >
+                {/* <Box display="flex" flexWrap={"wrap"}> */}
+                  
+                <FormControlLabel control={<Checkbox checked={/[a-z]/.test(formData.password)} />} label="one lowercase character" />
 
-                <Typography variant="body1" color="initial" sx={{ color: "red" }}> {error.password}</Typography>
-              }
+                <FormControlLabel control={<Checkbox checked={/[A-Z]/.test(formData.password)} />} label="One uppercase character" />
+                <FormControlLabel
+                  control={<Checkbox checked={/\d/.test(formData.password)} />}
+                  label="One number"
+                  />
+                <FormControlLabel
+                  control={<Checkbox checked={formData.password.length >= 8} />}
+                  label="8 character minimum"
+                  />
+                  {/* </Box> */}
+
+              </FormGroup>
+
               {error.password &&
 
                 <Box mb={2}>

@@ -13,6 +13,7 @@ import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField'
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@mui/material';
+import Alert from '@mui/material/Alert';
 // import Loader from '../Loader';
 import axios from 'axios';
 import { useTheme } from '@mui/material/styles';
@@ -40,50 +41,50 @@ const Login = () => {
         }
     })
 
-      const handleSubmit = async () => {
+    const handleSubmit = async () => {
 
 
-          // const isValid = handleError();
-          // if (!isValid) {
-          //     return
-          // }
-          setLoader(true)
+        const isValid = handleError();
+        if (!isValid) {
+            return
+        }
+        setLoader(true)
 
-          try {
-              // const updatedFormData = { ...formData, type: 0 };
+        try {
+            // const updatedFormData = { ...formData, type: 0 };
 
-              const response = await axios.post("http://localhost:5003/login", formData)
+            const response = await axios.post("http://localhost:5003/login", formData)
 
-              console.log( "mtsssssssssssssssssss",  response.data);
+            console.log("mtsssssssssssssssssss", response.data);
 
-              if (response.status === 200) {
-                  localStorage.setItem("token", response.data.token)
-                  localStorage.setItem("userId", response.data.userId)
-                  
-
-                  navigate("/")
-                  // console.log("mts");
-              }
-
-              else {
-                  
-                  console.log("Login failed:", response);
-                  setMessage({ text: response.data.message, type: "error" })
-                }
-                // console.log("i am amts")
-
-          }
-          catch (error) {
-              console.error(error);
-              console.error(error.response.data.message);
-              setMessage({ text: error.response.data.message, type: "error" })
-              setMessage({ text: "invalid email or password", type: "error" })
-
-          }
-          setLoader(false)
+            if (response.status === 200) {
+                localStorage.setItem("token", response.data.token)
+                localStorage.setItem("userId", response.data.userId)
 
 
-      }
+                navigate("/")
+                // console.log("mts");
+            }
+
+            else {
+
+                console.log("Login failed:", response);
+                setMessage({ text: response.data.message, type: "error" })
+            }
+            // console.log("i am amts")
+
+        }
+        catch (error) {
+            console.error(error);
+            console.error(error.response.data.message);
+            setMessage({ text: error.response.data.message, type: "error" })
+            // setMessage({ text: "invalid email or password", type: "error" })
+
+        }
+        setLoader(false)
+
+
+    }
 
     // console.log(formData);
     function handleChange(event) {
@@ -113,7 +114,7 @@ const Login = () => {
             newError.email = "Invalid email format";
             isValid = false;
         }
-        if (!formData.password) {
+        else if (!formData.password) {
             newError.password = "Password is required";
             isValid = false;
         }
@@ -138,10 +139,10 @@ const Login = () => {
             {/* {loader && <Loader />} */}
 
             <Grid
-             container
-             sx={{ height: "100vh" }}
-             height={"100vh"}
-               >
+                container
+                sx={{ height: "100vh" }}
+                height={"100vh"}
+            >
 
                 <Grid item xl={2} lg={2} md={2} sm={3} sx={{
                     display: { xs: 'none', md: 'block' },
@@ -149,9 +150,11 @@ const Login = () => {
                     <Box
 
                         component={"img"}
-                        sx={{ width: "250px", height: "auto",
-                         mt: "30px",
-                          color: "red" }}
+                        sx={{
+                            width: "250px", height: "auto",
+                            mt: "30px",
+                            color: "red"
+                        }}
 
                         src={blogLogo}
                         alt="logo"
@@ -228,10 +231,12 @@ const Login = () => {
                             />
                             {error.email &&
 
-
-                                (<Typography variant="body1" color="initial" sx={{ color: "red" }}> {error.email}</Typography>)
+                                <Box mb={2}>
+                                    <Alert severity="error">
+                                        {error.email}
+                                    </Alert>
+                                </Box>
                             }
-
                             <TextField
 
                                 margin='normal'
@@ -264,7 +269,15 @@ const Login = () => {
 
 
                             />
-                            {message&&
+                            {error.password &&
+
+                                <Box mb={2}>
+                                    <Alert severity="error">
+                                        {error.password}
+                                    </Alert>
+                                </Box>
+                            }
+                            {message &&
 
                                 <Typography variant="body1" color="initial" sx={{ color: "red", }}> {message.text}</Typography>}
 
@@ -277,17 +290,17 @@ const Login = () => {
                                 variant='contained'
                                 fullWidth
                                 size='large'
-                                style={{ 
-                                    backgroundColor: theme.palette.primary.main 
+                                style={{
+                                    backgroundColor: theme.palette.primary.main
 
                                 }}
                                 // sx={{ mt: 3, mb: 2 }}
                                 onClick={handleSubmit}
 
-                            >{  loader?<CircularProgress size={24} thickness={8}  sx={{color:"white" }}/>  :
+                            >{loader ? <CircularProgress size={24} thickness={8} sx={{ color: "white" }} /> :
 
                                 "Sign In"
-                            }
+                                }
 
                             </Button>
 
