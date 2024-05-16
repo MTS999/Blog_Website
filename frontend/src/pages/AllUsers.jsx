@@ -58,11 +58,12 @@ const rows = [
 export default function AllUsers() {
   const [loader, setLoader] = React.useState(false);
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [rowsPerPage, setRowsPerPage] = React.useState(4);
+  const [totalusers,setTotalUserDataCount]=React.useState(0)
   const [allUserData, setAllUserData] = React.useState([])
   const [allBlogData, setAllBlogData] = React.useState([])
   const [refreshTable, setRefreshTable] = React.useState(false)
-  console.log(refreshTable);
+  console.log(allUserData);
 
   // console.log(allUserData);
   const handleChangePage = (event, newPage) => {
@@ -75,27 +76,59 @@ export default function AllUsers() {
   };
   const token = localStorage.getItem("token")
 
+  // const fetchUserData = async () => {
+  //   setLoader(true)
+  //   try {
+
+  //     const response = await axios.get("http://localhost:5003/getalluserdata", {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`
+
+  //       }
+  //     })
+
+  //     // console.log(response.data);
+  //     // setAllUserData(response.data.users)
+  //     if (Array.isArray(response.data.users)) {
+  //       setAllUserData(response.data.users);
+  //     } else {
+  //       console.error("Response data is not an array:", response.data);
+  //     }
+
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  //   finally {
+  //     setLoader(false)
+  //   }
+  // }
+
   const fetchUserData = async () => {
-    setLoader(true)
+    setLoader(true);
     try {
+        let url = "http://localhost:5003/getalluserdata";
+        const queryParams = new URLSearchParams();
+        queryParams.append("page", page);
+        queryParams.append("limit", rowsPerPage);
 
-      const response = await axios.get("http://localhost:5003/getalluserdata", {
-        headers: {
-          Authorization: `Bearer ${token}`
+        url += `?${queryParams.toString()}`;
 
-        }
-      })
+        const response = await axios.get(url, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
 
-      // console.log(response.data);
-      setAllUserData(response.data)
-
+        // Update state with total count and paginated user data
+        setTotalUserDataCount(response.data.totalCount);
+        setAllUserData(response.data.users);
     } catch (error) {
-      console.log(error);
+        console.error('Error fetching user data:', error);
+    } finally {
+        setLoader(false);
     }
-    finally {
-      setLoader(false)
-    }
-  }
+};
+
 
   const fetcBlogData = async () => {
     setLoader(true)
@@ -109,7 +142,7 @@ export default function AllUsers() {
         }
       })
 
-      console.log(response.data);
+      // console.log(response.data);
       setAllBlogData(response.data)
 
 
@@ -125,7 +158,7 @@ export default function AllUsers() {
 
     fetchUserData()
     fetcBlogData()
-  }, [token, refreshTable])
+  }, [token, refreshTable,page])
 
 
   const formatDate = (isoDateString) => {
@@ -167,7 +200,7 @@ export default function AllUsers() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {allUserData.map((user, index) => (
+              { allUserData && allUserData.map((user, index) => (
                 <TableRow hover role="checkbox" tabIndex={-1} key={index}>
                   <TableCell align="center" style={{ minWidth: columns[0].minWidth, fontSize: "18px" }}>{index + 1}</TableCell>
                   <TableCell align="center" style={{ minWidth: columns[9].minWidth, fontSize: "18px" }}>
@@ -199,9 +232,9 @@ export default function AllUsers() {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[10, 25, 100]}
+          rowsPerPageOptions={[4,10,12]}
           component="div"
-          count={rows.length}
+          count={totalusers}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}

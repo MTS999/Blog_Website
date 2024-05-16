@@ -44,10 +44,10 @@ const Login = () => {
     const handleSubmit = async () => {
 
 
-        const isValid = handleError();
-        if (!isValid) {
-            return
-        }
+        // const isValid = handleError();
+        // if (!isValid) {
+        //     return
+        // }
         setLoader(true)
 
         try {
@@ -231,7 +231,7 @@ const Login = () => {
                             />
                             {error.email &&
 
-                                <Box mb={2}>
+                                <Box mb={2} minWidth={"100%"}>
                                     <Alert severity="error">
                                         {error.email}
                                     </Alert>
@@ -271,15 +271,20 @@ const Login = () => {
                             />
                             {error.password &&
 
-                                <Box mb={2}>
+                                <Box mb={2} minWidth={"100%"}>
                                     <Alert severity="error">
                                         {error.password}
                                     </Alert>
                                 </Box>
                             }
-                            {message &&
+                            {message.text &&
 
-                                <Typography variant="body1" color="initial" sx={{ color: "red", }}> {message.text}</Typography>}
+                                <Box mb={2} minWidth={"100%"}>
+                                    <Alert severity="error">
+                                        {message.text}
+                                    </Alert>
+                                </Box>
+                            }
 
 
                             <Typography variant="body1" color="initial" textAlign={"end"} mb={2} mt={1}

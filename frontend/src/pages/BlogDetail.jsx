@@ -21,6 +21,9 @@ import CommentIcon from '@mui/icons-material/Comment';
 import CloseIcon from '@mui/icons-material/Close';
 import { useNavigate } from 'react-router-dom';
 import Chip from '@mui/material/Chip';
+import LikeDislike from '../components/LikeDislike';
+import Like_Dislike from '../components/Like_Dislike';
+
 
 const MAX_LINES = 2; // Maximum number of lines for content
 
@@ -70,6 +73,7 @@ export const BlogDetail = () => {
   const [comments, setComments] = React.useState([]);
   const [content, setAddComment] = React.useState("");
   const [recentBlogs, setRecentBlogs] = React.useState([]);
+  const [refresh,setRefresh]=React.useState(true)
 
   // console.log(recentBlogs);
   const params = useParams()
@@ -177,7 +181,7 @@ export const BlogDetail = () => {
     };
 
     fetchRecentBlogs();
-  }, []);
+  }, [refresh]);
 
   async function handleAddComment() {
     try {
@@ -363,7 +367,7 @@ export const BlogDetail = () => {
                         variant='contained'
                         size='small'
                         onClick={() => handleFollow(Blog.authorId)}>
-                        {userData.following.includes(Blog.authorId) ? "Following" : "Follow"}
+                        {userData?.following.includes(Blog.authorId) ? "Following" : "Follow"}
                       </Button>}
 
                   </Typography>
@@ -568,38 +572,11 @@ export const BlogDetail = () => {
 
                         </CardContent>
                         <CardActions>
-                          {/* <LikeDislike blog={blog} Blogs={Blogs} setBlogs={setBlogs} /> */}
-
-                          {/* <IconButton sx={{
-                            color: blog.likes.includes(userId) ? "green" : "inherit"
-                          }} aria-label="add to favorites" onClick={() => handleLike(blog._id)}>
-                            <ThumbUpIcon /> {blog.likes.length}
-                          </IconButton>
-                          <IconButton aria-label="add to dislike" onClick={() => handleDislike(blog._id)}
-                            sx={{
-                              color: blog.dislikes.includes(userId) ? "red" : "inherit"
-                            }} >
-                            <ThumbDownIcon /> {blog.dislikes.length}
-                          </IconButton> */}
-                          {/* <IconButton sx={{
-                            color: Blog.likes.includes(userId) ? "green" : "inherit"
-                          }} aria-label="add to favorites"
-                            onClick={() => handleLike(Blog._id)}
-                          >
-                            <ThumbUpIcon /> {Blog.likes.length}
-                          </IconButton>
-                          <IconButton aria-label="add to dislike"
-                            onClick={() => handleDislike(Blog._id)}
-                            sx={{
-                              color: Blog.dislikes.includes(userId) ? "red" : "inherit"
-                            }} >
-                            <ThumbDownIcon /> {Blog.dislikes.length}
-                          </IconButton> */}
+                          <Like_Dislike blog={blog} setRefresh={setRefresh}  />
+                       
                           <Button size="small" variant="contained" onClick={() => navigate(`/blog/${blog._id}`)}>Read </Button>
 
-                          {/* {userId === blog.authorId && <Button size="small" variant="contained"
-                            onClick={() => navigate(`/addblog`, { state: blog })}
-                          >Edit</Button>} */}
+                        
 
 
                         </CardActions>

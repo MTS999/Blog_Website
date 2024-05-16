@@ -159,9 +159,9 @@ const Pending = () => {
 
                 <Paper sx={{ width: '100%', overflow: 'hidden', marginTop: "100px" }}>
                     <TableContainer sx={{ maxHeight: 440 }}>
-                        <Box textAlign={"center"}>
+                        <Box textAlign={"center"} mb={5}>
 
-                            <Typography variant="h4" color="initial" >Pending request</Typography>
+                            <Typography variant="h4" color="initial" >Request for Author</Typography>
                         </Box>
                         <Table stickyHeader aria-label="sticky table">
                             <TableHead>
@@ -170,7 +170,7 @@ const Pending = () => {
                                         <TableCell
                                             key={column.id}
                                             align={column.align}
-                                            style={{ minWidth: column.minWidth }}
+                                            style={{ minWidth: column.minWidth ,background:"#BDBDBD"}}
                                         >
                                             {column.label}
                                         </TableCell>
@@ -201,7 +201,7 @@ const Pending = () => {
                                         <TableCell align="center" style={{ minWidth: columns[6].minWidth, fontSize: "18px" }}>
                                             <Button onClick={() => RequestReject(user._id)}>
 
-                                                <Chip label={"Reject"} sx={{ backgroundColor: "#E4F8DD", width: "100px", height: "45px", color: "#00A95A", fontWeight: "bold", borderRadius: "5px", fontSize: "16px" }} />
+                                                <Chip label={"Reject"} sx={{ backgroundColor: "#FFE2E1", width: "100px", height: "45px", color: "#B72237", fontWeight: "bold", borderRadius: "5px", fontSize: "16px" }} />
                                             </Button>
                                         </TableCell>
                                     </TableRow>

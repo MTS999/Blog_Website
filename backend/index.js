@@ -48,30 +48,30 @@ const verifyToken = (request, response, next) => {
     }
 };
 app.post("/signup", async (request, response) => {
-    try{
+    try {
 
-    //     let existingUser=await Users.findOne({$or:[{user_name:request.body.user_name}, {email:request.body.email}]})
+        //     let existingUser=await Users.findOne({$or:[{user_name:request.body.user_name}, {email:request.body.email}]})
 
-    //  if(existingUser){
-    //     return response.status(400).json({error:"Username or email already exists"})
-    //  }
-    let Existusername=await Users.findOne({user_name:request.body.user_name})
-    if(Existusername){
-        return response.status(400).json({error:"Username  already exists"})
-    }
-    let Existemail=await Users.findOne({email:request.body.email})
-    if(Existemail){
-        return response.status(400).json({error:"Email  already exists"})
-    }
+        //  if(existingUser){
+        //     return response.status(400).json({error:"Username or email already exists"})
+        //  }
+        let Existusername = await Users.findOne({ user_name: request.body.user_name })
+        if (Existusername) {
+            return response.status(400).json({ error: "Username  already exists" })
+        }
+        let Existemail = await Users.findOne({ email: request.body.email })
+        if (Existemail) {
+            return response.status(400).json({ error: "Email  already exists" })
+        }
 
         let user = new Users(request.body)
 
         let result = await user.save()
         response.send(result)
     }
-    catch(error){
+    catch (error) {
         response.send(error)
-    }   
+    }
 
 })
 
@@ -125,30 +125,56 @@ app.post("/login", async (request, response) => {
         response.status(400).json({ message: "invalid request" })
     }
 })
+// app.get("/getalluserdata", verifyToken, async (request, response) => {
+//     try {
+
+//         const role = request.user.role
+//         if (role !== "admin") {
+//             return response.status(403).json({ message: "Unauthorized - You do not have permission to access this resource" })
+//         }
+
+//         const users = await Users.find();
+
+//         // Send the user data in the response
+//         response.json(users);
+//     }
+//     catch (error) {
+//         console.error("Error fetching user data:", error);
+//         response.status(500).json({ message: "Internal server error" });
+//     }
+
+// })
 app.get("/getalluserdata", verifyToken, async (request, response) => {
     try {
+        const page = parseInt(request.query.page) || 1;
+        const limit = parseInt(request.query.limit) || 10;
 
-        const role = request.user.role
+        const role = request.user.role;
         // if (role !== "admin") {
         //     return response.status(403).json({ message: "Unauthorized - You do not have permission to access this resource" })
         // }
 
-        const users = await Users.find();
+        // Count total number of users
+        const totalCount = await Users.countDocuments();
 
-        // Send the user data in the response
-        response.json(users);
-    }
-    catch (error) {
+        // Calculate the number of documents to skip based on the page number and limit
+        const skip = (page - 1) * limit;
+
+        // Fetch paginated user data
+        const users = await Users.find().skip(skip).limit(limit);
+
+        // Send the user data and total count in the response
+        response.json({ totalCount, users });
+    } catch (error) {
         console.error("Error fetching user data:", error);
         response.status(500).json({ message: "Internal server error" });
     }
-
-})
+});
 
 app.get("/pending-request", verifyToken, async (request, response) => {
 
     try {
-        const role=request.user.role
+        const role = request.user.role
         if (role !== "admin") {
             return response.status(403).json({ message: "Unauthorized - You do not have permission to access this resource" })
         }
@@ -160,52 +186,52 @@ app.get("/pending-request", verifyToken, async (request, response) => {
         response.json(pending_users)
     }
 
-    catch(error){
+    catch (error) {
         console.error("Error fetching pending po:", error);
         response.status(500).json({ message: "Internal server error" });
     }
 
 })
-app.put("/pending",verifyToken,  async(request,response)=>{
+app.put("/pending", verifyToken, async (request, response) => {
 
     try {
 
-        const userId=request.user.id
+        const userId = request.user.id
 
-   const updateuser= await Users.findByIdAndUpdate(userId,{role:"pending"},{new:true})
-      
-   
-   response.json(updateuser)
+        const updateuser = await Users.findByIdAndUpdate(userId, { role: "pending" }, { new: true })
+
+
+        response.json(updateuser)
     } catch (error) {
-        response.status(500).json({message:"interna; servert error"})
+        response.status(500).json({ message: "interna; servert error" })
     }
 })
-app.put("/pending-reject/:id",verifyToken,async(request,response)=>{
+app.put("/pending-reject/:id", verifyToken, async (request, response) => {
 
     try {
 
-        const userId=request.params.id
+        const userId = request.params.id
 
-   const updateuser= await Users.findByIdAndUpdate(userId,{role:"reader"},{new:true})
-      
-   
-   response.json(updateuser)
+        const updateuser = await Users.findByIdAndUpdate(userId, { role: "reader" }, { new: true })
+
+
+        response.json(updateuser)
     } catch (error) {
-        response.status(500).json({message:"interna; servert error"})
+        response.status(500).json({ message: "interna; servert error" })
     }
 })
-app.put("/pending-accept/:id",verifyToken,  async(request,response)=>{
+app.put("/pending-accept/:id", verifyToken, async (request, response) => {
 
     try {
 
-        const userId=request.params.id
+        const userId = request.params.id
 
-   const updateuser= await Users.findByIdAndUpdate(userId,{role:"author"},{new:true})
-      
-   
-   response.json(updateuser)
+        const updateuser = await Users.findByIdAndUpdate(userId, { role: "author" }, { new: true })
+
+
+        response.json(updateuser)
     } catch (error) {
-        response.status(500).json({message:"interna; servert error"})
+        response.status(500).json({ message: "interna; servert error" })
     }
 })
 app.get("/getallblogdata", verifyToken, async (request, response) => {
@@ -274,17 +300,98 @@ app.post("/addblog", verifyToken, async (request, response) => {
     }
 });
 
+// app.get("/blogs", verifyToken, async (request, response) => {
+//     try {
+//         let query = {};
+
+//         console.log( "mts", request.query);
+//         // Check if category query parameter is present
+//         if (request.query.category) {
+//             query.category = request.query.category;
+//         }
+//         if (request.query.blog === "myblog") {
+//             const id = request.user.id
+
+//             // Add author ID to the query
+//             query.authorId = id;
+//         }
+//         if (request.query.blog === "reading-list") {
+//             const userId = request.user.id;
+
+//             // Find the current user
+//             const currentUser = await Users.findById(userId);
+
+//             if (!currentUser) {
+//                 return response.status(404).json({ message: "User not found" });
+//             }
+
+//             // Retrieve the reading list of the current user
+//             const readingList = currentUser.reading_list;
+
+//             // Query all blog posts in the reading list
+//             const result = await BlogPost.find({ _id: { $in: readingList } });
+
+//             // Return the blogs from the reading list
+//             return response.send(result);
+//         }
+
+//         if (request.query.feed === "following") {
+//             const userId = request.user.id;
+
+//             // Find the current user's information
+//             const currentUser = await Users.findById(userId);
+
+//             if (!currentUser) {
+//                 return response.status(404).json({ message: "User not found" });
+//             }
+
+//             // Retrieve the list of users that the current user is following
+//             const followingUsers = currentUser.following;
+
+//             // Query all blog posts from the following users
+//             const followingBlogs = await BlogPost.find({ authorId: { $in: followingUsers } });
+
+//             // Return the blogs from following users
+//             return response.send(followingBlogs)
+//         }
+
+//         // Find blog posts based on the query
+//         let result = await BlogPost.find(query);
+
+//         if (result.length > 0) {
+//             response.send(result);
+//         } else {
+//             response.send("No blogs found");
+//         }
+//     } catch (error) {
+//         console.error('Error fetching Blogs:', error);
+//         response.status(500).send("Internal Server Error");
+//     }
+// })
+
 app.get("/blogs", verifyToken, async (request, response) => {
     try {
         let query = {};
+        let page = parseInt(request.query.page) ||1; // Get the page number from the query parameters, default to 1 if not provided
+        let limit = parseInt(request.query.limit) ||4; // Number of blogs per page, default to 10 if not provided
 
-        console.log( "mts", request.query);
+        console.log("mts", typeof(page),page);
+        console.log("mts", request.query);
+
+        // Calculate the number of documents to skip based on the page number and limit
+
+        let skip = page - 1 ;
+        console.log(skip);
+        skip = ((page - 1) * limit) ;
+
+        // let skip = (page - 1) * limit;
+
         // Check if category query parameter is present
         if (request.query.category) {
             query.category = request.query.category;
         }
         if (request.query.blog === "myblog") {
-            const id = request.user.id
+            const id = request.user.id;
 
             // Add author ID to the query
             query.authorId = id;
@@ -301,12 +408,13 @@ app.get("/blogs", verifyToken, async (request, response) => {
 
             // Retrieve the reading list of the current user
             const readingList = currentUser.reading_list;
+            let totalCount = await BlogPost.countDocuments({ _id: { $in: readingList } });
 
             // Query all blog posts in the reading list
-            const readingListBlogs = await BlogPost.find({ _id: { $in: readingList } });
+            const result = await BlogPost.find({ _id: { $in: readingList } }).limit(limit).skip(skip);
 
             // Return the blogs from the reading list
-            return response.send(readingListBlogs);
+            return response.send({result,totalCount});
         }
 
         if (request.query.feed === "following") {
@@ -321,27 +429,34 @@ app.get("/blogs", verifyToken, async (request, response) => {
 
             // Retrieve the list of users that the current user is following
             const followingUsers = currentUser.following;
+            let totalCount = await BlogPost.countDocuments({ authorId: { $in: followingUsers } });
 
             // Query all blog posts from the following users
-            const followingBlogs = await BlogPost.find({ authorId: { $in: followingUsers } });
+            const result = await BlogPost.find({ authorId: { $in: followingUsers } }).limit(limit).skip(skip);
 
             // Return the blogs from following users
-            return response.send(followingBlogs)
+          return  response.send({ totalCount, result });
+
+            // return response.send(followingBlogs);
         }
 
         // Find blog posts based on the query
-        let result = await BlogPost.find(query);
+        let totalCount = await BlogPost.countDocuments(query);
+           console.log(skip);
+        let result = await BlogPost.find(query).limit(limit).skip(skip);
 
         if (result.length > 0) {
-            response.send(result);
+            response.send({ totalCount, result });
         } else {
             response.send("No blogs found");
         }
+
+        console.log(" end"+ page);
     } catch (error) {
         console.error('Error fetching Blogs:', error);
         response.status(500).send("Internal Server Error");
     }
-})
+});
 
 
 app.get("/following-blogs", verifyToken, async (request, response) => {
@@ -396,11 +511,16 @@ app.post("/search", async (request, response) => {
         // console.log("mtsss", request.body);
         let query
 
+        let page = parseInt(request.query.page) ||1; // Get the page number from the query parameters, default to 1 if not provided
+        let limit = parseInt(request.query.limit) ||4; // Number of blogs per page, default to 10 if not provided
 
+        let skip = page - 1 ;
+        console.log(skip);
+        skip = ((page - 1) * limit) ;
         if (searchData.title) {
 
             query = {
-                title: { $regex: searchData.title, $options: 'i' } 
+                title: { $regex: searchData.title, $options: 'i' }
             };
         }
 
@@ -410,9 +530,13 @@ app.post("/search", async (request, response) => {
             }
         }
         console.log(query);
-        const blogs = await BlogPost.find(query);
+        // const blogs = await BlogPost.find(query);
+        let totalCount = await BlogPost.countDocuments(query);
+
+        let result = await BlogPost.find(query).limit(limit).skip(skip);
+
         // console.log(blogs);
-        response.json(blogs); // Send the found blogs as JSON response
+        response.send({ totalCount, result });
     } catch (error) {
         console.error('Error fetching recent blogs:', error);
         response.status(500).send("Internal Server Error");
@@ -555,30 +679,30 @@ app.put("/update/:id", verifyToken, async (request, response) => {
 })
 
 
-app.delete("/deleteblog/:id",verifyToken, async (request, response) => {
+app.delete("/deleteblog/:id", verifyToken, async (request, response) => {
 
     try {
-     const role=request.user.role
-     const blogId=request.params.id
-     const userId=request.user.id
+        const role = request.user.role
+        const blogId = request.params.id
+        const userId = request.user.id
 
-     const blogPost= await BlogPost.findById(blogId)
+        const blogPost = await BlogPost.findById(blogId)
 
-     if(!blogPost){
-        return response.status(404).json({messege:"blog not found"})
-     }
-     if(role==="admin"|| userId===blogPost.authorId){
-        const result=await BlogPost.findByIdAndDelete(blogId)
+        if (!blogPost) {
+            return response.status(404).json({ messege: "blog not found" })
+        }
+        if (role === "admin" || userId === blogPost.authorId) {
+            const result = await BlogPost.findByIdAndDelete(blogId)
 
-        return response.json({ message: "Blog post deleted successfully", result });
+            return response.json({ message: "Blog post deleted successfully", result });
 
-     }
+        }
 
-     else{
-        return response.status(403).json({ message: "Unauthorized - You are not authorized to delete this blog post" });
+        else {
+            return response.status(403).json({ message: "Unauthorized - You are not authorized to delete this blog post" });
 
-     }
-        
+        }
+
     } catch (error) {
         console.error("Error deleting blog post:", error);
         response.status(500).json({ message: "Internal server error" });

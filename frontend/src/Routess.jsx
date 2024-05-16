@@ -14,7 +14,7 @@ import Profile from './pages/Profile'
 import  Dashboard  from './pages/Dashboard'
 import AllUsers from './pages/AllUsers'
 import Pending from './pages/Pending'
-import Checkout from './components/Checkout'
+import ReponsiveDrawer1 from './components/ReponsiveDrawer1'
 
 
 const Routess = () => {
@@ -22,6 +22,8 @@ const Routess = () => {
             <Routes>
 
                 <Route path='/' element={<ResponsiveDrawer />}>
+
+                    <Route path='/:blog' element={<Blogs />} />
                     <Route index element={<Blogs />} />
                     <Route path='blog/:id' element={<BlogDetail />} />
                     <Route path='/profile' element={<Profile />} />
@@ -34,7 +36,6 @@ const Routess = () => {
 
                 <Route path='/login' element={<Login />}/>
                 <Route path='/signup' element={<Signup />}/>
-                <Route path='/mts' element={<Checkout />}/>
                 {/* <Route path='/mts' element={<TemporaryDrawer />}/> */}
 
             </Routes>

@@ -34,7 +34,7 @@ const Dashboard = () => {
             })
 
             // console.log(response.data);
-            setAllUserData(response.data)
+            setAllUserData(response.data.users)
 
         } catch (error) {
             console.log(error);

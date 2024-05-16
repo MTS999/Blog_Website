@@ -7,7 +7,6 @@ import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton'
-import TablePagination from '@mui/material/TablePagination';
 
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
@@ -64,7 +63,7 @@ const Blogs = () => {
   // const [selectedCategory, setSelectedCategory] = React.useState("");
   const [userRole, setUserRole] = React.useState('');
   const [recentBlogs, setRecentBlogs] = React.useState([]);
-  const [refresh, setRefresh] = React.useState(true)
+  const [refresh,setRefresh]=React.useState(true)
 
   console.log(allUserData);
   const navigate = useNavigate()
@@ -74,24 +73,12 @@ const Blogs = () => {
   const blogParam = queryParams.get('blog');
   const qcategory = queryParams.get('category');
   const following = queryParams.get('feed');
-
+  
   console.log(blogParam);
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("userId")
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(4);
-  const [totalBlogs, setTotalBlogs] = React.useState(0);
-
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-};
-
-const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-};
-
+  const [rowsPerPage, setRowsPerPage] = React.useState(2);
   const fetchUserData = async () => {
     // setLoader(true)
     try {
@@ -157,39 +144,37 @@ const handleChangeRowsPerPage = (event) => {
 
 
   const fetchData = async () => {
-   
     setLoader(true);
     try {
-      let url = "http://localhost:5003/blogs";
-      const queryParams = new URLSearchParams();
-      if (qcategory) {
-        queryParams.append("category", qcategory);
-      }
-      if (blogParam) {
-        queryParams.append("blog", blogParam);
-      }
-      if (following) {
-        queryParams.append("feed", following);
-      }
-      // Add pagination parameters
-      queryParams.append("page", page); // assuming you have 'page' state for the current page number
-      queryParams.append("limit", rowsPerPage); // assuming you have 'limit' state for the number of blogs per page
-
-      url += `?${queryParams.toString()}`;
-
-      const response = await axios.get(url, {
-        headers: {
-          Authorization: `Bearer ${token}`
+        let url = "http://localhost:5003/blogs";
+        const queryParams = new URLSearchParams();
+        if (qcategory) {
+            queryParams.append("category", qcategory);
         }
-      });
-      setBlogs(response.data.result);
-      setTotalBlogs(response.data.totalCount)
+        if (blogParam) {
+            queryParams.append("blog", blogParam);
+        }
+        if (following) {
+            queryParams.append("feed", following);
+        }
+        // Add pagination parameters
+        queryParams.append("page", page); // assuming you have 'page' state for the current page number
+        queryParams.append("limit", rowsPerPage); // assuming you have 'limit' state for the number of blogs per page
+
+        url += `?${queryParams.toString()}`;
+
+        const response = await axios.get(url, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        setBlogs(response.data);
     } catch (error) {
-      console.error('Error fetching Blogs:', error);
+        console.error('Error fetching Blogs:', error);
     } finally {
-      setLoader(false);
+        setLoader(false);
     }
-  };
+};
 
 
 
@@ -254,20 +239,17 @@ const handleChangeRowsPerPage = (event) => {
 
   // fetch all blogs
   useEffect(() => {
-    if(Search.length>0){
-      return
-    }
     const token = localStorage.getItem("token");
     // console.log("mts");
     setLoader(true)
 
 
-
+  
 
     if (token) {
       fetchData();
     }
-  }, [location.state, blogParam, qcategory, following,page]);
+  }, [location.state, blogParam, qcategory, following]);
 
   // gete user-role
 
@@ -301,9 +283,7 @@ const handleChangeRowsPerPage = (event) => {
 
       }
       try {
-        const queryParams = new URLSearchParams();
-        queryParams.append("page", page); // assuming you have 'page' state for the current page number
-        queryParams.append("limit", rowsPerPage); 
+
         const response = await axios.post("http://localhost:5003/search",
           body, {
           headers: {
@@ -314,9 +294,7 @@ const handleChangeRowsPerPage = (event) => {
 
 
         console.log(response.data);
-        setBlogs(response.data.result)
-        setTotalBlogs(response.data.totalCount)
-
+        setBlogs(response.data)
       } catch (error) {
         console.log("mts", error);
       }
@@ -326,7 +304,7 @@ const handleChangeRowsPerPage = (event) => {
       fetchBlogs();
     }
 
-  }, [Search, token, SearchBy,page])
+  }, [Search, token, SearchBy])
 
 
   async function handle_reading_list(postId) {
@@ -334,11 +312,7 @@ const handleChangeRowsPerPage = (event) => {
 
     try {
 
-      const queryParams = new URLSearchParams();
-      queryParams.append("page", page); // assuming you have 'page' state for the current page number
-      queryParams.append("limit", rowsPerPage); // assuming you have 'limit' state for the number of blogs per page
       const response = await axios.post(`http://localhost:5003/reading-list/${postId}`, {}, {
-
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -356,7 +330,20 @@ const handleChangeRowsPerPage = (event) => {
   }
 
 
-
+  //   const handleDelete = async (id) => {
+  //     try {
+  //         const token = localStorage.getItem("token");
+  //         const response = await axios.delete(`http://localhost:5003/deleteblog/${id}`, {
+  //             headers: {
+  //                 Authorization: `Bearer ${token}`
+  //             }
+  //         });
+  //         console.log(response.data);
+  //         // Optionally, you can update the UI to remove the deleted blog post
+  //     } catch (error) {
+  //         console.error('Error deleting blog post:', error);
+  //     }
+  // };
   const BlogData = Blogs.map((blog) => {
     return (
 
@@ -438,7 +425,7 @@ const handleChangeRowsPerPage = (event) => {
               >
 
                 {/* <LikeDislike blog={blog} Blogs={Blogs} setBlogs={setBlogs} /> */}
-                <Like_Dislike blog={blog} setRefresh={setRefresh} />
+                <Like_Dislike blog={blog} setRefresh={setRefresh}  />
 
 
 
@@ -567,7 +554,21 @@ const handleChangeRowsPerPage = (event) => {
             }}
 
           />
-        
+          {/* <FormControl sx={{ margin: "0px 3px", minWidth: 80, padding: "0px" }}>
+            <InputLabel id="demo-simple2-select-autowidth-label">by</InputLabel>
+            <Select
+              labelId="demo-simple-select-autowidth-label"
+              id="demo-simple-select-autowidth"
+              value={SearchBy}
+              onChange={handleChange}
+              autoWidth
+              label="search by"
+            >
+      
+              <MenuItem value={"title"}>title</MenuItem>
+              <MenuItem value={"user_name"}> username</MenuItem>
+            </Select>
+          </FormControl> */}
 
           <FormControl >
             <RadioGroup
@@ -580,7 +581,8 @@ const handleChangeRowsPerPage = (event) => {
             >
               <FormControlLabel value="title" control={<Radio />} label="title" />
               <FormControlLabel value="user_name" control={<Radio />} label="Author" />
-          
+              <FormControlLabel value="user_name" control={<Radio />} label="Author" />
+              <FormControlLabel value="user_name" control={<Radio />} label="Author" />
 
             </RadioGroup>
           </FormControl>
@@ -591,17 +593,6 @@ const handleChangeRowsPerPage = (event) => {
 
 
         </Box>
-        <Box>
-        <TablePagination
-          rowsPerPageOptions={[4,15,20]}
-          component="div"
-          count={totalBlogs}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-          </Box>
         <Divider />
         <Grid container mt={4} >
 
@@ -685,7 +676,7 @@ const handleChangeRowsPerPage = (event) => {
 
                       </CardContent>
                       <CardActions>
-                        <Like_Dislike blog={blog} setRefresh={setRefresh} />
+                      <Like_Dislike blog={blog} setRefresh={setRefresh}  />
                         {/* <LikeDislike blog={blog} Blogs={Blogs} setBlogs={setBlogs} /> */}
 
 

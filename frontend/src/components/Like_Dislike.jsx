@@ -6,7 +6,7 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import axios from 'axios';
 
-function LikeDislike (props){
+function Like_Dislike (props){
 
     const userId = localStorage.getItem("userId")
 
@@ -23,25 +23,8 @@ function LikeDislike (props){
         }
 
       })
-      const blogIndex = props.Blogs.findIndex(blog => blog._id === postId);
+      props.setRefresh(pre=>!pre) 
 
-      // Update the dislike count of the corresponding blog
-      const updatedBlogs = [...props.Blogs];
-      updatedBlogs[blogIndex] = {
-        ...updatedBlogs[blogIndex],
-        likes: response.data.blogPost.likes,
-        dislikes: response.data.blogPost.dislikes,
-
-      };
-
-      // Update the state with the updated Blogs array
-//    if(props.setRecentBlogs){
-//     props.setRecentBlogs([])
-//    }
-//    else{
-
-       props.setBlogs(updatedBlogs);
-    // }
 
       console.log(response.data.blogPost.likes);
     }
@@ -60,22 +43,8 @@ function LikeDislike (props){
           Authorization: `Bearer ${token}`
         }
       })
-      const blogIndex = props.Blogs.findIndex(blog => blog._id === postId);
 
-      // Update the dislike count of the corresponding blog
-      const updatedBlogs = [...props.Blogs];
-      updatedBlogs[blogIndex] = {
-        ...updatedBlogs[blogIndex],
-        dislikes: response.data.blogPost.dislikes,
-        likes: response.data.blogPost.likes
-
-      };
-
-      // Update the state with the updated Blogs array
-    props.setBlogs(updatedBlogs);
-
-
-      console.log(response);
+     props.setRefresh(pre=>!pre) 
     }
     catch (error) {
       console.error('Error disliking:', error);
@@ -100,11 +69,10 @@ function LikeDislike (props){
     )
 }
 
-LikeDislike.propTypes = {
+Like_Dislike.propTypes = {
 
    blog:PropTypes.object,
-   Blogs:PropTypes.array,
-   setBlogs:PropTypes.func,
+  setRefresh:PropTypes.func,
 }
 
-export default LikeDislike
+export default Like_Dislike
