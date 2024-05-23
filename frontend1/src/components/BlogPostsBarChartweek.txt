@@ -1,0 +1,43 @@
+import React from 'react';
+import { BarChart } from '@mui/x-charts/BarChart';
+import PropTypes from 'prop-types';
+import { getISOWeek, parse } from 'date-fns';
+
+const countBlogPostsPerWeek = (data) => {
+    const weekCounts = {};
+    data.forEach(blog => {
+        const week = getISOWeek(parse(blog.createdAt, 'yyyy-MM-dd', new Date())); // Get the ISO week number
+        if (!weekCounts[week]) {
+            weekCounts[week] = 0;
+        }
+        weekCounts[week] += 1; // Increment the count for the corresponding week
+    });
+
+    const weekData = Array(52).fill(0); // Initialize an array for 52 weeks
+    for (const [week, count] of Object.entries(weekCounts)) {
+        weekData[week - 1] = count; // Adjust for 0-based index
+    }
+    
+    return weekData;
+};
+
+const BlogPostsBarChart = ({ allBlogData }) => {
+    const blogPostsData = [{ data: countBlogPostsPerWeek(allBlogData) }];
+    const weeks = Array.from({ length: 52 }, (_, i) => `Week ${i + 1}`); // Array of week labels
+
+    return (
+        <BarChart
+            display="block"
+            series={blogPostsData}
+            height={290}
+            xAxis={[{ data: weeks, scaleType: 'band' }]}
+            margin={{ top: 10, bottom: 30, left: 40, right: 10 }}
+        />
+    );
+};
+
+BlogPostsBarChart.propTypes = {
+    allBlogData: PropTypes.array.isRequired,
+};
+
+export default BlogPostsBarChart;

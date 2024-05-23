@@ -50,7 +50,11 @@ const verifyToken = (request, response, next) => {
 app.post("/signup", async (request, response) => {
     try {
 
-     
+        //     let existingUser=await Users.findOne({$or:[{user_name:request.body.user_name}, {email:request.body.email}]})
+
+        //  if(existingUser){
+        //     return response.status(400).json({error:"Username or email already exists"})
+        //  }
         let Existusername = await Users.findOne({ user_name: request.body.user_name })
         if (Existusername) {
             return response.status(400).json({ error: "Username  already exists" })
@@ -142,8 +146,8 @@ app.post("/login", async (request, response) => {
 // })
 app.get("/getalluserdata", verifyToken, async (request, response) => {
     try {
-        const page = parseInt(request.query.page);
-        const limit = parseInt(request.query.limit);
+        const page = parseInt(request.query.page) ;
+        const limit = parseInt(request.query.limit) ;
 
         const role = request.user.role;
         // if (role !== "admin") {
@@ -154,7 +158,7 @@ app.get("/getalluserdata", verifyToken, async (request, response) => {
         const totalCount = await Users.countDocuments();
 
         // Calculate the number of documents to skip based on the page number and limit
-        const skip = (page) * limit;
+        const skip = (page - 1) * limit;
 
         // Fetch paginated user data
         const users = await Users.find().skip(skip).limit(limit);
@@ -167,65 +171,37 @@ app.get("/getalluserdata", verifyToken, async (request, response) => {
     }
 });
 
-// app.get("/pending-request", verifyToken, async (request, response) => {
-
-//     try {
-//         const role = request.user.role
-//         if (role !== "admin") {
-//             return response.status(403).json({ message: "Unauthorized - You do not have permission to access this resource" })
-//         }
-//         // const page = parseInt(request.query.page)||1 ;
-//         let page = parseInt(request.query.page, 10);
-//         if (isNaN(page) || page < 0) {
-//             page = 1;
-//         }
-//         const limit = parseInt(request.query.limit) || 4;
-//         const skip = (page - 1) * limit;
-
-//         totalCount = await Users.countDocuments({ role: "pending" })
-//         pendingUsers = await Users.find({ role: "pending" }).skip(skip).limit(limit)
-
-
-
-
-//         response.json({ pendingUsers, totalCount })
-//     }
-
-//     catch (error) {
-//         console.log("Error fetching pending po:", error);
-//         response.status(500).json({ message: "Internal server error" });
-//     }
-
-// })
 app.get("/pending-request", verifyToken, async (request, response) => {
+
     try {
-        const role = request.user.role;
-        // if (role !== "admin") {
-        //     return response.status(403).json({ message: "Unauthorized - You do not have permission to access this resource" });
-        // }
-
-        let page = parseInt(request.query.page, 10);
-        if (isNaN(page) || page < 0) {
-            page = 1;
+        const role = request.user.role
+        if (role !== "admin") {
+            return response.status(403).json({ message: "Unauthorized - You do not have permission to access this resource" })
         }
-        const limit = parseInt(request.query.limit, 10) || 4;
-        const skip = (page) * limit;
+        const page = parseInt(request.query.page) ;
+        const limit = parseInt(request.query.limit) ;
 
-        const totalCount = await User.countDocuments({ role: "pending" });
-        const pendingUsers = await User.find({ role: "pending" }).skip(skip).limit(limit);
 
-        response.json({ pendingUsers, totalCount });
-    } catch (error) {
-        console.error("Error fetching pending users:", error);
-        response.status(500).json({ message: "Internal server error", error: error.message });
+
+
+        const pending_users = await Users.find(
+            { role: "pending" }
+        )
+
+        response.json(pending_users)
     }
-});
 
+    catch (error) {
+        console.error("Error fetching pending po:", error);
+        response.status(500).json({ message: "Internal server error" });
+    }
+
+})
 app.put("/pending", verifyToken, async (request, response) => {
 
     try {
 
-
+       
 
         const userId = request.user.id
 
@@ -400,74 +376,89 @@ app.post("/addblog", verifyToken, async (request, response) => {
 //     }
 // })
 
-app.get("/blogs/:blog", verifyToken, async (request, response) => {
+app.get("/blogs", verifyToken, async (request, response) => {
     try {
-        console.log(request.params.blog);
         let query = {};
-        let page = parseInt(request.query.page, 10);
-        if (isNaN(page) || page < 0) {
-            page = 1;
-        }
-        const limit = parseInt(request.query.limit, 10) ;
-        const skip = (page) * limit;
-     
+        let page = parseInt(request.query.page) ||1; // Get the page number from the query parameters, default to 1 if not provided
+        let limit = parseInt(request.query.limit) ||4; // Number of blogs per page, default to 10 if not provided
 
-        if (request.params.blog === "myblog") {
+        console.log("mts", typeof(page),page);
+        console.log("mts", request.query);
+
+        // Calculate the number of documents to skip based on the page number and limit
+
+        let skip = page - 1 ;
+        console.log(skip);
+        skip = ((page - 1) * limit) ;
+
+        // let skip = (page - 1) * limit;
+
+        // Check if category query parameter is present
+        if (request.query.category) {
+            query.category = request.query.category;
+        }
+        if (request.query.blog === "myblog") {
             const id = request.user.id;
 
+            // Add author ID to the query
             query.authorId = id;
         }
-        else if (request.params.blog === "reading-list") {
+        if (request.query.blog === "reading-list") {
             const userId = request.user.id;
 
+            // Find the current user
             const currentUser = await Users.findById(userId);
 
             if (!currentUser) {
                 return response.status(404).json({ message: "User not found" });
             }
 
+            // Retrieve the reading list of the current user
             const readingList = currentUser.reading_list;
             let totalCount = await BlogPost.countDocuments({ _id: { $in: readingList } });
 
+            // Query all blog posts in the reading list
             const result = await BlogPost.find({ _id: { $in: readingList } }).limit(limit).skip(skip);
 
-            return response.send({ result, totalCount });
+            // Return the blogs from the reading list
+            return response.send({result,totalCount});
         }
 
-        else if (request.params.blog === "following") {
+        if (request.query.feed === "following") {
             const userId = request.user.id;
 
+            // Find the current user's information
             const currentUser = await Users.findById(userId);
 
             if (!currentUser) {
                 return response.status(404).json({ message: "User not found" });
             }
 
+            // Retrieve the list of users that the current user is following
             const followingUsers = currentUser.following;
             let totalCount = await BlogPost.countDocuments({ authorId: { $in: followingUsers } });
 
+            // Query all blog posts from the following users
             const result = await BlogPost.find({ authorId: { $in: followingUsers } }).limit(limit).skip(skip);
 
-            return response.send({ totalCount, result });
+            // Return the blogs from following users
+          return  response.send({ totalCount, result });
 
+            // return response.send(followingBlogs);
         }
-        else if(request.params.blog === "home"){
-            query.category=""
-            console.log(query,"mtsssss",page,limit);
-        }
-        else {
-            query.category = request.params.blog;
 
-        }
+        // Find blog posts based on the query
         let totalCount = await BlogPost.countDocuments(query);
+           console.log(skip);
         let result = await BlogPost.find(query).limit(limit).skip(skip);
-        // console.log(result.length,totalCount);
+
         if (result.length > 0) {
             response.send({ totalCount, result });
         } else {
             response.send("No blogs found");
         }
 
+        console.log(" end"+ page);
     } catch (error) {
         console.error('Error fetching Blogs:', error);
         response.status(500).send("Internal Server Error");
@@ -527,12 +518,12 @@ app.post("/search", async (request, response) => {
         // console.log("mtsss", request.body);
         let query
 
-        let page = parseInt(request.query.page) || 1; // Get the page number from the query parameters, default to 1 if not provided
-        let limit = parseInt(request.query.limit) || 4; // Number of blogs per page, default to 10 if not provided
+        let page = parseInt(request.query.page) ||1; // Get the page number from the query parameters, default to 1 if not provided
+        let limit = parseInt(request.query.limit) ||4; // Number of blogs per page, default to 10 if not provided
 
-        let skip = page - 1;
+        let skip = page - 1 ;
         console.log(skip);
-        skip = ((page - 1) * limit);
+        skip = ((page - 1) * limit) ;
         if (searchData.title) {
 
             query = {

@@ -11,15 +11,15 @@ import TableRow from '@mui/material/TableRow';
 import axios from 'axios';
 import BasicMenu from '../components/BasicMenu';
 import Loader from '../components/Loader';
-import  Box  from '@mui/material/Box';
-import  Typography  from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 
 const columns = [
   { id: 'index', label: '#', minWidth: 50, align: 'center' },
   { id: 'action', label: 'Action', minWidth: 170, align: 'center' },
   { id: 'first_name', label: 'First Name', minWidth: 170 },
   { id: 'last_name', label: 'Last Name', minWidth: 170 },
-  { id: 'email', label: 'Email', minWidth: 170, align:'center' },
+  { id: 'email', label: 'Email', minWidth: 170, align: 'center' },
   { id: 'role', label: 'role', minWidth: 170, align: 'center' },
   { id: 'blog', label: 'blog', minWidth: 170, align: 'center' },
   { id: 'followers', label: 'followers', minWidth: 170, align: 'center' },
@@ -59,7 +59,7 @@ export default function AllUsers() {
   const [loader, setLoader] = React.useState(false);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(4);
-  const [totalusers,setTotalUserDataCount]=React.useState(0)
+  const [totalusers, setTotalUserDataCount] = React.useState(0)
   const [allUserData, setAllUserData] = React.useState([])
   const [allBlogData, setAllBlogData] = React.useState([])
   const [refreshTable, setRefreshTable] = React.useState(false)
@@ -106,28 +106,28 @@ export default function AllUsers() {
   const fetchUserData = async () => {
     setLoader(true);
     try {
-        let url = "http://localhost:5003/getalluserdata";
-        const queryParams = new URLSearchParams();
-        queryParams.append("page", page);
-        queryParams.append("limit", rowsPerPage);
+      let url = "http://localhost:5003/getalluserdata";
+      const queryParams = new URLSearchParams();
+      queryParams.append("page", page);
+      queryParams.append("limit", rowsPerPage);
 
-        url += `?${queryParams.toString()}`;
+      url += `?${queryParams.toString()}`;
 
-        const response = await axios.get(url, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
 
-        // Update state with total count and paginated user data
-        setTotalUserDataCount(response.data.totalCount);
-        setAllUserData(response.data.users);
+      // Update state with total count and paginated user data
+      setTotalUserDataCount(response.data.totalCount);
+      setAllUserData(response.data.users);
     } catch (error) {
-        console.error('Error fetching user data:', error);
+      console.error('Error fetching user data:', error);
     } finally {
-        setLoader(false);
+      setLoader(false);
     }
-};
+  };
 
 
   const fetcBlogData = async () => {
@@ -158,7 +158,7 @@ export default function AllUsers() {
 
     fetchUserData()
     fetcBlogData()
-  }, [token, refreshTable,page])
+  }, [token, refreshTable, page])
 
 
   const formatDate = (isoDateString) => {
@@ -191,8 +191,10 @@ export default function AllUsers() {
                   <TableCell
                     key={column.id}
                     align={column.align}
-                    style={{ minWidth: column.minWidth ,backgroundColor:"#BDBDBD",
-                    fontWeight:"bold" }}
+                    style={{
+                      minWidth: column.minWidth, backgroundColor: "#BDBDBD",
+                      fontWeight: "bold"
+                    }}
                   >
                     {column.label}
                   </TableCell>
@@ -200,7 +202,7 @@ export default function AllUsers() {
               </TableRow>
             </TableHead>
             <TableBody>
-              { allUserData && allUserData.map((user, index) => (
+              {allUserData && allUserData.map((user, index) => (
                 <TableRow hover role="checkbox" tabIndex={-1} key={index}>
                   <TableCell align="center" style={{ minWidth: columns[0].minWidth, fontSize: "18px" }}>{index + 1}</TableCell>
                   <TableCell align="center" style={{ minWidth: columns[9].minWidth, fontSize: "18px" }}>
@@ -232,7 +234,7 @@ export default function AllUsers() {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[4,10,12]}
+          rowsPerPageOptions={[4, 10, 12]}
           component="div"
           count={totalusers}
           rowsPerPage={rowsPerPage}
