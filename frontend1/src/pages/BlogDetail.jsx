@@ -330,35 +330,39 @@ export const BlogDetail = () => {
         <>
             {Blog &&
                 <Box mt={14} sx={{ width: '100%', overflowX: 'hidden' }}>
-                    <Grid container backgroundColor="#F7F9FA">
+                    <Grid container
+                    //  backgroundColor="#F7F9FA"
+                    >
 
 
                         <Grid item xs={12} p={3}
                             display={"flex"}
                             justifyContent={"center"}
-                            backgroundColor="#FFFFFF"
+                        // backgroundColor="#FFFFFF"
 
                         >
                             <Box maxWidth={700}
                                 // border={"2px solid red"}
+                                backgroundColor="#202837"
+
                                 sx={{
                                     boxShadow: "0px 0px 10px rgba(0, 0, 0, .3)"
                                 }}
                                 padding={4}>
 
-                                <Box mb={3}>
+                                <Box mb={3} >
 
-                                    <Typography mt={3} mb={3} variant="h4" color="initial" textAlign={"center"} fontWeight={"bold"}>{Blog.title}</Typography>
-                                    <Divider />
+                                    <Typography mt={3} mb={3} variant="h4" textAlign={"center"} fontWeight={"bold"}>{Blog.title}</Typography>
+                                    <Divider color="white" />
                                     <div style={{ width: '100%', padding: "50px 20px" }}>
                                         <img src={Blog.image} alt="Description of your image" style={{ width: '100%', height: 'auto', borderRadius: "10px" }} />
                                     </div>
-                                    <Divider />
+                                    <Divider color="white" />
 
                                 </Box>
-                                <Box mb={2}>
+                                <Box mb={2}  >
 
-                                    <Typography variant="body1" color="initial"> <strong>Author : {Blog.user_name}</strong>
+                                    <Typography variant="body1" > <strong>Author : {Blog.user_name}</strong>
 
                                         {userId !== Blog.authorId &&
                                             <Button
@@ -371,8 +375,8 @@ export const BlogDetail = () => {
 
                                     </Typography>
                                 </Box>
-                                {/* <Typography variant="body1" color="initial"> {Blog.updatedAt !== Blog.createdAt ? `updatedAt :${Blog.updatedAt}` : `createdAt :${Blog.createdAt}`}</Typography> */}
-                                <Typography mb={3} variant="body1" color="initial">
+                                {/* <Typography variant="body1" > {Blog.updatedAt !== Blog.createdAt ? `updatedAt :${Blog.updatedAt}` : `createdAt :${Blog.createdAt}`}</Typography> */}
+                                <Typography mb={3} variant="body1" >
                                     {Blog.updatedAt !== Blog.createdAt ?
                                         `updatedAt: ${new Date(Blog.updatedAt).toLocaleString('en-US', {
                                             year: 'numeric',
@@ -393,11 +397,13 @@ export const BlogDetail = () => {
                                     }
                                 </Typography>
 
+                                
 
+                                <Typography mb={1} p={2} variant="h6" sx={{ width: '100%' }} dangerouslySetInnerHTML={{ __html: Blog.content }} />
+                                <Divider color="white" />
 
-                                <Typography mb={3} p={2} variant="h6" color="initial" sx={{ width: '100%', backgroundColor: "#EAEAEA" }} dangerouslySetInnerHTML={{ __html: Blog.content }} />
-                                <Box mb={3} >
-
+                                <Box mt={2} mb={3} display={"flex"} >
+                             
                                     {Blog && (<>
                                         <IconButton sx={{
                                             color: Blog.likes.includes(userId) ? "green" : "inherit"
@@ -432,6 +438,7 @@ export const BlogDetail = () => {
                                                 top: "100px",// This adds space at the top
                                                 height: 'calc(100% - 100px)',
                                                 // width:"50px"// Adjusts height if necessary
+                                                width : {sm:"400px"}
                                             }
                                         }}
                                         anchor={state} open={open} onClose={toggleDrawer(false)}>
@@ -466,9 +473,9 @@ export const BlogDetail = () => {
                                                         variant='contained' size='small' onClick={handleAddComment}>Add </Button>
                                                 </Box>
                                             </Box>
-                                            <Typography variant="h6" color="initial"> All Comments ({comments.length})</Typography>
+                                            <Typography variant="h6" > All Comments ({comments.length})</Typography>
                                             {comments.length > 0 &&
-                                                <Box key={"12"} sx={{ width: "100%" }} backgroundColor="#f2fafc" border={"2px solid #EAEAEA"} borderRadius={3} p={2}>
+                                                <Box key={"12"} sx={{ width: "100%" }} border={"2px solid #EAEAEA"} borderRadius={3} p={2}>
 
                                                     {comments.map((comment) => {
 
@@ -482,11 +489,11 @@ export const BlogDetail = () => {
 
                                                                         <Box>
 
-                                                                            <Typography variant="h6" color="initial" fontWeight={"bold"}>{comment.author}</Typography>
-                                                                            <Typography variant="body1" color="initial">{calculateTimeDifference(comment.createdAt)}</Typography>
+                                                                            <Typography variant="h6" fontWeight={"bold"}>{comment.author}</Typography>
+                                                                            <Typography variant="body1" >{calculateTimeDifference(comment.createdAt)}</Typography>
                                                                         </Box>
                                                                     </Box>
-                                                                    <Typography variant="body1" color="initial">{comment.content}</Typography>
+                                                                    <Typography variant="body1" >{comment.content}</Typography>
                                                                     <Box mt={2}>
 
                                                                         {userId === comment.authorId &&
@@ -525,7 +532,7 @@ export const BlogDetail = () => {
                                 display: "flex", alignItems: "center", flexDirection: "column",
                             }}
                         >
-                            <Typography variant="h3" color="initial" mb={3}>Recent Posts</Typography>
+                            <Typography variant="h3" mb={3}>Recent Posts</Typography>
                             <Box maxWidth={700}
                                 display={"flex"} justifyContent={"space-around"}
                                 flexWrap={"wrap"}
@@ -551,7 +558,7 @@ export const BlogDetail = () => {
                                                     <Chip size="large" label={blog.category} />
                                                 </Box>
 
-                                                <Typography variant="h5" color="initial" fontWeight={"600"} mb={2}>
+                                                <Typography variant="h5" fontWeight={"600"} mb={2}>
                                                     <TruncatedContent type="body" content={blog.title} />
 
 

@@ -10,6 +10,8 @@ import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 // import Loader from '../Loader';.
 import BlogPostsBarChart from '../components/BlogPostsBarChart';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+// import ThumbDownAltIcon from '@mui/icons-material/ThumbDownAlt';
 
 const Dashboard = () => {
 
@@ -90,13 +92,12 @@ const Dashboard = () => {
 
             {/* </Box> */}
 
-            <Container maxWidth="lg" sx={{ marginTop: "90px" }}>
+            <Container maxWidth="lg" sx={{ marginTop: "130px" }}>
                 {allBlogData.length > 0 && (
                     <BlogPostsBarChart allBlogData={allBlogData} />
                 )}
 
 
-                <Typography variant="h4" color="initial">Hi Welcome</Typography>
                 <Grid container pt={4} spacing={3} justifyContent={"space-evenly"}>
 
                     {/* number of all users */}
@@ -122,7 +123,7 @@ const Dashboard = () => {
                                 justifyContent: "center",
                                 flexDirection: "column"
                             }} >
-                                <GroupIcon sx={{ marginBottom: "20px" }} />
+                                <GroupIcon sx={{ marginBottom: "20px", color:"black" }} />
                                 <Typography variant="h4" color="initial" style={{ fontWeight: 'bold' }}>{allUserData.length}</Typography>
                                 <Typography variant="body1" color="initial">Total Users</Typography>
 
@@ -157,7 +158,7 @@ const Dashboard = () => {
                                 justifyContent: "center",
                                 flexDirection: "column"
                             }} >
-                                <GroupIcon sx={{ marginBottom: "20px" }} />
+                                <GroupIcon sx={{ marginBottom: "20px" , color:"black" }} />
                                 <Typography variant="h4" color="initial" style={{ fontWeight: 'bold' }}>
                                     {allUserData.filter(user => user.role === "author").length}
                                 </Typography>
@@ -194,12 +195,12 @@ const Dashboard = () => {
                                 justifyContent: "center",
                                 flexDirection: "column"
                             }} >
-                                <GroupIcon sx={{ marginBottom: "20px" }} />
+                                <GroupIcon sx={{ marginBottom: "20px" , color:"black" }} />
                                 <Typography variant="h4" color="initial" style={{ fontWeight: 'bold' }}>
                                     {allUserData.filter(user => user.role === "reader").length}
 
                                 </Typography>
-                                <Typography variant="body1" color="initial">Total Users</Typography>
+                                <Typography variant="body1" color="initial">Total Readers</Typography>
 
                             </Paper>
                         </Box>
@@ -232,7 +233,7 @@ const Dashboard = () => {
                                 justifyContent: "center",
                                 flexDirection: "column"
                             }} >
-                                <GroupIcon sx={{ marginBottom: "20px" }} />
+                                <GroupIcon sx={{ marginBottom: "20px" , color:"black" }} />
                                 <Typography variant="h4" color="initial" style={{ fontWeight: 'bold' }}>
                                     {allBlogData.length}
 
@@ -270,7 +271,7 @@ const Dashboard = () => {
                                 justifyContent: "center",
                                 flexDirection: "column"
                             }} >
-                                <GroupIcon sx={{ marginBottom: "20px" }} />
+                                <ThumbUpIcon sx={{ marginBottom: "20px" , color:"black"}} />
                                 <Typography variant="h4" color="initial" style={{ fontWeight: 'bold' }}>
                                     {totalLikes}
                                 </Typography>
@@ -307,7 +308,7 @@ const Dashboard = () => {
                                 justifyContent: "center",
                                 flexDirection: "column"
                             }} >
-                                <GroupIcon sx={{ marginBottom: "20px" }} />
+                                <GroupIcon sx={{ marginBottom: "20px" , color:"black" }} />
                                 <Typography variant="h4" color="initial" style={{ fontWeight: 'bold' }}>
                                     {totalDisLikes}
 

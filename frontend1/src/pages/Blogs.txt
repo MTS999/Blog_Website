@@ -39,7 +39,7 @@ const Blogs = () => {
     const [userRole, setUserRole] = React.useState('');
     const [recentBlogs, setRecentBlogs] = React.useState([]);
     const [refresh, setRefresh] = React.useState(true)
-    const [underline,setUnderline]=React.useState(true)
+
     // console.log(allUserData);
     const navigate = useNavigate()
     const params = useParams()
@@ -90,7 +90,17 @@ const Blogs = () => {
     const fetchData = async () => {
 
         try {
-            
+            // let url
+            // if (params.blog) {
+
+            //     url = `http://localhost:5003/blogs/${params.blog}`;
+            // }
+            // else {
+            //     console.log("jnskcskjc");
+
+            //     url = `http://localhost:5003/blogs`;
+
+            // }
             let url = `http://localhost:5003/blogs`;
             if (params.blog) url += `/${params.blog}`;
 
@@ -142,7 +152,7 @@ const Blogs = () => {
 
         const fetchData = async () => {
             try {
-                const response = await axios.get(`http://localhost:5003/userdata/${userId}`, {
+                const response = await axios.get(`http://localhost:5003/userdata`, {
                     headers: {
                         authorization: `Bearer ${token}`
 
@@ -277,15 +287,7 @@ const Blogs = () => {
         }
     }
 
- function handleForyou(){
-    navigate(`/all`)
-    setUnderline(true)
-    
- }
- function handleFollowing(){
-    navigate(`/following`)
-    setUnderline(false)
- }
+
 
     const BlogData = Blogs && Blogs.length > 0 ?
 
@@ -380,50 +382,48 @@ const Blogs = () => {
                             value={SearchBy} // Set the value of radio group to SearchBy
                             onChange={handleChange} // Handle change for radio buttons
                         >
-                            <FormControlLabel value="title"  control={<Radio />} label="title" />
+                            <FormControlLabel value="title" control={<Radio />} label="title" />
                             <FormControlLabel value="user_name" control={<Radio />} label="Author" />
 
 
                         </RadioGroup>
                     </FormControl>
                 </Box>
-                <Box pl={6} display={"block"} textAlign={"start"} mb={1}>
-                    <Button 
-                    sx={{fontSize:"18px" ,borderBottom: underline?"4px solid white":""}}
-                    onClick={handleForyou}
-                    width="large" varient="contained" > For You</Button>
-
-
-                    <Button
-                    sx={{fontSize:"18px",borderBottom: !underline?"4px solid white":""}}
-                     varient="contained" onClick={handleFollowing}> Following</Button>
+                <Box pl={6} display={"block"} textAlign={"start"} mb={3}>
+                    <Button varient="contained" onClick={() => navigate(`/`)}> For You</Button>
+                    <Button varient="contained" onClick={() => navigate(`/following`)}> Following</Button>
 
 
                 </Box>
-               
+                <Box>
+                    <TablePagination
+                        rowsPerPageOptions={[4, 15, 20]}
+                        component="div"
+                        count={totalBlogs}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                    />
+                </Box>
                 <Divider />
-                <Grid container mt={4} justifyContent={"space-around"} >
+                <Grid container mt={4} >
 
 
                     {/* <Divider /> */}
                     <Grid item
                         sx={{
-                            // padding: "40px",
-                            paddingLeft: { xs: '20px', sm: '40px' },
-                            paddingRight: { xs: '20px', sm: '40px' },
-
-                             paddingTop: "0px", width: "100%",
-                              display: "flex",
+                            padding: "10px", paddingTop: "0px", width: "100%", display: "flex",
                             alignItems: "center",
                             flexDirection: "column",
                         }}
                         xs={12} lg={7}
                     >
-                        {/* <Typography variant="h3" mb={3} > Blogs</Typography> */}
+                        <Typography variant="body1" color="initial"></Typography>
 
                         {BlogData.length === 0 ?
                             <>
-                                <Typography variant="h3" >Blog no Found</Typography>
+                                <Typography variant="h3" color="initial">Blog no Found</Typography>
 
                                 <Divider
                                     variant="fullWidth"
@@ -436,7 +436,7 @@ const Blogs = () => {
                             BlogData}
                         <Box display={"block"} textAlign={"end"}>
                             <TablePagination
-                                rowsPerPageOptions={[4, 8, 20]}
+                                rowsPerPageOptions={[4, 15, 20]}
                                 component="div"
                                 count={totalBlogs}
                                 rowsPerPage={rowsPerPage}
@@ -451,17 +451,14 @@ const Blogs = () => {
 
                     <Grid item
                         sx={{
-                            // padding: "10px", 
-                            // padding: { xs: '20px', sm: '40px' },
-
-                            paddingTop: "0px", width: "100%",
+                            padding: "10px", paddingTop: "0px", width: "100%",
                             display: "flex", alignItems: "center", flexDirection: "column",
 
                         }}
                         xs={12} lg={4}
                     >
 
-                        <Typography variant="h3" mb={3}>Recent Posts</Typography>
+                        <Typography variant="h3" color="initial">Recent Posts</Typography>
                         <Box width={"100%"} maxWidth={700}
                             display={"flex"} justifyContent={"space-around"}
                             flexWrap={"wrap"}

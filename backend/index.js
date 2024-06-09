@@ -50,7 +50,7 @@ const verifyToken = (request, response, next) => {
 app.post("/signup", async (request, response) => {
     try {
 
-     
+
         let Existusername = await Users.findOne({ user_name: request.body.user_name })
         if (Existusername) {
             return response.status(400).json({ error: "Username  already exists" })
@@ -285,9 +285,9 @@ app.get("/getallblogdata", verifyToken, async (request, response) => {
 
 })
 
-app.get("/userdata", verifyToken, async (request, response) => {
+app.get("/userdata/:id", verifyToken, async (request, response) => {
     try {
-        const userId = request.user.id
+        const userId = request.params.id
         const userData = await Users.findOne({ _id: userId })
 
         if (!userData) {
@@ -408,9 +408,9 @@ app.get("/blogs/:blog", verifyToken, async (request, response) => {
         if (isNaN(page) || page < 0) {
             page = 1;
         }
-        const limit = parseInt(request.query.limit, 10) ;
+        const limit = parseInt(request.query.limit, 10);
         const skip = (page) * limit;
-     
+
 
         if (request.params.blog === "myblog") {
             const id = request.user.id;
@@ -451,9 +451,15 @@ app.get("/blogs/:blog", verifyToken, async (request, response) => {
             return response.send({ totalCount, result });
 
         }
-        else if(request.params.blog === "home"){
-            query.category=""
-            console.log(query,"mtsssss",page,limit);
+        else if (request.params.blog === "all") {
+            let totalCount = await BlogPost.countDocuments();
+            let result = await BlogPost.find().limit(limit).skip(skip);
+            // console.log(result.length,totalCount);
+            if (result.length > 0) {
+               return response.send({ totalCount, result });
+            } else {
+              return  response.send("No blogs found");
+            }
         }
         else {
             query.category = request.params.blog;

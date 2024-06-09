@@ -55,13 +55,13 @@ function Like_Dislike (props){
         <>
         
         <IconButton sx={{
-                color: props.blog.likes.includes(userId) ? "green" : "inherit"
+                color: props.blog.likes.includes(userId) ? "black" : "inherit"
               }} aria-label="add to favorites" onClick={() => handleLike(props.blog._id)}>
                 <ThumbUpIcon /> {props.blog.likes.length}
               </IconButton>
               <IconButton aria-label="add to dislike" onClick={() => handleDislike(props.blog._id)}
                 sx={{
-                  color: props.blog.dislikes.includes(userId) ? "red" : "inherit"
+                  color: props.blog.dislikes.includes(userId) ? "black" : "inherit"
                 }} >
                 <ThumbDownIcon /> {props.blog.dislikes.length}
               </IconButton>

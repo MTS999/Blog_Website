@@ -1,43 +1,51 @@
 import React from 'react';
+// import { BarChart } from 'mui-charts'; // Ensure you have the correct import for BarChart
 import { BarChart } from '@mui/x-charts/BarChart';
 import PropTypes from 'prop-types';
-import { getISOWeek, parse } from 'date-fns';
+import Typography from '@mui/material/Typography'
 
-const countBlogPostsPerWeek = (data) => {
-    const weekCounts = {};
+// Sample blogData
+const blogData = [
+    { id: 1, title: "How to learn JavaScript in 2023", category: "JavaScript", published: "2023-01-15" },
+    { id: 2, title: "Understanding React Hooks", category: "React", published: "2023-02-20" },
+    { id: 3, title: "Advanced CSS Techniques", category: "CSS", published: "2023-02-25" },
+    { id: 4, title: "Mastering Python", category: "Python", published: "2023-03-05" },
+    { id: 5, title: "Django for Beginners", category: "Python", published: "2023-03-10" },
+    { id: 6, title: "Data Analysis with Pandas", category: "Data Science", published: "2023-04-15" },
+    { id: 7, title: "Introduction to TensorFlow", category: "Data Science", published: "2023-04-20" },
+    { id: 8, title: "Building REST APIs with Node.js", category: "JavaScript", published: "2023-05-01" },
+    { id: 9, title: "Getting Started with TypeScript", category: "TypeScript", published: "2023-05-15" },
+    { id: 10, title: "Vue.js Essentials", category: "Vue", published: "2023-05-20" },
+];
+
+const countBlogPostsPerMonth = (data) => {
+    const counts = Array(12).fill(0); // Initialize an array with 12 zeros for each month
     data.forEach(blog => {
-        const week = getISOWeek(parse(blog.createdAt, 'yyyy-MM-dd', new Date())); // Get the ISO week number
-        if (!weekCounts[week]) {
-            weekCounts[week] = 0;
-        }
-        weekCounts[week] += 1; // Increment the count for the corresponding week
+        const month = new Date(blog.createdAt).getMonth(); // Get the month index (0-11)
+        counts[month] += 1; // Increment the count for the corresponding month
     });
-
-    const weekData = Array(52).fill(0); // Initialize an array for 52 weeks
-    for (const [week, count] of Object.entries(weekCounts)) {
-        weekData[week - 1] = count; // Adjust for 0-based index
-    }
-    
-    return weekData;
+    return counts;
 };
 
 const BlogPostsBarChart = ({ allBlogData }) => {
-    const blogPostsData = [{ data: countBlogPostsPerWeek(allBlogData) }];
-    const weeks = Array.from({ length: 52 }, (_, i) => `Week ${i + 1}`); // Array of week labels
+    console.log(allBlogData);
+    const blogPostsData = [{ data: countBlogPostsPerMonth(allBlogData) }];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
     return (
-        <BarChart
-            display="block"
-            series={blogPostsData}
-            height={290}
-            xAxis={[{ data: weeks, scaleType: 'band' }]}
-            margin={{ top: 10, bottom: 30, left: 40, right: 10 }}
-        />
+        <>
+            <BarChart
+                display="block"
+                series={blogPostsData}
+                height={290}
+                xAxis={[{ data: months, scaleType: 'band' }]}
+                margin={{ top: 10, bottom: 30, left: 40, right: 10 }}
+            />
+            <Typography variant="h3" >Blog Chart</Typography>
+        </>
     );
 };
-
 BlogPostsBarChart.propTypes = {
     allBlogData: PropTypes.array.isRequired,
 };
-
 export default BlogPostsBarChart;

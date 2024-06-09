@@ -389,7 +389,7 @@ const AddNewUser = () => {
                                 onClick={handleSubmit}
 
                             >
-                                Sign up
+                                ADD
                             </Button>
 
 

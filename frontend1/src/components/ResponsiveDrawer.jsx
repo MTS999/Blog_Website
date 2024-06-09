@@ -15,7 +15,8 @@ import MailIcon from '@mui/icons-material/Mail';
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import logo from "../images/blogLogo.png"
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 
@@ -34,8 +35,9 @@ import BookmarkAddIcon from '@mui/icons-material/BookmarkAdd';
 // import SchoolIcon from '@mui/icons-material/School';
 import FoodBankIcon from '@mui/icons-material/FoodBank';
 const drawerWidth = 200;
-// import image from "../images/blogLogo.png"
 import UserProfileAvatar from "./UserProfileAvatar"
+import Divider from '@mui/material/Divider'
+import image from "../images/blog3.png"
 
 function ResponsiveDrawer(props) {
   const { window } = props;
@@ -46,16 +48,16 @@ function ResponsiveDrawer(props) {
   const [userData, setUserData] = React.useState(null)
   const [pendingUsers, setPendingUsers] = React.useState([])
   const [selectedItem, setSelectedItem] = React.useState('Home'); // Initially selected as 'dashboard'
-
+  const [category1,setCategory1]=React.useState(true)
   const handleListItemClick = (itemName) => {
     setSelectedItem(itemName);
 
-};
+  };
 
   // console.log(pendingUsers)
   const [selectedCategory, setSelectedCategory] = React.useState("Home");
   const userId = localStorage.getItem("userId");
-//   console.log(userData);
+  //   console.log(userData);
 
 
   const navigate = useNavigate()
@@ -102,7 +104,7 @@ function ResponsiveDrawer(props) {
 
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5003/userdata`, {
+        const response = await axios.get(`http://localhost:5003/userdata/${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`
 
@@ -187,11 +189,11 @@ function ResponsiveDrawer(props) {
 
 
           <ListItem key={"home"} disablePadding
-          selected={selectedItem === 'Home'}
-          onClick={() => handleListItemClick('Home')}
-
+            selected={selectedItem === 'Home'}
+            onClick={() => handleListItemClick('Home')}
+           
           >
-            <ListItemButton onClick={() => navigate(`/`)}>
+            <ListItemButton onClick={() => navigate(`/all`)}>
               <ListItemIcon>
                 <HomeIcon />
               </ListItemIcon>
@@ -203,9 +205,9 @@ function ResponsiveDrawer(props) {
           userRole === "admin" &&
 
           <ListItem key={"dashboard"}
-          selected={selectedItem === 'dashboard'}
-          onClick={() => handleListItemClick('dashboard')}
-          disablePadding>
+            selected={selectedItem === 'dashboard'}
+            onClick={() => handleListItemClick('dashboard')}
+            disablePadding>
             <ListItemButton onClick={() => navigate(`/dashboard`)}>
               <ListItemIcon>
                 <DashboardIcon />
@@ -219,15 +221,15 @@ function ResponsiveDrawer(props) {
           userRole === "admin" &&
 
           <ListItem key={"newuser"}
-          selected={selectedItem === 'dashboard'}
-          onClick={() => handleListItemClick('dashboard')}
-          disablePadding>
+            selected={selectedItem === 'newuser'}
+            onClick={() => handleListItemClick('dashboard')}
+            disablePadding>
             <ListItemButton onClick={() => navigate(`/add-new-user`)}>
               <ListItemIcon>
-                <DashboardIcon />
+                <PersonAddIcon />
 
               </ListItemIcon>
-              <ListItemText primary={"ADDUser"} />
+              <ListItemText primary={"AddUser"} />
             </ListItemButton>
           </ListItem>
         }
@@ -235,8 +237,8 @@ function ResponsiveDrawer(props) {
           userRole === "admin" &&
 
           <ListItem key={"pending request"} disablePadding
-          selected={selectedItem === 'pending'}
-          onClick={() => handleListItemClick('pending')}
+            selected={selectedItem === 'pending'}
+            onClick={() => handleListItemClick('pending')}
           >
             <ListItemButton onClick={() => navigate(`/pending-request`)}>
               <ListItemIcon>
@@ -258,14 +260,14 @@ function ResponsiveDrawer(props) {
               </ListItemText>
             </ListItemButton>
           </ListItem>
-}
+        }
         {
           userRole === "admin" &&
 
           <ListItem key={"alllusers"}
-          selected={selectedItem === 'allusers'}
-          onClick={() => handleListItemClick('allusers')}
-          disablePadding>
+            selected={selectedItem === 'allusers'}
+            onClick={() => handleListItemClick('allusers')}
+            disablePadding>
             <ListItemButton onClick={() => navigate(`/allusers`)}>
               <ListItemIcon>
                 <PeopleIcon />
@@ -279,41 +281,45 @@ function ResponsiveDrawer(props) {
           userRole === "author" &&
 
           <ListItem key={"myblogs"}
-          selected={selectedItem === 'myblogs'}
-          onClick={() => handleListItemClick('myblogs')}
-          
-          disablePadding>
+            selected={selectedItem === 'myblogs'}
+            onClick={() => handleListItemClick('myblogs')}
+
+            disablePadding>
             <ListItemButton onClick={() => navigate(`/myblog`)}>
               <ListItemIcon>
                 <InboxIcon />
               </ListItemIcon>
-              <ListItemText primary={"myblog"} />
+              <ListItemText primary={"MyBlog"} />
             </ListItemButton>
           </ListItem>
         }
 
 
         <ListItem key={"reading-list"}
-        
-        selected={selectedItem === 'reading'}
-        onClick={() => handleListItemClick('reading')}
-        disablePadding>
+
+          selected={selectedItem === 'reading'}
+          onClick={() => handleListItemClick('reading')}
+          disablePadding>
           <ListItemButton onClick={() => navigate(`/reading-list`)}>
             <ListItemIcon>
               <BookmarkAddIcon />
             </ListItemIcon>
-            <ListItemText primary={"Reading_list"} />
+            <ListItemText primary={"Bookmarks"} />
           </ListItemButton>
         </ListItem>
+        <Divider
+          variant="fullWidth"
+          orientation="horizontal"
 
+        />
         {
 
           userRole === "author" &&
 
-          <ListItem key={"add-blog"} 
-          selected={selectedItem === 'addblog'}
-          onClick={() => handleListItemClick('addblog')}
-          disablePadding>
+          <ListItem key={"add-blog"}
+            selected={selectedItem === 'addblog'}
+            onClick={() => handleListItemClick('addblog')}
+            disablePadding>
             <ListItemButton onClick={() => navigate(`/addblog`)}>
               <ListItemIcon>
                 <BookmarkAddIcon />
@@ -322,19 +328,36 @@ function ResponsiveDrawer(props) {
             </ListItemButton>
           </ListItem>
         }
-        {category.map((text, index) => (
-          <ListItem key={text} 
-          selected={selectedItem === `${text}`}
-          onClick={() => handleListItemClick(`${text}`)}
-          disablePadding>
-            <ListItemButton onClick={() => navigate(`/${text}`)}>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <FoodBankIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
+         <ListItem key={"add"}
+            // selected={selectedItem === 'addblog'}
+            onClick={() => setCategory1(!category1)}
+            disablePadding>
+            <ListItemButton >
+              {/* <ListItemIcon>
+                <BookmarkAddIcon />
+              </ListItemIcon> */}
+              <ListItemText primary={"Category"} 
+                        sx={{ color: 'blue', fontWeight: '900', fontSize:"50px" }} 
+
+              />
             </ListItemButton>
           </ListItem>
-        ))}
+          { category1 &&
+
+            category.map((text, index) => (
+              <ListItem key={text}
+              selected={selectedItem === `${text}`}
+              onClick={() => handleListItemClick(`${text}`)}
+              disablePadding>
+              <ListItemButton onClick={() => navigate(`/${text}`)}>
+              <ListItemIcon>
+              {index % 2 === 0 ? <InboxIcon /> : <FoodBankIcon />}
+              </ListItemIcon>
+              <ListItemText primary={text} />
+              </ListItemButton>
+              </ListItem>
+            ))
+          }
       </List>
 
     </div>
@@ -357,13 +380,13 @@ function ResponsiveDrawer(props) {
 
   function profileAction() {
     handleClose()
-    navigate("/profile")
+    navigate(`/profile/${userId}`)
   }
   // Remove this const when copying and pasting into your project.
   const container = window !== undefined ? () => window().document.body : undefined;
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex', backgroundColor:"background.papar" }}>
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -382,7 +405,6 @@ function ResponsiveDrawer(props) {
 
           sx={{
 
-            backgroundColor: "#BDBDBD",
 
           }}>
           <IconButton
@@ -395,11 +417,10 @@ function ResponsiveDrawer(props) {
             <MenuIcon />
           </IconButton>
 
-          {/* <img src={image} alt=""  width="60px" /> */}
-          <Typography variant="h4" noWrap component="div" mr={"auto"} color={"#000000"} fontWeight={"bold"}>
-            Blog
+          <Typography variant="h4" noWrap component="div" mr={"auto"} color={"#000000"} fontWeight={"bold"} alignItems={"center"}>
+          <img src={image} alt=""  width="100px" />
+            {/* Blog */}
           </Typography>
-
 
           <div>
             <Stack ml={2} direction="row" spacing={2} onClick={handleClick}
@@ -423,7 +444,7 @@ function ResponsiveDrawer(props) {
               }}
             >
               <MenuItem onClick={profileAction}>Profile</MenuItem>
-              {/* <MenuItem onClick={handleClose}>My account</MenuItem> */}
+              <MenuItem onClick={handleClose}>My account</MenuItem>
               <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
           </div>

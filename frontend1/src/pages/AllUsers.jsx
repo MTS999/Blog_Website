@@ -35,7 +35,7 @@ const columns = [
 export default function AllUsers() {
     const [loader, setLoader] = React.useState(false);
     const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    const [rowsPerPage, setRowsPerPage] = React.useState(8);
     const [totalCount, settotalCount] = React.useState(0)
     const [allUserData, setAllUserData] = React.useState([])
     const [allBlogData, setAllBlogData] = React.useState([])
@@ -110,7 +110,7 @@ export default function AllUsers() {
 
         fetchUserData()
         fetcBlogData()
-    }, [token, refreshTable, page])
+    }, [token, refreshTable, page,rowsPerPage])
 
 
     const formatDate = (isoDateString) => {
@@ -132,10 +132,10 @@ export default function AllUsers() {
             <Loader />
         }
             <Paper m sx={{ width: '100%', overflow: 'hidden', marginTop: "100px" }}>
-                <TableContainer sx={{ maxHeight: 500 }}>
+                        <Typography variant="h3"  >All Uesrs</Typography>
+                <TableContainer sx={{ maxHeight: 600 }}>
                     <Box mb={3} textAlign={"center"}>
 
-                        <Typography variant="h3" color="initial" >Pending request</Typography>
                     </Box>
                     <Table stickyHeader aria-label="sticky table">
                         <TableHead>
@@ -187,7 +187,7 @@ export default function AllUsers() {
                     </Table>
                 </TableContainer>
                 <TablePagination
-                    rowsPerPageOptions={[4, 10, 100]}
+                    rowsPerPageOptions={[4, 8, 100]}
                     component="div"
                     count={totalCount}
                     rowsPerPage={rowsPerPage}

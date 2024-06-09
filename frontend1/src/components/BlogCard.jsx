@@ -13,7 +13,8 @@ const BlogCard = ({ blog, userData, userId, blogParam, handle_reading_list, setR
 
     return (
         <Card key={blog._id} sx={{
-            width: "100%", maxWidth: 700, marginBottom: "20px",
+            borderRadius:"8px",
+            width: "100%", maxWidth: 750, marginBottom: "20px",
             padding: "15px",
             boxShadow: "0px 0px 10px rgba(0, 0, 0, .3)",
             display: "flex",
@@ -33,10 +34,10 @@ const BlogCard = ({ blog, userData, userId, blogParam, handle_reading_list, setR
                     <Box display="flex" alignItems={"center"} mb={2}>
                         <UserProfileAvatar userId={blog.authorId} userName={blog.user_name} />
                         <Box>
-                            <Typography mr={1} display={"inline-block"} variant="h6" color="initial" fontWeight={"bold"}>
+                            <Typography mr={1} display={"inline-block"} variant="h6"  fontWeight={"bold"}>
                                 {`${blog.user_name}  `}
                             </Typography>
-                            <Typography display={"inline-block"} variant="body1" color="initial">
+                            <Typography display={"inline-block"} variant="body1" >
                                 {new Date(blog.createdAt).toLocaleString('en-US', {
                                     year: 'numeric',
                                     month: 'short',
@@ -45,7 +46,7 @@ const BlogCard = ({ blog, userData, userId, blogParam, handle_reading_list, setR
                             </Typography>
                         </Box>
                     </Box>
-                    <Typography variant="h5" color="initial" fontWeight={"600"} mb={1}>
+                    <Typography variant="h5"  fontWeight={"600"} mb={1}>
                         {blog.title}
                     </Typography>
                     <Box display={{ sm: 'none', xs: 'inline-block' }} width={"100%"}>

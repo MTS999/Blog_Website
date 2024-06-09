@@ -11,6 +11,8 @@ const RecentBlogCard = ({ blog, userId, blogParam, setRefresh }) => {
 
     return (
         <Card key={blog._id} sx={{
+            borderRadius:"8px",
+
             width: "100%", maxWidth: 300, marginBottom: "20px", minWidth: 200,
             padding: "15px",
             boxShadow: "0px 0px 10px rgba(0, 0, 0, .3)",
@@ -19,7 +21,7 @@ const RecentBlogCard = ({ blog, userId, blogParam, setRefresh }) => {
             <Box mb={2}>
                 <Chip size="large" label={blog.category} />
             </Box>
-            <Typography variant="h5" color="initial" fontWeight={"600"} mb={1}>
+            <Typography variant="h5"  fontWeight={"600"} mb={1}>
                 <div style={{
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',

@@ -15,7 +15,6 @@ import  Dashboard  from './pages/Dashboard'
 import AllUsers from './pages/AllUsers'
 import Pending from './pages/Pending'
 import AddNewUser from './pages/AddNewUser'
-// import ReponsiveDrawer1 from './components/ReponsiveDrawer1'
 
 
 const Routess = () => {
@@ -24,10 +23,10 @@ const Routess = () => {
 
                 <Route path='/' element={<ResponsiveDrawer />}>
 
-                    <Route path='/:blog' element={<Blogs />} />
-                    <Route index element={<Blogs />} />
+                    <Route path=':blog' element={<Blogs />} />
+                    {/* <Route index element={<Blogs />} /> */}
                     <Route path='blog/:id' element={<BlogDetail />} />
-                    <Route path='/profile' element={<Profile />} />
+                    <Route path='/profile/:id' element={<Profile />} />
                     <Route path='/dashboard' element={<Dashboard />} />
                     <Route path='/allusers' element={<AllUsers />} />
                     <Route path='/pending-request' element={<Pending />} />

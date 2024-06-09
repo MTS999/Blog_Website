@@ -146,7 +146,7 @@ const Pending = () => {
                     >
 
 
-                        <Typography variant="h4" color="initial" mt={20}>No Request here</Typography>
+                        <Typography variant="h4"  mt={20}>No Request here</Typography>
                     </Box>
 
                     :
@@ -155,7 +155,7 @@ const Pending = () => {
                         <TableContainer sx={{ maxHeight: 440 }}>
                             <Box textAlign={"center"} mb={5}>
 
-                                <Typography variant="h4" color="initial" >Request for Author</Typography>
+                                <Typography variant="h4"  >Request for Author</Typography>
                             </Box>
                             <Table stickyHeader aria-label="sticky table">
                                 <TableHead>

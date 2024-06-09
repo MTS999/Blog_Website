@@ -1,7 +1,7 @@
 import React from 'react';
-// import { BarChart } from 'mui-charts'; // Ensure you have the correct import for BarChart
 import { BarChart } from '@mui/x-charts/BarChart';
 import PropTypes from 'prop-types';
+import Typography from '@mui/material/Typography';
 
 // Sample blogData
 const blogData = [
@@ -17,31 +17,46 @@ const blogData = [
     { id: 10, title: "Vue.js Essentials", category: "Vue", published: "2023-05-20" },
 ];
 
-const countBlogPostsPerMonth = (data) => {
-    const counts = Array(12).fill(0); // Initialize an array with 12 zeros for each month
+const countBlogPostsPerWeek = (data) => {
+    const weeksInYear = 52;
+    const counts = Array(weeksInYear).fill(0); // Initialize an array with 52 zeros for each week
+
     data.forEach(blog => {
-        const month = new Date(blog.createdAt).getMonth(); // Get the month index (0-11)
-        counts[month] += 1; // Increment the count for the corresponding month
+        const week = getWeekOfYear(new Date(blog.createdAt)); // Get the week index (1-52)
+        counts[week - 1] += 1; // Increment the count for the corresponding week (adjust for 0-based index)
     });
+
     return counts;
 };
 
-const BlogPostsBarChart = ({allBlogData}) => {
+// Helper function to get the week of the year
+const getWeekOfYear = (date) => {
+    const startDate = new Date(date.getFullYear(), 0, 1);
+    const days = Math.floor((date - startDate) / (24 * 60 * 60 * 1000));
+    return Math.ceil((days + startDate.getDay() + 1) / 7);
+};
+
+const BlogPostsBarChart = ({ allBlogData }) => {
     console.log(allBlogData);
-    const blogPostsData = [{ data: countBlogPostsPerMonth(allBlogData) }];
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const blogPostsData = [{ data: countBlogPostsPerWeek(allBlogData) }];
+    const weeks = Array.from({ length: 52 }, (_, i) => `Week ${i + 1}`);
 
     return (
-        <BarChart
-            display="block"
-            series={blogPostsData}
-            height={290}
-            xAxis={[{ data: months, scaleType: 'band' }]}
-            margin={{ top: 10, bottom: 30, left: 40, right: 10 }}
-        />
+        <>
+            <BarChart
+                display="block"
+                series={blogPostsData}
+                height={290}
+                xAxis={[{ data: weeks, scaleType: 'band' }]}
+                margin={{ top: 10, bottom: 30, left: 40, right: 10 }}
+            />
+            <Typography variant="h3">Blog Chart</Typography>
+        </>
     );
 };
+
 BlogPostsBarChart.propTypes = {
     allBlogData: PropTypes.array.isRequired,
 };
+
 export default BlogPostsBarChart;

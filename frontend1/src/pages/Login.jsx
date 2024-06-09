@@ -37,7 +37,7 @@ const Login = () => {
         const token = localStorage.getItem("token")
 
         if (token) {
-            navigate("/")
+            navigate("/all")
         }
     })
 
@@ -62,7 +62,7 @@ const Login = () => {
                 localStorage.setItem("userId", response.data.userId)
 
 
-                navigate("/")
+                navigate("/all")
                 // console.log("mts");
             }
 
