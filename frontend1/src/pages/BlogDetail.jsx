@@ -24,6 +24,28 @@ import Chip from '@mui/material/Chip';
 import Like_Dislike from '../components/Like_Dislike';
 
 
+import { Link } from "react-router-dom";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Paper from "@mui/material/Paper";
+import Draggable from "react-draggable";
+
+function PaperComponent(props) {
+  return (
+    <Draggable
+      handle="#draggable-dialog-title"
+      cancel={'[class*="MuiDialogContent-root"]'}
+    >
+      <Paper {...props} />
+    </Draggable>
+  );
+}
+
+
+
 const MAX_LINES = 2; // Maximum number of lines for content
 
 const TruncatedContent = ({ type, content }) => {
@@ -42,6 +64,20 @@ const TruncatedContent = ({ type, content }) => {
 };
 
 export const BlogDetail = () => {
+
+
+    const [oopen, setOopen] = React.useState(false);
+    const handleClickOpen = () => {
+      setOopen(true);
+    };
+  
+    const handleClose = () => {
+      setOopen(false);
+    };
+  
+
+
+
 
     const [open, setOpen] = React.useState(false);
     const toggleDrawer = (newOpen) => () => {
@@ -107,7 +143,7 @@ export const BlogDetail = () => {
 
         const fetchData = async () => {
             try {
-                const response = await axios.get(`http://localhost:5003/userdata`, {
+                const response = await axios.get(`http://localhost:5003/userdata/${userId}`, {
                     headers: {
                         authorization: `Bearer ${token}`
 
@@ -122,9 +158,8 @@ export const BlogDetail = () => {
                 console.error('Error fetching data   mts:', error);
             }
         }
-        if (token) {
             fetchData()
-        }
+        
     }, [userId, token])
 
     useEffect(() => {
@@ -147,9 +182,8 @@ export const BlogDetail = () => {
                 console.error('Error fetching Blogs:', error);
             }
         }
-        if (token) {
             fetchData()
-        }
+        
     }, [params.id])
 
     useEffect(() => {
@@ -181,8 +215,15 @@ export const BlogDetail = () => {
 
         fetchRecentBlogs();
     }, [refresh]);
-
+  // handle add comment functionality
     async function handleAddComment() {
+
+        if (!token) {
+            handleClickOpen();
+      
+            console.log("no token there");
+            return;
+          }
         try {
             const response = await axios.post(`http://localhost:5003/comment/${Blog._id}`, { content }, {
                 headers: {
@@ -200,6 +241,7 @@ export const BlogDetail = () => {
             console.error('Error fetching comments:', error.response ? error.response.data : error.message);
         }
     }
+  // handle add comment functionality
 
     async function handleDelete(postId) {
         try {
@@ -220,26 +262,16 @@ export const BlogDetail = () => {
             console.error('Error fetching comments:', error.response ? error.response.data : error.message);
         }
     }
-    // async function handleEdit(postId) {
-    //   try {
-    //     const response = await axios.delete(`http://localhost:5003/commentedit/${postId}`, { content }, {
-    //       headers: {
-    //         authorization: `Bearer ${token}`
-
-    //       }
-
-    //     }
-    //     );
-
-    //     console.log("mtssss", response);
-    //   } catch (error) {
-    //     console.error('Error fetching comments:', error.response ? error.response.data : error.message);
-    //   }
-    // }
+  
 
     async function handleLike(postId) {
         const token = localStorage.getItem("token");
-
+        if (!token) {
+            handleClickOpen();
+      
+            console.log("no token there");
+            return;
+          }
         try {
 
             const response = await axios.post(`http://localhost:5003/like/${postId}`, {}, {
@@ -264,7 +296,12 @@ export const BlogDetail = () => {
 
     async function handleDislike(postId) {
         const token = localStorage.getItem("token");
-
+        if (!token) {
+            handleClickOpen();
+      
+            console.log("no token there");
+            return;
+          }
         try {
 
             const response = await axios.post(`http://localhost:5003/dislike/${postId}`, {}, {
@@ -285,7 +322,12 @@ export const BlogDetail = () => {
     }
     async function handleFollow(postId) {
         const token = localStorage.getItem("token");
-
+        if (!token) {
+            handleClickOpen();
+      
+            console.log("no token there");
+            return;
+          }
         try {
 
             const response = await axios.post(`http://localhost:5003/follow/${postId}`, {}, {
@@ -297,8 +339,7 @@ export const BlogDetail = () => {
 
             console.log(response.data);
             setUserData(response.data.userData)
-            // setBlog(response.data.blogPost);
-            // Update the state with the updated Blogs array
+        
 
 
         }
@@ -596,6 +637,36 @@ export const BlogDetail = () => {
                     </Grid>
                 </Box >
             }
+
+
+<Dialog
+        open={oopen}
+        onClose={handleClose}
+        PaperComponent={PaperComponent}
+        aria-labelledby="draggable-dialog-title"
+        maxWidth={"300px"}
+        sx={{ '& .MuiDialog-paper': { width: '300px', maxWidth: '300px' } }} // fixed width
+        >
+        <DialogTitle style={{ cursor: "move" }} id="draggable-dialog-title">
+          
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{fontSize:"20px"}}>
+            you  have  to 
+            
+            <Link style={{color:"#90CAF9" , paddingLeft:"5px"}} to="/login">login</Link>  or 
+
+
+            <Link style={{color:"#90CAF9", paddingLeft:"5px"}} to={"/signup"}>Signup</Link>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={handleClose}>
+            Cancel
+          </Button>
+          {/* <Button onClick={handleClose}>Subscribe</Button> */}
+        </DialogActions>
+      </Dialog>
         </>
     )
 }

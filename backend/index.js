@@ -121,31 +121,13 @@ app.post("/login", async (request, response) => {
         response.status(400).json({ message: "invalid request" })
     }
 })
-// app.get("/getalluserdata", verifyToken, async (request, response) => {
-//     try {
 
-//         const role = request.user.role
-//         if (role !== "admin") {
-//             return response.status(403).json({ message: "Unauthorized - You do not have permission to access this resource" })
-//         }
-
-//         const users = await Users.find();
-
-//         // Send the user data in the response
-//         response.json(users);
-//     }
-//     catch (error) {
-//         console.error("Error fetching user data:", error);
-//         response.status(500).json({ message: "Internal server error" });
-//     }
-
-// })
-app.get("/getalluserdata", verifyToken, async (request, response) => {
+app.get("/getalluserdata",  async (request, response) => {
     try {
         const page = parseInt(request.query.page);
         const limit = parseInt(request.query.limit);
 
-        const role = request.user.role;
+        // const role = request.user.role;
         // if (role !== "admin") {
         //     return response.status(403).json({ message: "Unauthorized - You do not have permission to access this resource" })
         // }
@@ -285,7 +267,7 @@ app.get("/getallblogdata", verifyToken, async (request, response) => {
 
 })
 
-app.get("/userdata/:id", verifyToken, async (request, response) => {
+app.get("/userdata/:id",     async (request, response) => {
     try {
         const userId = request.params.id
         const userData = await Users.findOne({ _id: userId })
@@ -331,95 +313,106 @@ app.post("/addblog", verifyToken, async (request, response) => {
     }
 });
 
-// app.get("/blogs", verifyToken, async (request, response) => {
+
+// app.get("/blogs/:blog",  async (request, response) => {
 //     try {
+//         console.log(request.body,"kdcmdc");
+
+//         console.log(request.params.blog);
 //         let query = {};
-
-//         console.log( "mts", request.query);
-//         // Check if category query parameter is present
-//         if (request.query.category) {
-//             query.category = request.query.category;
+//         let page = parseInt(request.query.page, 10);
+//         if (isNaN(page) || page < 0) {
+//             page = 1;
 //         }
-//         if (request.query.blog === "myblog") {
-//             const id = request.user.id
+//         const limit = parseInt(request.query.limit, 10);
+//         const skip = (page) * limit;
 
-//             // Add author ID to the query
+
+//         if (request.params.blog === "myblog") {
+//             const id = request.body.userId;
+
 //             query.authorId = id;
 //         }
-//         if (request.query.blog === "reading-list") {
-//             const userId = request.user.id;
+//         else if (request.params.blog === "reading-list") {
+//             const userId = request.body.userId;
 
-//             // Find the current user
 //             const currentUser = await Users.findById(userId);
 
 //             if (!currentUser) {
 //                 return response.status(404).json({ message: "User not found" });
 //             }
 
-//             // Retrieve the reading list of the current user
 //             const readingList = currentUser.reading_list;
+//             let totalCount = await BlogPost.countDocuments({ _id: { $in: readingList } });
 
-//             // Query all blog posts in the reading list
-//             const result = await BlogPost.find({ _id: { $in: readingList } });
+//             const result = await BlogPost.find({ _id: { $in: readingList } }).limit(limit).skip(skip);
 
-//             // Return the blogs from the reading list
-//             return response.send(result);
+//             return response.send({ result, totalCount });
 //         }
 
-//         if (request.query.feed === "following") {
-//             const userId = request.user.id;
-
-//             // Find the current user's information
+//         else if (request.params.blog === "following") {
+//             const userId = request.body.userId;
+//            console.log(request.body);
 //             const currentUser = await Users.findById(userId);
 
 //             if (!currentUser) {
 //                 return response.status(404).json({ message: "User not found" });
 //             }
 
-//             // Retrieve the list of users that the current user is following
 //             const followingUsers = currentUser.following;
+//             let totalCount = await BlogPost.countDocuments({ authorId: { $in: followingUsers } });
 
-//             // Query all blog posts from the following users
-//             const followingBlogs = await BlogPost.find({ authorId: { $in: followingUsers } });
+//             const result = await BlogPost.find({ authorId: { $in: followingUsers } }).limit(limit).skip(skip);
 
-//             // Return the blogs from following users
-//             return response.send(followingBlogs)
+//             return response.send({ totalCount, result });
+
 //         }
+//         else if (request.params.blog === "all") {
+//             let totalCount = await BlogPost.countDocuments();
+//             let result = await BlogPost.find().limit(limit).skip(skip);
+//             // console.log(result.length,totalCount);
+//             if (result.length > 0) {
+//                return response.send({ totalCount, result });
+//             } else {
+//               return  response.send("No blogs found");
+//             }
+//         }
+//         else {
+//             query.category = request.params.blog;
 
-//         // Find blog posts based on the query
-//         let result = await BlogPost.find(query);
-
+//         }
+//         let totalCount = await BlogPost.countDocuments(query);
+//         let result = await BlogPost.find(query).limit(limit).skip(skip);
+//         // console.log(result.length,totalCount);
 //         if (result.length > 0) {
-//             response.send(result);
+//             response.send({ totalCount, result });
 //         } else {
 //             response.send("No blogs found");
 //         }
+
 //     } catch (error) {
 //         console.error('Error fetching Blogs:', error);
 //         response.status(500).send("Internal Server Error");
 //     }
-// })
-
-app.get("/blogs/:blog", verifyToken, async (request, response) => {
+// });
+app.post("/blogs/:blog", async (request, response) => {
     try {
-        console.log(request.params.blog);
+        // console.log(request.body, "kdcmdc");
+        // console.log(request.body.userId);
+
         let query = {};
         let page = parseInt(request.query.page, 10);
         if (isNaN(page) || page < 0) {
             page = 1;
         }
         const limit = parseInt(request.query.limit, 10);
-        const skip = (page) * limit;
-
+        const skip = page * limit;
 
         if (request.params.blog === "myblog") {
-            const id = request.user.id;
-
+            const id = request.body.userId;
             query.authorId = id;
-        }
-        else if (request.params.blog === "reading-list") {
-            const userId = request.user.id;
-
+        } else if (request.params.blog === "reading-list") {
+            const userId = request.body.userId;
             const currentUser = await Users.findById(userId);
 
             if (!currentUser) {
@@ -428,14 +421,13 @@ app.get("/blogs/:blog", verifyToken, async (request, response) => {
 
             const readingList = currentUser.reading_list;
             let totalCount = await BlogPost.countDocuments({ _id: { $in: readingList } });
-
             const result = await BlogPost.find({ _id: { $in: readingList } }).limit(limit).skip(skip);
 
             return response.send({ result, totalCount });
-        }
+        } else if (request.params.blog === "following") {
 
-        else if (request.params.blog === "following") {
-            const userId = request.user.id;
+            const userId = request.body.userId;
+            console.log(request.body, "kdcmdc");
 
             const currentUser = await Users.findById(userId);
 
@@ -445,43 +437,35 @@ app.get("/blogs/:blog", verifyToken, async (request, response) => {
 
             const followingUsers = currentUser.following;
             let totalCount = await BlogPost.countDocuments({ authorId: { $in: followingUsers } });
-
             const result = await BlogPost.find({ authorId: { $in: followingUsers } }).limit(limit).skip(skip);
 
             return response.send({ totalCount, result });
-
-        }
-        else if (request.params.blog === "all") {
+        } else if (request.params.blog === "all") {
             let totalCount = await BlogPost.countDocuments();
             let result = await BlogPost.find().limit(limit).skip(skip);
-            // console.log(result.length,totalCount);
             if (result.length > 0) {
-               return response.send({ totalCount, result });
+                return response.send({ totalCount, result });
             } else {
-              return  response.send("No blogs found");
+                return response.send("No blogs found");
             }
-        }
-        else {
+        } else {
             query.category = request.params.blog;
-
         }
+
         let totalCount = await BlogPost.countDocuments(query);
         let result = await BlogPost.find(query).limit(limit).skip(skip);
-        // console.log(result.length,totalCount);
         if (result.length > 0) {
             response.send({ totalCount, result });
         } else {
             response.send("No blogs found");
         }
-
     } catch (error) {
         console.error('Error fetching Blogs:', error);
         response.status(500).send("Internal Server Error");
     }
 });
 
-
-app.get("/following-blogs", verifyToken, async (request, response) => {
+app.get("/followijng-blogs", verifyToken, async (request, response) => {
     try {
         console.log("MTS");
         // Get the current user's ID from the request
@@ -508,7 +492,7 @@ app.get("/following-blogs", verifyToken, async (request, response) => {
     }
 });
 
-app.get("/recent-blogs", verifyToken, async (request, response) => {
+app.get("/recent-blogs",  async (request, response) => {
     try {
         // Directly find and return the 5 most recent blog posts
         let result = await BlogPost.find({})
@@ -658,7 +642,7 @@ app.get("/user-role", verifyToken, async (request, response) => {
     }
 
 })
-app.get("/blog/:id", verifyToken, async (request, response) => {
+app.get("/blog/:id",  async (request, response) => {
     let result = await BlogPost.findOne({ _id: request.params.id })
     if (result) {
 

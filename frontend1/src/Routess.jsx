@@ -15,6 +15,7 @@ import  Dashboard  from './pages/Dashboard'
 import AllUsers from './pages/AllUsers'
 import Pending from './pages/Pending'
 import AddNewUser from './pages/AddNewUser'
+import AskLoginSignup from './components/AskLoginSignup'
 
 
 const Routess = () => {
@@ -24,7 +25,7 @@ const Routess = () => {
                 <Route path='/' element={<ResponsiveDrawer />}>
 
                     <Route path=':blog' element={<Blogs />} />
-                    {/* <Route index element={<Blogs />} /> */}
+                    <Route index element={<Blogs />} />
                     <Route path='blog/:id' element={<BlogDetail />} />
                     <Route path='/profile/:id' element={<Profile />} />
                     <Route path='/dashboard' element={<Dashboard />} />
@@ -37,7 +38,7 @@ const Routess = () => {
 
                 <Route path='/login' element={<Login />}/>
                 <Route path='/signup' element={<Signup />}/>
-                {/* <Route path='/mts' element={<TemporaryDrawer />}/> */}
+                <Route path='/mts' element={<AskLoginSignup />}/>
 
             </Routes>
 

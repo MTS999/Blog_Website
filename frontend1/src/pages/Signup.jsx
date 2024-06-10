@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import startup from "../images/startup.jpg"
-import Logo from "../images/ClubNetlogo-copy.png"
+import Logo from "../images/blog3.png"
 import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField'
@@ -175,7 +175,7 @@ const Signup = () => {
         <>
             {/* {loader && <Loader />} */}
 
-            <Grid container sx={{ height: "100vh" }}  >
+            <Grid container sx={{ height: "100vh" }}   backgroundColor={"background.default"}>
 
                 <Grid item xl={2} lg={2} md={2} sm={3} sx={{
                     // backgroundColor: "green",
@@ -236,7 +236,7 @@ const Signup = () => {
 
                             <Typography component="h6" variant="h4" mb={2} fontWeight={"bold"}>
                                 Get started with a   Forever Free Plan                          </Typography>
-                            <Typography variant="body1" color="initial" textAlign={"start"}>
+                            <Typography variant="body1" textAlign={"start"}>
                                 Already has an Account?
                                 {/* <span style={{ color: theme.palette.primary.main }}
                                 ><Link style={{ textDecoration: "none" }} to={"/login"}>Login</Link></span> */}
