@@ -1,312 +1,445 @@
-Profileimport React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Box, Grid } from '@mui/material';
-import TextField from '@mui/material/TextField';
-import { Stack } from '@mui/material';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-// import Loader from '../Loader';
-import { useNavigate } from 'react-router-dom';
-import { useLocation } from "react-router-dom";
-import { Alert } from "@mui/material";
-
-
-export default function Profile() {
-  // const [loader, setloader] = useState(false);
-  const [count, setCount] = useState(0)
-  const [userData, setUserData] = useState(null);
-  const navigate = useNavigate()
-  const location = useLocation()
-  // const [message, setMessage] = React.useState({ text: '', type: '' });
-
-  // console.log(location.state);
-
+import React from "react";
+import { useState, useEffect } from "react";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import TextField from "@mui/material/TextField";
+import Alert from "@mui/material/Alert";
+import { useNavigate, useParams } from "react-router-dom";
+import { Avatar, Button, IconButton } from "@mui/material";
+import CameraAltIcon from '@mui/icons-material/CameraAlt'; // Import the camera icon
+import axios from "axios";
+import Loader from "../components/Loader";
+const Profile = () => {
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
+    user_name: "",
     email: "",
-    role: '',
-    profile_image: '',
-    contact_number: ""
+    password: "",
+    role: "",
+    image_url: "",
   });
+
+  const [error, setError] = useState({
+    first_name: "",
+    last_name: "",
+    user_name: "",
+    email: "",
+    password: "",
+  });
+
+  const [loader, setLoader] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [message, setMessage] = useState({ text: "", type: "" });
+  const [userData, setUserData] = useState(null);
+  const [Edit, setEdit] = useState(false);
+
+  const [image, setImage] = useState(null);
+  const [imageUrl, setImageUrl] = useState("");
+
+  const params = useParams();
+  const navigate = useNavigate();
+
   const token = localStorage.getItem("token");
-  const userId = localStorage.getItem("userId")
+  const userId = localStorage.getItem("userId");
+
+  //find the user role
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      try {
+        const response = await axios.get("http://localhost:5003/user-role", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setUserRole(response.data);
+      } catch (error) {
+        console.error("Error fetching user role:", error);
+      }
+    };
+    if (token) {
+      fetchUserRole();
+    }
+  }, [token]);
 
   useEffect(() => {
-
-
+    setLoader(true)
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5003/userdata`, {
-          headers: {
-            authorization: `Bearer ${token}`
-
+        const response = await axios.get(
+          `http://localhost:5003/userdata/${params.id}`,
+          {
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
           }
-        })
-        console.log(response.data);
-        setUserData(response.data)
-
-        const { first_name, last_name, email, role, image_url, contact_number } = response.data;
-        setFormData({
-          first_name: first_name || "",
-          last_name: last_name || "",
-          email: email || "",
-          role: role || "",
-          profile_image: image_url || "",
-          contact_number: contact_number || ""
-        });
+        );
+        setUserData(response.data);
+        if (response.data) {
+          const {
+            first_name,
+            user_name,
+            last_name,
+            email,
+            role,
+            image_url,
+            contact_number,
+          } = response.data;
+          setFormData({
+            first_name: first_name || "",
+            last_name: last_name || "",
+            email: email || "",
+            user_name: user_name || "",
+            role: role || "",
+            image_url: image_url || "",
+            contact_number: contact_number || "",
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+      finally{
+        setLoader(false)
 
       }
-
-      catch (error) {
-        console.error('Error fetching data   mts:', error);
-      }
-    }
+    };
     if (token) {
-      fetchData()
+      fetchData();
     }
-  }, [userId, token,count])
+  }, [params.id, token]);
 
-  function handleChange(event) {
+  const handleChange = (event) => {
     const { name, value } = event.target;
-
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
-  }
+  };
 
-  // const handleSave = () => {
-  //     setCount(pre => pre + 1)
-  //     const token = localStorage.getItem("token");
-  //     setloader(true)
-  //     axios.put(`http://146.190.164.174:4000/api/admin/edit_admin`,
+  const handleError = () => {
+    let isValid = true;
+    const nameFormat = /^[a-zA-Z]+$/;
+    const emailFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const newError = { first_name: "", last_name: "", email: "", password: "" };
 
-  //         {
-  //             first_name: formData.first_name,
-  //             last_name: formData.last_name,
-  //             contact_number: formData.contact_number,
-  //             profile_image: formData.profile_image,
-  //             role: formData.role
-  //         }
-  //         ,
-
-  //         {
-  //             headers: {
-  //                 'Content-Type': 'application/json',
-
-  //                 'x-sh-auth': token
-
-  //             }
-  //         })
-  //         .then(response => {
-  //             console.log(response.data); // Handle successful response
-  //             setMessage({ text: 'admin updated successfully!', type: 'success' });
-  //             setloader(false)
-
-  //         })
-  //         .catch(error => {
-  //             console.error('Error updating up admin:', error); // Handle error
-  //             setMessage({ text: error.response.data.message, type: 'error' });
-  //             setloader(false)
-  //         });
-  // };
-  const RequestPending = async () => {
-        
-    
-    try {
-        const response = await axios.put(`http://localhost:5003/pending`,{}, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
-
-
-        console.log(response);
-        setCount(pre=>pre+1)
-
-
-    } catch (error) {
-        console.log(error);
+    if (!formData.first_name) {
+      newError.first_name = "First Name is required";
+      isValid = false;
+    } else if (!nameFormat.test(formData.first_name)) {
+      newError.first_name = "First Name should only contain alphabets";
+      isValid = false;
     }
-}
+
+    if (!formData.last_name) {
+      newError.last_name = "Last Name is required";
+      isValid = false;
+    } else if (!nameFormat.test(formData.last_name)) {
+      newError.last_name = "Last Name should only contain alphabets";
+      isValid = false;
+    }
+
+    if (!formData.user_name) {
+      newError.user_name = "Username is required";
+      isValid = false;
+    }
+
+    if (!formData.email) {
+      newError.email = "Email is required";
+      isValid = false;
+    } else if (!emailFormat.test(formData.email)) {
+      newError.email = "Invalid email format";
+      isValid = false;
+    }
+
+    setError(newError);
+    return isValid;
+  };
+
+  const handleSubmit = async () => {
+    if(handleError()){
+      return
+    }
+    setLoader(true)
+
+    if (image) {
+      const uploadedImageUrl = await handleImageUpload();
+      formData.image_url = uploadedImageUrl;
+    }
+    try {
+      const response = await axios.put(
+        `http://localhost:5003/update-user/${params.id}`,
+        formData,
+        {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setMessage({ text: "User updated successfully", type: "success" });
+      setEdit(false);
+    } catch (error) {
+      setMessage({ text: "Error updating user", type: "error" });
+      console.error("Error updating user:", error);
+    }
+    finally{
+      setLoader(false)
+
+    }
+  };
+
+  useEffect(() => {
+    if (image) {
+      const imageUrl = URL.createObjectURL(image);
+      setImageUrl(imageUrl);
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        image_url: imageUrl,
+      }));
+    }
+  }, [image]);
+
+  const handleImageUpload = async () => {
+    setError(null);
+    setLoader(true);
+    try {
+      const data = new FormData();
+      data.append("file", image);
+      data.append("upload_preset", "hsgjgqg1");
+      data.append("cloud_name", "dwvl4hurg");
+
+      const response = await fetch(
+        "https://api.cloudinary.com/v1_1/dwvl4hurg/image/upload",
+        {
+          method: "POST",
+          body: data,
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Upload failed: " + response.statusText);
+      }
+
+      const jsonResponse = await response.json();
+      console.log("Upload successful:", jsonResponse);
+      return jsonResponse.url;
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      setError(error.message || "An error occurred during upload.");
+    } finally {
+      setLoader(false);
+    }
+  };
+
   return (
     <>
-      <Grid container spacing={2} justifyContent={"space-around"} m={1} mt={10} mr={5} sx={{ paddingLeft: 0 }}>
 
-
-
-        {/* {loader && <Loader />} */}
-        <Grid item xs={12} alignItems={"center"}>
-
-          <Typography variant="h4" fontWeight={"bold"} color="initial">{location.state ? "Edit Admin" : "Profile"}</Typography>
-        </Grid>
-        {/* <div >
-        <img  src={formData.profile_image} alt="mts" />
-      </div> */}
-        <Grid item xs={12}    display={"flex"}
-            justifyContent={"center"} >
-
+    {
+      loader &&
+      <Loader/>
+    }
+      <Grid container sx={{ height: "100vh" }}>
+        <Grid
+          item
+          sx={{
+            backgroundColor: "inherit",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "0px",
+            margin: " 0px auto",
+          }}
+        >
           <Box
-    
-         
-            width={"100px"}
-            borderRadius={10}
+            sx={{
+              mx: 4,
+              marginTop: { xs: "100px", md: "100px" },
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              maxWidth: "600px",
+              width: "100%",
+              minWidth: { sm: "500px" },
+            }}
           >
-
-            <img
-              src={formData.profile_image}
-              alt="Profile Pic"
-              height="100px"
-              width={"100%"}
-              style={{
-                borderRadius: "50%"
+            <Box
+              sx={{
+                mx: 4,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                width: "100%",
               }}
+              // imageUrl
+            >
+              <Typography
+                component="h6"
+                variant="h4"
+                mb={2}
+                fontWeight={"bold"}
+              >
+                {Edit ? "Edit Profile" : "User Profile"}
+              </Typography>
 
+              <Box sx={{ position: 'relative', margin:"auto" }}>
+                <Avatar
+                  sx={{
+                    width: 100,
+                    height: 100,
+                    marginRight: "10px",
+                    backgroundColor: "green",
+                  }}
+                  display="inline-block"
+                >
+                  {formData.image_url ? (
+                    <img src={formData.image_url} alt="Profile" style={{ width: '100%', height: '100%' }} />
+                  ) : (
+                    formData.user_name?.charAt(0).toUpperCase()
+                  )}
+                </Avatar>
+                {Edit && (
+                  <>
+                    <IconButton
+                      sx={{
+                        position: 'absolute',
+                        bottom: 0,
+                        right: 0,
+                        backgroundColor: 'green',
+                        color:"yellow"
+                      }}
+                      onClick={() => document.getElementById('image').click()}
+                    >
+                      <CameraAltIcon />
+                    </IconButton>
+                    <input
+                      type="file"
+                      name="image"
+                      id="image"
+                      style={{ display: 'none' }}
+                      onChange={(e) => setImage(e.target.files[0])}
+                    />
+                  </>
+                )}
+              </Box>
 
-            />
+              <TextField
+                margin="normal"
+                required
+                id="first_name"
+                name="first_name"
+                label="First Name"
+                value={formData.first_name}
+                onChange={handleChange}
+                fullWidth
+                autoComplete="email"
+                autoFocus
+                InputProps={{
+                  readOnly: !Edit,
+                }}
+              />
+              <TextField
+                margin="normal"
+                required
+                id="last_name"
+                name="last_name"
+                label="Last Name"
+                value={formData.last_name}
+                onChange={handleChange}
+                fullWidth
+                autoComplete="email"
+                autoFocus
+                InputProps={{
+                  readOnly: !Edit,
+                }}
+              />
+              <TextField
+                margin="normal"
+                required
+                id="user_name"
+                name="user_name"
+                label="Username"
+                value={formData.user_name}
+                onChange={handleChange}
+                fullWidth
+                autoComplete="user_name"
+                autoFocus
+                InputProps={{
+                  readOnly: !Edit,
+                }}
+              />
+              <TextField
+                margin="normal"
+                required
+                id="email"
+                name="email"
+                label="Email Address"
+                value={formData.email}
+                onChange={handleChange}
+                fullWidth
+                autoComplete="email"
+                autoFocus
+                InputProps={{
+                  readOnly: !Edit,
+                }}
+              />
+              <TextField
+                id="role"
+                name="role"
+                onChange={handleChange}
+                value={formData.role}
+                label="Role"
+                defaultValue={"mts"}
+                fullWidth
+                InputProps={{
+                  readOnly: true,
+                }}
+              />
+
+              {message.text && (
+                <Box mb={2}>
+                  <Alert severity={message.type}>{message.text}</Alert>
+                </Box>
+              )}
+
+              {Edit === false && (
+                <Button
+                  variant="contained"
+                  fullWidth
+                  size="large"
+                  sx={{ mt: 2, mb: 2 }}
+                  onClick={() => setEdit((pre) => !pre)}
+                >
+                  Edit
+                </Button>
+              )}
+              {Edit && (
+                <Button
+                  variant="contained"
+                  fullWidth
+                  size="large"
+                  sx={{ mt: 2,  }}
+                  onClick={handleSubmit}
+                >
+                  Save
+                </Button>
+              )}
+                 {Edit && (
+                <Button
+                  variant="contained"
+                  fullWidth
+                  size="large"
+                  sx={{ mt: 2, mb: 2 }}
+                  onClick={()=>setEdit(false)}
+                >
+                  Cancle
+                </Button>
+              )}
+            </Box>
           </Box>
         </Grid>
-
-        <Grid item md={6} xs={12} >
-
-
-
-
-          <TextField
-            color="success"
-            fullWidth
-            label="First Name*"
-            id="first_name"
-            name="first_name"
-            onChange={handleChange}
-            value={formData.first_name}
-            InputProps={{
-              readOnly: !location.state
-            }} />
-        </Grid>
-
-        <Grid item md={6} xs={12} >
-          <TextField
-            color="success"
-            fullWidth
-            label="Last Name"
-            id="last_name"
-            name="last_name"
-            onChange={handleChange}
-            value={formData.last_name}
-            InputProps={{
-              readOnly: !location.state
-            }}
-          />
-        </Grid>
-
-        {/* <Grid item md={6} xs={12} >
-
-          <TextField
-            color="success"
-            fullWidth
-            label="Profile Image"
-            id="profile_image"
-            name="profile_image"
-            onChange={handleChange}
-            value={formData.profile_image}
-            InputProps={{
-              readOnly: !location.state
-            }}
-          />
-        </Grid>
-
-        <Grid item md={6} xs={12} >
-          <TextField
-            color="success"
-            fullWidth
-            label="Phone Number"
-            id="contact_number"
-            name="contact_number"
-            onChange={handleChange}
-            value={formData.contact_number}
-            InputProps={{
-              readOnly: !location.state
-            }}
-
-          />
-        </Grid> */}
-
-        <Grid item md={6} xs={12} >
-          <TextField
-            color="success"
-            fullWidth
-            label="role"
-            id="role"
-            name="role"
-            onChange={handleChange}
-            value={   formData.role==="pending"? "Waiting for Author":formData.role}
-            InputProps={{
-              readOnly: !location.state
-            }} />
-        </Grid>
-
-        <Grid item md={6} xs={12} >
-          <TextField
-            color="success"
-            fullWidth
-            label="Email"
-            id="email"
-            name="email"
-            onChange={handleChange}
-            value={formData.email}
-            InputProps={{
-              readOnly: !location.state
-            }}
-          />
-
-        
-        </Grid>
-        {
-        // message.text && location.state &&
-        //   <Grid container mt={1} ml={2} spacing={2} justifyContent="space-between">
-
-        //     <Box mb={1} marginRight={"auto"}>
-        //       <Alert severity={message.type}>
-        //         {message.text}
-        //       </Alert>
-        //     </Box>
-        //   </Grid>
-        }
-        <Grid container mt={1} spacing={2} justifyContent="space-between">
-          <Grid item ml={2}>
-            <Button
-              variant="outlined"
-              size="small"
-              onClick={() => navigate(-1)}
-            // sx={{ display: location.state ? "" : "none" }}
-
-            >
-              Back
-            </Button>
-          </Grid>
-          <Grid item>
-            {/* <Button
-              variant="contained"
-              size="small"
-              sx={{ marginLeft: "8px", display: location.state ? "" : "none" }}
-            // onClick={handleSave}
-            >
-              Save
-            </Button> */}
-
-
-{
-            userData?.role==="reader" &&
-            <Button  onClick={RequestPending} variant='contained' >request for Author</Button>
-          }
-          </Grid>
-        </Grid>
-
-      </Grid >
-
-
+      </Grid>
     </>
   );
-}
+};
+
+export default Profile;

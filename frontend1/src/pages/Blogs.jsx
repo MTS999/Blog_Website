@@ -20,7 +20,7 @@ import BlogCard from "../components/BlogCard";
 import Loader from "../components/Loader";
 import RecentBlogCard from "../components/RecentBlogCard";
 import { useParams } from "react-router-dom";
-import {  Select, MenuItem, InputLabel } from '@mui/material';
+import { Select, MenuItem, InputLabel } from "@mui/material";
 
 const Blogs = () => {
   const [SearchBy, setSearchBy] = React.useState("title");
@@ -28,11 +28,16 @@ const Blogs = () => {
   const handleChange = (event) => {
     setSearchBy(event.target.value);
   };
+  const handleSortChange = (event) => {
+    setSortBy(event.target.value);
+  };
   const [allUserData, setAllUserData] = React.useState([]);
   const [loader, setLoader] = React.useState(false);
 
   const [userData, setUserData] = React.useState(null);
   const [Search, setSearch] = React.useState("");
+  const [SortBy, setSortBy] = React.useState("recent"); // State to handle sorting
+
   const [Blogs, setBlogs] = React.useState([]);
   // const [selectedCategory, setSelectedCategory] = React.useState("");
   const [userRole, setUserRole] = React.useState("");
@@ -42,7 +47,7 @@ const Blogs = () => {
   const navigate = useNavigate();
   let params = useParams();
   // console.log("mtsss", params.blog);
-  // console.log(params);
+  console.log(SortBy);
 
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("userId");
@@ -93,6 +98,11 @@ const Blogs = () => {
       queryParams.append("page", page); // assuming you have 'page' state for the current page number
       queryParams.append("limit", rowsPerPage); // assuming you have 'limit' state for the number of blogs per page
 
+      if (SortBy === "most_liked") {
+        queryParams.append("sort", "likes");
+      } else {
+        queryParams.append("sort", "recent");
+      }
       url += `?${queryParams.toString()}`;
 
       const response = await axios.post(
@@ -104,7 +114,7 @@ const Blogs = () => {
           },
         }
       );
-      // console.log(response.data);
+      console.log(response.data.result);
       setBlogs(response.data.result);
       setTotalBlogs(response.data.totalCount);
     } catch (error) {
@@ -117,7 +127,7 @@ const Blogs = () => {
   useEffect(() => {
     setLoader(true);
     fetchData();
-  }, [params, page, rowsPerPage]);
+  }, [params, page, rowsPerPage, SortBy]);
 
   useEffect(() => {
     fetchData();
@@ -228,7 +238,7 @@ const Blogs = () => {
     };
 
     fetchBlogs();
-  }, [Search, token, SearchBy,page]);
+  }, [Search, token, SearchBy]);
 
   // handle reading list functionality
   async function handle_reading_list(postId) {
@@ -348,7 +358,7 @@ const Blogs = () => {
               />
             </RadioGroup>
           </FormControl> */}
-          <FormControl  >
+          <FormControl>
             <InputLabel id="search-by-label">Search</InputLabel>
             <Select
               labelId="search-by-label"
@@ -359,6 +369,20 @@ const Blogs = () => {
             >
               <MenuItem value="title">Title</MenuItem>
               <MenuItem value="user_name">Author</MenuItem>
+            </Select>
+          </FormControl>
+
+          <FormControl>
+            <InputLabel id="sort-by-label">Sort By</InputLabel>
+            <Select
+              labelId="sort-by-label"
+              id="sort-by"
+              value={SortBy}
+              label="Sort By"
+              onChange={handleSortChange}
+            >
+              <MenuItem value="recent">Recent</MenuItem>
+              <MenuItem value="most_liked">Most Liked</MenuItem>
             </Select>
           </FormControl>
         </Box>
@@ -375,18 +399,19 @@ const Blogs = () => {
             {" "}
             For You
           </Button>
-
-          <Button
-            sx={{
-              fontSize: "18px",
-              borderBottom: !underline ? "4px solid white" : "",
-            }}
-            varient="contained"
-            onClick={handleFollowing}
-          >
-            {" "}
-            Following
-          </Button>
+          {token && (
+            <Button
+              sx={{
+                fontSize: "18px",
+                borderBottom: !underline ? "4px solid white" : "",
+              }}
+              varient="contained"
+              onClick={handleFollowing}
+            >
+              {" "}
+              Following
+            </Button>
+          )}
         </Box>
 
         <Divider />

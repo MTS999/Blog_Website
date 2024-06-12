@@ -3,14 +3,18 @@ import { useState, useEffect } from "react";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+
 import TextField from "@mui/material/TextField";
 import Alert from "@mui/material/Alert";
 import { useNavigate, useParams } from "react-router-dom";
-import { Avatar, Button, IconButton } from "@mui/material";
-import CameraAltIcon from '@mui/icons-material/CameraAlt'; // Import the camera icon
+import { Avatar, Button } from "@mui/material";
+// import Loader from '../Load2er';
+import UserProfileAvatar from "../components/UserProfileAvatar";
 import axios from "axios";
-import Loader from "../components/Loader";
+import { useTheme } from "@mui/material/styles";
+
 const Profile = () => {
+  const theme = useTheme();
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
@@ -64,7 +68,6 @@ const Profile = () => {
   }, [token]);
 
   useEffect(() => {
-    setLoader(true)
     const fetchData = async () => {
       try {
         const response = await axios.get(
@@ -98,10 +101,6 @@ const Profile = () => {
         }
       } catch (error) {
         console.error("Error fetching data:", error);
-      }
-      finally{
-        setLoader(false)
-
       }
     };
     if (token) {
@@ -152,41 +151,53 @@ const Profile = () => {
       isValid = false;
     }
 
+    // if (!formData.password) {
+    //   newError.password = "Password is required";
+    //   isValid = false;
+    // } else {
+    //   if (!/[a-z]/.test(formData.password)) {
+    //     newError.password = "Password must contain at least one lowercase character";
+    //     isValid = false;
+    //   } else if (!/[A-Z]/.test(formData.password)) {
+    //     newError.password = "Password must contain at least one uppercase character";
+    //     isValid = false;
+    //   } else if (!/\d/.test(formData.password)) {
+    //     newError.password = "Password must contain at least one number";
+    //     isValid = false;
+    //   } else if (formData.password.length < 8) {
+    //     newError.password = "Password must be at least 8 characters long";
+    //     isValid = false;
+    //   }
+    // }
+
     setError(newError);
     return isValid;
   };
 
   const handleSubmit = async () => {
-    const isValid = handleError();
-    setMessage({ text: "", type: "" });
-    if (!isValid) {
-      return;
-    }
-    setLoader(true)
-
+    // if (handleError())
     if (image) {
       const uploadedImageUrl = await handleImageUpload();
       formData.image_url = uploadedImageUrl;
     }
-    try {
-      const response = await axios.put(
-        `http://localhost:5003/update-user/${params.id}`,
-        formData,
-        {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setMessage({ text: "User updated successfully", type: "success" });
-      setEdit(false);
-    } catch (error) {
-      setMessage({ text: "Error updating user", type: "error" });
-      console.error("Error updating user:", error);
-    }
-    finally{
-      setLoader(false)
-
+    {
+      try {
+        const response = await axios.put(
+          `http://localhost:5003/update-user/${params.id}`,
+          formData,
+          {
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setMessage({ text: "User updated successfully", type: "success" });
+        setEdit(false);
+        // Optionally, you can fetch the updated data again or update state directly
+      } catch (error) {
+        setMessage({ text: "Error updating user", type: "error" });
+        console.error("Error updating user:", error);
+      }
     }
   };
 
@@ -232,14 +243,9 @@ const Profile = () => {
       setLoader(false);
     }
   };
-
   return (
     <>
-
-    {
-      loader &&
-      <Loader/>
-    }
+      {/* {loader && <Loader />} */}
       <Grid container sx={{ height: "100vh" }}>
         <Grid
           item
@@ -269,10 +275,10 @@ const Profile = () => {
                 mx: 4,
                 display: "flex",
                 flexDirection: "column",
-                alignItems: "center",
+                alignItems: "start",
                 width: "100%",
               }}
-              // imageUrl
+              imageUrl
             >
               <Typography
                 component="h6"
@@ -283,47 +289,70 @@ const Profile = () => {
                 {Edit ? "Edit Profile" : "User Profile"}
               </Typography>
 
-              <Box sx={{ position: 'relative', margin:"auto" }}>
+              <Avatar
+                sx={{
+                  width: 50,
+                  height: 50,
+                  marginRight: "10px",
+                  backgroundColor: "green",
+                }}
+                display="inline-block"
+              >
+                {formData.image_url ? (
+                  <img src={formData.image_url} alt="Profile" />
+                ) : (
+                  formData.user_name?.charAt(0).toUpperCase()
+                )}
+              </Avatar>
+              {/* {image && (
                 <Avatar
                   sx={{
-                    width: 100,
-                    height: 100,
+                    width: 50,
+                    height: 50,
                     marginRight: "10px",
-                    backgroundColor: "green",
+                    // backgroundColor: "green"
                   }}
-                  display="inline-block"
                 >
-                  {formData.image_url ? (
-                    <img src={formData.image_url} alt="Profile" style={{ width: '100%', height: '100%' }} />
-                  ) : (
-                    formData.user_name?.charAt(0).toUpperCase()
-                  )}
+                  <img
+                    // id="previewImage"
+                    src={formData.image_url}
+                    alt="Selected"
+                    style={{
+                      maxWidth: "100%",
+                      marginTop: "10px",
+                      borderRadius: "5px",
+                    }}
+                  />
                 </Avatar>
-                {Edit && (
-                  <>
-                    <IconButton
-                      sx={{
-                        position: 'absolute',
-                        bottom: 0,
-                        right: 0,
-                        backgroundColor: 'green',
-                        color:"yellow"
-                      }}
-                      onClick={() => document.getElementById('image').click()}
-                    >
-                      <CameraAltIcon />
-                    </IconButton>
-                    <input
-                      type="file"
-                      name="image"
-                      id="image"
-                      style={{ display: 'none' }}
-                      onChange={(e) => setImage(e.target.files[0])}
-                    />
-                  </>
-                )}
-              </Box>
+              )}
 
+              {!image && (
+                <UserProfileAvatar
+                  userId={params.id}
+                  userName={formData.user_name}
+                />
+              )} */}
+
+              <Box>
+                <input
+                  type="file"
+                  name="image"
+                  id="image"
+                  onChange={(e) => setImage(e.target.files[0])}
+                />
+                {/* {imageUrl && (
+                  <img
+                    id="previewImage"
+                    src={formData.image_url}
+                    alt="Selected"
+                    style={{
+                      maxWidth: "100%",
+                      marginTop: "10px",
+                      borderRadius: "5px",
+                    }}
+                  />
+                )} */}
+              </Box>
               <TextField
                 margin="normal"
                 required
@@ -339,11 +368,11 @@ const Profile = () => {
                   readOnly: !Edit,
                 }}
               />
-              {error.first_name && (
+              {/* {error.first_name && (
                 <Box mb={2} minWidth={"100%"}>
                   <Alert severity="error">{error.first_name}</Alert>
                 </Box>
-              )}
+              )} */}
 
               <TextField
                 margin="normal"
@@ -360,11 +389,11 @@ const Profile = () => {
                   readOnly: !Edit,
                 }}
               />
-              {error.last_name && (
+              {/* {error.last_name && (
                 <Box mb={2} minWidth={"100%"}>
                   <Alert severity="error">{error.last_name}</Alert>
                 </Box>
-              )}
+              )} */}
 
               <TextField
                 margin="normal"
@@ -381,11 +410,11 @@ const Profile = () => {
                   readOnly: !Edit,
                 }}
               />
-              {error.user_name && (
+              {/* {error.user_name && (
                 <Box mb={2} minWidth={"100%"}>
                   <Alert severity="error">{error.user_name}</Alert>
                 </Box>
-              )}
+              )} */}
 
               <TextField
                 margin="normal"
@@ -402,17 +431,19 @@ const Profile = () => {
                   readOnly: !Edit,
                 }}
               />
-              {error.email && (
+              {/* {error.email && (
                 <Box sx={{ width: "100%" }}>
                   <Typography
                     variant="body1"
                     color="initial"
                     sx={{ color: "red" }}
                   >
+                    {" "}
                     {error.email}
                   </Typography>
                 </Box>
-              )}
+              )} */}
+
               <TextField
                 id="role"
                 name="role"
@@ -448,21 +479,10 @@ const Profile = () => {
                   variant="contained"
                   fullWidth
                   size="large"
-                  sx={{ mt: 2,  }}
+                  sx={{ mt: 2, mb: 2 }}
                   onClick={handleSubmit}
                 >
                   Save
-                </Button>
-              )}
-                 {Edit && (
-                <Button
-                  variant="contained"
-                  fullWidth
-                  size="large"
-                  sx={{ mt: 2, mb: 2 }}
-                  onClick={()=>setEdit(false)}
-                >
-                  Cancle
                 </Button>
               )}
             </Box>

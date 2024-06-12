@@ -6,9 +6,13 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import axios from 'axios';
+import { Navigate, useNavigate } from 'react-router-dom';
+
+
 
 export default function BasicMenu(Props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const navigate=useNavigate()
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -45,31 +49,17 @@ export default function BasicMenu(Props) {
     }
 
   }
-  const handleEditRole = async () => {
 
-    handleClose()
-
-    try {
-      const response = await axios.put(`http://localhost:5003/update-role/${Props.userData._id}`,{}, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      Props.setRefreshTable(pre => !pre)
-
-      console.log(response);
-
-
-
+    const handleEdit=()=>{
+      navigate(`/adminuserprofile/${Props.userData._id}`)
+      handleClose()
 
     }
+    const handleProfile=()=>{
+      navigate(`/userInfo/${Props.userData._id}`)
+      handleClose()
 
-    catch (error) {
-      console.log(error);
     }
-
-  }
-
   return (
     <div>
       <MoreVertIcon
@@ -90,8 +80,8 @@ export default function BasicMenu(Props) {
         }}
       >
         <MenuItem onClick={handleDelete}>delete</MenuItem>
-        {/* <MenuItem onClick={handleClose}>edit</MenuItem> */}
-        <MenuItem onClick={handleEditRole}>Change role</MenuItem>
+        <MenuItem onClick={handleEdit}>Edit</MenuItem>
+        <MenuItem onClick={handleProfile}>Profile</MenuItem>
       </Menu>
     </div>
   );

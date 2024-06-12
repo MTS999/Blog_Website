@@ -58,7 +58,7 @@ const RecentBlogCard = ({ blog, userId, blogParam, setRefresh }) => {
 
 RecentBlogCard.propTypes = {
     blog: PropTypes.shape({
-        _id: PropTypes.string.isRequired,
+        _id: PropTypes.string,
         authorId: PropTypes.string.isRequired,
         user_name: PropTypes.string.isRequired,
         createdAt: PropTypes.string.isRequired,
@@ -67,7 +67,7 @@ RecentBlogCard.propTypes = {
         content: PropTypes.string.isRequired,
         category: PropTypes.string.isRequired,
     }).isRequired,
-    userId: PropTypes.string.isRequired,
+    userId: PropTypes.string,
     blogParam: PropTypes.any,
     setRefresh: PropTypes.func.isRequired,
 };

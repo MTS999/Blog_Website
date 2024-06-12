@@ -31,7 +31,8 @@ const BlogCard = ({ blog, userData, userId, blogParam, handle_reading_list, setR
                     flexDirection={"column"}
                     flexWrap={"wrap"}
                 >
-                    <Box display="flex" alignItems={"center"} mb={2}>
+
+                    <Box display="flex" alignItems={"center"} mb={2}  onClick={()=>navigate(`/userInfo/${blog.authorId}`)}>
                         <UserProfileAvatar userId={blog.authorId} userName={blog.user_name} />
                         <Box>
                             <Typography mr={1} display={"inline-block"} variant="h6"  fontWeight={"bold"}>

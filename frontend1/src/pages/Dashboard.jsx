@@ -11,8 +11,7 @@ import Paper from '@mui/material/Paper';
 // import Loader from '../Loader';.
 import BlogPostsBarChart from '../components/BlogPostsBarChart';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-// import ThumbDownAltIcon from '@mui/icons-material/ThumbDownAlt';
-
+import { useNavigate } from 'react-router-dom';
 const Dashboard = () => {
 
 
@@ -21,7 +20,8 @@ const Dashboard = () => {
     const [totalLikes, setTotalLikes] = React.useState(0)
     const [totalDisLikes, setTotalDisLikes] = React.useState(0)
     const token = localStorage.getItem("token")
-    console.log(allUserData);
+    const navigate=useNavigate()
+    // console.log(allUserData);
     // console.log(allBlogData);
 
     // function for api call to get all user data
@@ -76,7 +76,9 @@ const Dashboard = () => {
 
     // call both function in useEffect
     useEffect(() => {
-
+        if(!token){
+            navigate("/all")
+        }
         fetchUserData()
         fetcBlogData()
     }, [token])

@@ -17,7 +17,9 @@ const blogData = [
     { id: 10, title: "Vue.js Essentials", category: "Vue", published: "2023-05-20" },
 ];
 
+
 const countBlogPostsPerWeek = (data) => {
+      console.log(data);
     const weeksInYear = 52;
     const counts = Array(weeksInYear).fill(0); // Initialize an array with 52 zeros for each week
 

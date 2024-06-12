@@ -155,7 +155,7 @@ const Pending = () => {
                         <TableContainer sx={{ maxHeight: 440 }}>
                             <Box textAlign={"center"} mb={5}>
 
-                                <Typography variant="h4"  >Request for Author</Typography>
+                                <Typography variant="h4" fontWeight={"bold"}  margin={"auto"} mt={5}  >Request for Author</Typography>
                             </Box>
                             <Table stickyHeader aria-label="sticky table">
                                 <TableHead>
@@ -164,7 +164,7 @@ const Pending = () => {
                                             <TableCell
                                                 key={column.id}
                                                 align={column.align}
-                                                style={{ minWidth: column.minWidth, background: "#BDBDBD" }}
+                                                style={{ minWidth: column.minWidth, background: "#BDBDBD" ,fontSize:"20px" }}
                                             >
                                                 {column.label}
                                             </TableCell>

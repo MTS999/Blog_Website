@@ -3,14 +3,24 @@ import { useState, useEffect } from "react";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import startup from "../images/startup.jpg";
+import Logo from "../images/ClubNetlogo-copy.png";
+import InputAdornment from "@mui/material/InputAdornment";
+import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
 import Alert from "@mui/material/Alert";
-import { useNavigate, useParams } from "react-router-dom";
-import { Avatar, Button, IconButton } from "@mui/material";
-import CameraAltIcon from '@mui/icons-material/CameraAlt'; // Import the camera icon
+import { Link, resolvePath, useNavigate, useParams } from "react-router-dom";
+import { Button } from "@mui/material";
+// import Loader from '../Load2er';
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import MenuItem from "@mui/material/MenuItem";
 import axios from "axios";
-import Loader from "../components/Loader";
-const Profile = () => {
+import { useTheme } from "@mui/material/styles";
+
+const AdminUserprofile = () => {
+  const theme = useTheme();
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
@@ -18,9 +28,7 @@ const Profile = () => {
     email: "",
     password: "",
     role: "",
-    image_url: "",
   });
-
   const [error, setError] = useState({
     first_name: "",
     last_name: "",
@@ -29,20 +37,19 @@ const Profile = () => {
     password: "",
   });
 
+  console.log(error);
   const [loader, setLoader] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
   const [userData, setUserData] = useState(null);
   const [Edit, setEdit] = useState(false);
-
-  const [image, setImage] = useState(null);
-  const [imageUrl, setImageUrl] = useState("");
+  const [userRole, setUserRole] = useState("");
+  const [role, setRole] = useState(["admin", "reader", "author"]);
 
   const params = useParams();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
-  const userId = localStorage.getItem("userId");
+  // const userId = localStorage.getItem("userId");
 
   //find the user role
   useEffect(() => {
@@ -64,7 +71,6 @@ const Profile = () => {
   }, [token]);
 
   useEffect(() => {
-    setLoader(true)
     const fetchData = async () => {
       try {
         const response = await axios.get(
@@ -76,32 +82,27 @@ const Profile = () => {
           }
         );
         setUserData(response.data);
-        if (response.data) {
-          const {
-            first_name,
-            user_name,
-            last_name,
-            email,
-            role,
-            image_url,
-            contact_number,
-          } = response.data;
-          setFormData({
-            first_name: first_name || "",
-            last_name: last_name || "",
-            email: email || "",
-            user_name: user_name || "",
-            role: role || "",
-            image_url: image_url || "",
-            contact_number: contact_number || "",
-          });
-        }
+
+        const {
+          first_name,
+          user_name,
+          last_name,
+          email,
+          role,
+          image_url,
+          contact_number,
+        } = response.data;
+        setFormData({
+          first_name: first_name || "",
+          last_name: last_name || "",
+          email: email || "",
+          user_name: user_name || "",
+          role: role || "",
+          profile_image: image_url || "",
+          contact_number: contact_number || "",
+        });
       } catch (error) {
         console.error("Error fetching data:", error);
-      }
-      finally{
-        setLoader(false)
-
       }
     };
     if (token) {
@@ -152,94 +153,44 @@ const Profile = () => {
       isValid = false;
     }
 
+
     setError(newError);
     return isValid;
   };
 
   const handleSubmit = async () => {
+    console.log("how are oyyy");
     const isValid = handleError();
     setMessage({ text: "", type: "" });
     if (!isValid) {
       return;
     }
-    setLoader(true)
-
-    if (image) {
-      const uploadedImageUrl = await handleImageUpload();
-      formData.image_url = uploadedImageUrl;
-    }
-    try {
-      const response = await axios.put(
-        `http://localhost:5003/update-user/${params.id}`,
-        formData,
-        {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setMessage({ text: "User updated successfully", type: "success" });
-      setEdit(false);
-    } catch (error) {
-      setMessage({ text: "Error updating user", type: "error" });
-      console.error("Error updating user:", error);
-    }
-    finally{
-      setLoader(false)
-
-    }
-  };
-
-  useEffect(() => {
-    if (image) {
-      const imageUrl = URL.createObjectURL(image);
-      setImageUrl(imageUrl);
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        image_url: imageUrl,
-      }));
-    }
-  }, [image]);
-
-  const handleImageUpload = async () => {
-    setError(null);
-    setLoader(true);
-    try {
-      const data = new FormData();
-      data.append("file", image);
-      data.append("upload_preset", "hsgjgqg1");
-      data.append("cloud_name", "dwvl4hurg");
-
-      const response = await fetch(
-        "https://api.cloudinary.com/v1_1/dwvl4hurg/image/upload",
-        {
-          method: "POST",
-          body: data,
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Upload failed: " + response.statusText);
+    
+      try {
+        const response = await axios.put(
+          `http://localhost:5003/update-user/${params.id}`,
+          formData,
+          {
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log(response);
+        console.log("how are oyyyooooooooooooooooooooooooooooooooooo");
+        setMessage({ text: "User updated successfully", type: "success" });
+        setEdit(false);
+        // Optionally, you can fetch the updated data again or update state directly
+      } catch (error) {
+        setMessage({ text: "Error updating user", type: "error" });
+        console.error("Error updating user:", error);
       }
-
-      const jsonResponse = await response.json();
-      console.log("Upload successful:", jsonResponse);
-      return jsonResponse.url;
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      setError(error.message || "An error occurred during upload.");
-    } finally {
-      setLoader(false);
-    }
+    
   };
 
   return (
     <>
-
-    {
-      loader &&
-      <Loader/>
-    }
+      {/* {loader && <Loader />} */}
       <Grid container sx={{ height: "100vh" }}>
         <Grid
           item
@@ -269,10 +220,9 @@ const Profile = () => {
                 mx: 4,
                 display: "flex",
                 flexDirection: "column",
-                alignItems: "center",
+                alignItems: "start",
                 width: "100%",
               }}
-              // imageUrl
             >
               <Typography
                 component="h6"
@@ -280,49 +230,8 @@ const Profile = () => {
                 mb={2}
                 fontWeight={"bold"}
               >
-                {Edit ? "Edit Profile" : "User Profile"}
+                {Edit ? "Edit User" : "User Profile"}
               </Typography>
-
-              <Box sx={{ position: 'relative', margin:"auto" }}>
-                <Avatar
-                  sx={{
-                    width: 100,
-                    height: 100,
-                    marginRight: "10px",
-                    backgroundColor: "green",
-                  }}
-                  display="inline-block"
-                >
-                  {formData.image_url ? (
-                    <img src={formData.image_url} alt="Profile" style={{ width: '100%', height: '100%' }} />
-                  ) : (
-                    formData.user_name?.charAt(0).toUpperCase()
-                  )}
-                </Avatar>
-                {Edit && (
-                  <>
-                    <IconButton
-                      sx={{
-                        position: 'absolute',
-                        bottom: 0,
-                        right: 0,
-                        backgroundColor: 'green',
-                        color:"yellow"
-                      }}
-                      onClick={() => document.getElementById('image').click()}
-                    >
-                      <CameraAltIcon />
-                    </IconButton>
-                    <input
-                      type="file"
-                      name="image"
-                      id="image"
-                      style={{ display: 'none' }}
-                      onChange={(e) => setImage(e.target.files[0])}
-                    />
-                  </>
-                )}
-              </Box>
 
               <TextField
                 margin="normal"
@@ -413,18 +322,30 @@ const Profile = () => {
                   </Typography>
                 </Box>
               )}
-              <TextField
-                id="role"
-                name="role"
-                onChange={handleChange}
-                value={formData.role}
-                label="Role"
-                defaultValue={"mts"}
-                fullWidth
-                InputProps={{
-                  readOnly: true,
-                }}
-              />
+
+              {userRole === "admin" && (
+                <TextField
+                  // fullWidth
+                  id="role"
+                  name="role"
+                  onChange={handleChange}
+                  value={formData.role}
+                  select
+                  label="role"
+                  defaultValue={formData.role}
+                  fullWidth
+                >
+                  {role.map((option) => (
+                    <MenuItem
+                      key={option}
+                      value={option}
+                      defaultValue={formData.role}
+                    >
+                      {option}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              )}
 
               {message.text && (
                 <Box mb={2}>
@@ -448,19 +369,19 @@ const Profile = () => {
                   variant="contained"
                   fullWidth
                   size="large"
-                  sx={{ mt: 2,  }}
+                  sx={{ mt: 2 }}
                   onClick={handleSubmit}
                 >
                   Save
                 </Button>
               )}
-                 {Edit && (
+              {Edit && (
                 <Button
                   variant="contained"
                   fullWidth
                   size="large"
                   sx={{ mt: 2, mb: 2 }}
-                  onClick={()=>setEdit(false)}
+                  onClick={() => setEdit(false)}
                 >
                   Cancle
                 </Button>
@@ -473,4 +394,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default AdminUserprofile;

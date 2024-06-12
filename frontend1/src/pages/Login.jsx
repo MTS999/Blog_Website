@@ -190,7 +190,7 @@ const Login = () => {
               }}
             >
               <Typography component="h6" variant="h4" mb={2}>
-                Sign in to your Mailcub Account
+                Sign in to MTS Blog
               </Typography>
               <Typography variant="body1" textAlign={"start"} mb={2}>
                 Do not have an account yet?{" "}

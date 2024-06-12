@@ -235,7 +235,8 @@ const Signup = () => {
                         >
 
                             <Typography component="h6" variant="h4" mb={2} fontWeight={"bold"}>
-                                Get started with a   Forever Free Plan                          </Typography>
+                            Sign in to MTS Blog
+                            </Typography>
                             <Typography variant="body1" textAlign={"start"}>
                                 Already has an Account?
                                 {/* <span style={{ color: theme.palette.primary.main }}
