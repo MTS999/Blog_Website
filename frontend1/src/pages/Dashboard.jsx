@@ -34,7 +34,7 @@ const Dashboard = () => {
 
                 }
             })
-
+         
             setAllUserData(response.data.users)
 
         } catch (error) {
@@ -54,7 +54,7 @@ const Dashboard = () => {
                 }
             })
 
-            // console.log(response.data);
+            console.log(response.data);
             setAllBlogData(response.data)
             let totalLikes = 0
             response.data.forEach(element => {
@@ -89,10 +89,7 @@ const Dashboard = () => {
     return (
 
         <>
-            {/* <Box> */}
-
-
-            {/* </Box> */}
+         
 
             <Container maxWidth="lg" sx={{ marginTop: "130px" }}>
                 {allBlogData.length > 0 && (

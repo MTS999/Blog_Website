@@ -9,12 +9,10 @@ import InputAdornment from "@mui/material/InputAdornment";
 import TextField from "@mui/material/TextField";
 import SearchIcon from "@mui/icons-material/Search";
 import Box from "@mui/material/Box";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import { Divider } from "@mui/material";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
+
 import FormControl from "@mui/material/FormControl";
 import BlogCard from "../components/BlogCard";
 import Loader from "../components/Loader";
@@ -114,7 +112,7 @@ const Blogs = () => {
           },
         }
       );
-      console.log(response.data.result);
+      console.log(response.data);
       setBlogs(response.data.result);
       setTotalBlogs(response.data.totalCount);
     } catch (error) {

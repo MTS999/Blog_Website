@@ -46,11 +46,11 @@ const RecentBlogCard = ({ blog, userId, blogParam, setRefresh }) => {
             <CardActions>
                 <Like_Dislike blog={blog} setRefresh={setRefresh} />
                 <Button size="small" variant="contained" onClick={() => navigate(`/blog/${blog._id}`)}>Read</Button>
-                {userId === blog.authorId && blogParam && (
+                {/* {userId === blog.authorId && blogParam && (
                     <Button size="small" variant="contained" onClick={() => navigate(`/addblog`, { state: blog })}>
                         Edit
                     </Button>
-                )}
+                )} */}
             </CardActions>
         </Card>
     );

@@ -40,7 +40,7 @@ const Routess = () => {
 
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
-      <Route path="/mts" element={<ArslanChart />} />
+      {/* <Route path="/mts" element={<ArslanChart />} /> */}
     </Routes>
   );
 };

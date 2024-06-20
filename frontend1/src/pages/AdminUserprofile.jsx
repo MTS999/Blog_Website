@@ -1,20 +1,14 @@
-import React from "react";
 import { useState, useEffect } from "react";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import startup from "../images/startup.jpg";
-import Logo from "../images/ClubNetlogo-copy.png";
-import InputAdornment from "@mui/material/InputAdornment";
-import IconButton from "@mui/material/IconButton";
+
 import TextField from "@mui/material/TextField";
 import Alert from "@mui/material/Alert";
-import { Link, resolvePath, useNavigate, useParams } from "react-router-dom";
+import {  useParams } from "react-router-dom";
 import { Button } from "@mui/material";
 // import Loader from '../Load2er';
-import FormGroup from "@mui/material/FormGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
+
 import MenuItem from "@mui/material/MenuItem";
 import axios from "axios";
 import { useTheme } from "@mui/material/styles";
@@ -347,7 +341,7 @@ const AdminUserprofile = () => {
                 </TextField>
               )}
 
-              {message.text && (
+              {message.text && Edit=== false  &&(
                 <Box mb={2}>
                   <Alert severity={message.type}>{message.text}</Alert>
                 </Box>

@@ -9,6 +9,7 @@ import Like_Dislike from './Like_Dislike';
 import { useNavigate } from 'react-router-dom';
 
 const BlogCard = ({ blog, userData, userId, blogParam, handle_reading_list, setRefresh }) => {
+    console.log(blogParam);
     const navigate = useNavigate();
 
     return (
@@ -84,7 +85,7 @@ const BlogCard = ({ blog, userData, userId, blogParam, handle_reading_list, setR
                                     Read
                                 </Button>
                             </Box>
-                            {userId === blog.authorId && blogParam && (
+                            {userId === blog.authorId && blogParam ==="myblog"&& (
                                 <Button
                                     size="small"
                                     variant="contained"

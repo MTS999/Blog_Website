@@ -116,14 +116,8 @@ function ResponsiveDrawer(props) {
       fetchData();
     }
   }, [token]);
-  //  end
-  // useEffect(() => {
-  //   const token = localStorage.getItem("token");
 
-  //   if (!token) {
-  //     navigate("/login");
-  //   }
-  // });
+ 
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -212,7 +206,7 @@ function ResponsiveDrawer(props) {
               <ListItem
                 key={"newuser"}
                 selected={selectedItem === "newuser"}
-                onClick={() => handleListItemClick("dashboard")}
+                onClick={() => handleListItemClick("newuser")}
                 disablePadding
               >
                 <ListItemButton onClick={() => navigate(`/add-new-user`)}>

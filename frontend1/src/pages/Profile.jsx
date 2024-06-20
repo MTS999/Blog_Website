@@ -1,50 +1,40 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import TextField from "@mui/material/TextField";
-import Alert from "@mui/material/Alert";
-import { useNavigate, useParams } from "react-router-dom";
-import { Avatar, Button, IconButton } from "@mui/material";
-import CameraAltIcon from '@mui/icons-material/CameraAlt'; // Import the camera icon
+import React, { useState, useEffect } from "react";
+import {
+  Grid,
+  Box,
+  Typography,
+  TextField,
+  Alert,
+  Avatar,
+  Button,
+  IconButton,
+} from "@mui/material";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
 import Loader from "../components/Loader";
+
 const Profile = () => {
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
     user_name: "",
     email: "",
-    password: "",
     role: "",
     image_url: "",
   });
-
-  const [error, setError] = useState({
-    first_name: "",
-    last_name: "",
-    user_name: "",
-    email: "",
-    password: "",
-  });
-
+  const [error, setError] = useState({});
   const [loader, setLoader] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
   const [userData, setUserData] = useState(null);
-  const [Edit, setEdit] = useState(false);
-
+  const [edit, setEdit] = useState(false);
   const [image, setImage] = useState(null);
   const [imageUrl, setImageUrl] = useState("");
-
+  const [userRole, setUserRole] = useState("");
   const params = useParams();
   const navigate = useNavigate();
-
   const token = localStorage.getItem("token");
-  const userId = localStorage.getItem("userId");
 
-  //find the user role
   useEffect(() => {
     const fetchUserRole = async () => {
       try {
@@ -64,44 +54,30 @@ const Profile = () => {
   }, [token]);
 
   useEffect(() => {
-    setLoader(true)
+    setLoader(true);
     const fetchData = async () => {
       try {
         const response = await axios.get(
           `http://localhost:5003/userdata/${params.id}`,
           {
             headers: {
-              authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${token}`,
             },
           }
         );
         setUserData(response.data);
-        if (response.data) {
-          const {
-            first_name,
-            user_name,
-            last_name,
-            email,
-            role,
-            image_url,
-            contact_number,
-          } = response.data;
-          setFormData({
-            first_name: first_name || "",
-            last_name: last_name || "",
-            email: email || "",
-            user_name: user_name || "",
-            role: role || "",
-            image_url: image_url || "",
-            contact_number: contact_number || "",
-          });
-        }
+        setFormData({
+          first_name: response.data.first_name || "",
+          last_name: response.data.last_name || "",
+          email: response.data.email || "",
+          user_name: response.data.user_name || "",
+          role: response.data.role || "",
+          image_url: response.data.image_url || "",
+        });
       } catch (error) {
         console.error("Error fetching data:", error);
-      }
-      finally{
-        setLoader(false)
-
+      } finally {
+        setLoader(false);
       }
     };
     if (token) {
@@ -121,7 +97,7 @@ const Profile = () => {
     let isValid = true;
     const nameFormat = /^[a-zA-Z]+$/;
     const emailFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const newError = { first_name: "", last_name: "", email: "", password: "" };
+    const newError = {};
 
     if (!formData.first_name) {
       newError.first_name = "First Name is required";
@@ -162,19 +138,20 @@ const Profile = () => {
     if (!isValid) {
       return;
     }
-    setLoader(true)
+    setLoader(true);
 
-    if (image) {
-      const uploadedImageUrl = await handleImageUpload();
-      formData.image_url = uploadedImageUrl;
-    }
     try {
-      const response = await axios.put(
+      let uploadedImageUrl = formData.image_url;
+      if (image) {
+        uploadedImageUrl = await handleImageUpload();
+      }
+      const updatedData = { ...formData, image_url: uploadedImageUrl };
+      await axios.put(
         `http://localhost:5003/update-user/${params.id}`,
-        formData,
+        updatedData,
         {
           headers: {
-            authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -183,10 +160,8 @@ const Profile = () => {
     } catch (error) {
       setMessage({ text: "Error updating user", type: "error" });
       console.error("Error updating user:", error);
-    }
-    finally{
-      setLoader(false)
-
+    } finally {
+      setLoader(false);
     }
   };
 
@@ -202,8 +177,6 @@ const Profile = () => {
   }, [image]);
 
   const handleImageUpload = async () => {
-    setError(null);
-    setLoader(true);
     try {
       const data = new FormData();
       data.append("file", image);
@@ -223,23 +196,39 @@ const Profile = () => {
       }
 
       const jsonResponse = await response.json();
-      console.log("Upload successful:", jsonResponse);
       return jsonResponse.url;
     } catch (error) {
       console.error("Error uploading image:", error);
       setError(error.message || "An error occurred during upload.");
+    }
+  };
+  const handlePending = async () => {
+    setLoader(true);
+    try {
+      const response = await axios.put(
+        `http://localhost:5003/pending`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setMessage({
+        text: "Pending request submitted successfully",
+        type: "success",
+      });
+      setUserRole(response.data.role); // Update the user role in the frontend
+    } catch (error) {
+      setMessage({ text: "Error submitting pending request", type: "error" });
+      console.error("Error submitting pending request:", error);
     } finally {
       setLoader(false);
     }
   };
-
   return (
     <>
-
-    {
-      loader &&
-      <Loader/>
-    }
+      {loader && <Loader />}
       <Grid container sx={{ height: "100vh" }}>
         <Grid
           item
@@ -249,7 +238,7 @@ const Profile = () => {
             justifyContent: "center",
             alignItems: "center",
             padding: "0px",
-            margin: " 0px auto",
+            margin: "0px auto",
           }}
         >
           <Box
@@ -272,18 +261,12 @@ const Profile = () => {
                 alignItems: "center",
                 width: "100%",
               }}
-              // imageUrl
             >
-              <Typography
-                component="h6"
-                variant="h4"
-                mb={2}
-                fontWeight={"bold"}
-              >
-                {Edit ? "Edit Profile" : "User Profile"}
+              <Typography component="h6" variant="h4" mb={2} fontWeight="bold">
+                {edit ? "Edit Profile" : "User Profile"}
               </Typography>
 
-              <Box sx={{ position: 'relative', margin:"auto" }}>
+              <Box sx={{ position: "relative", margin: "auto" }}>
                 <Avatar
                   sx={{
                     width: 100,
@@ -294,22 +277,26 @@ const Profile = () => {
                   display="inline-block"
                 >
                   {formData.image_url ? (
-                    <img src={formData.image_url} alt="Profile" style={{ width: '100%', height: '100%' }} />
+                    <img
+                      src={formData.image_url}
+                      alt="Profile"
+                      style={{ width: "100%", height: "100%" }}
+                    />
                   ) : (
                     formData.user_name?.charAt(0).toUpperCase()
                   )}
                 </Avatar>
-                {Edit && (
+                {edit && (
                   <>
                     <IconButton
                       sx={{
-                        position: 'absolute',
+                        position: "absolute",
                         bottom: 0,
                         right: 0,
-                        backgroundColor: 'green',
-                        color:"yellow"
+                        backgroundColor: "green",
+                        color: "yellow",
                       }}
-                      onClick={() => document.getElementById('image').click()}
+                      onClick={() => document.getElementById("image").click()}
                     >
                       <CameraAltIcon />
                     </IconButton>
@@ -317,7 +304,7 @@ const Profile = () => {
                       type="file"
                       name="image"
                       id="image"
-                      style={{ display: 'none' }}
+                      style={{ display: "none" }}
                       onChange={(e) => setImage(e.target.files[0])}
                     />
                   </>
@@ -333,14 +320,11 @@ const Profile = () => {
                 value={formData.first_name}
                 onChange={handleChange}
                 fullWidth
-                autoComplete="email"
-                autoFocus
-                InputProps={{
-                  readOnly: !Edit,
-                }}
+                autoComplete="first_name"
+                InputProps={{ readOnly: !edit }}
               />
               {error.first_name && (
-                <Box mb={2} minWidth={"100%"}>
+                <Box mb={2} minWidth="100%">
                   <Alert severity="error">{error.first_name}</Alert>
                 </Box>
               )}
@@ -354,14 +338,11 @@ const Profile = () => {
                 value={formData.last_name}
                 onChange={handleChange}
                 fullWidth
-                autoComplete="email"
-                autoFocus
-                InputProps={{
-                  readOnly: !Edit,
-                }}
+                autoComplete="last_name"
+                InputProps={{ readOnly: !edit }}
               />
               {error.last_name && (
-                <Box mb={2} minWidth={"100%"}>
+                <Box mb={2} minWidth="100%">
                   <Alert severity="error">{error.last_name}</Alert>
                 </Box>
               )}
@@ -376,13 +357,10 @@ const Profile = () => {
                 onChange={handleChange}
                 fullWidth
                 autoComplete="user_name"
-                autoFocus
-                InputProps={{
-                  readOnly: !Edit,
-                }}
+                InputProps={{ readOnly: !edit }}
               />
               {error.user_name && (
-                <Box mb={2} minWidth={"100%"}>
+                <Box mb={2} minWidth="100%">
                   <Alert severity="error">{error.user_name}</Alert>
                 </Box>
               )}
@@ -397,33 +375,22 @@ const Profile = () => {
                 onChange={handleChange}
                 fullWidth
                 autoComplete="email"
-                autoFocus
-                InputProps={{
-                  readOnly: !Edit,
-                }}
+                InputProps={{ readOnly: !edit }}
               />
               {error.email && (
-                <Box sx={{ width: "100%" }}>
-                  <Typography
-                    variant="body1"
-                    color="initial"
-                    sx={{ color: "red" }}
-                  >
-                    {error.email}
-                  </Typography>
+                <Box mb={2} minWidth="100%">
+                  <Alert severity="error">{error.email}</Alert>
                 </Box>
               )}
+
               <TextField
                 id="role"
                 name="role"
                 onChange={handleChange}
                 value={formData.role}
                 label="Role"
-                defaultValue={"mts"}
                 fullWidth
-                InputProps={{
-                  readOnly: true,
-                }}
+                InputProps={{ readOnly: true }}
               />
 
               {message.text && (
@@ -431,39 +398,50 @@ const Profile = () => {
                   <Alert severity={message.type}>{message.text}</Alert>
                 </Box>
               )}
+              {userRole === "reader" &&
+                <Button
+                  sx={{ mt: 2, mb: 2 }}
+                  variant="contained"
+                  fullWidth
+                  size="large"
+                  onClick={handlePending}
+                >
+                  
+                  Request for author
+                </Button>
+              }
 
-              {Edit === false && (
+              {!edit ? (
                 <Button
                   variant="contained"
                   fullWidth
                   size="large"
-                  sx={{ mt: 2, mb: 2 }}
-                  onClick={() => setEdit((pre) => !pre)}
+                  sx={{ mt: 2 }}
+                  onClick={() => setEdit(true)}
                 >
                   Edit
                 </Button>
-              )}
-              {Edit && (
-                <Button
-                  variant="contained"
-                  fullWidth
-                  size="large"
-                  sx={{ mt: 2,  }}
-                  onClick={handleSubmit}
-                >
-                  Save
-                </Button>
-              )}
-                 {Edit && (
-                <Button
-                  variant="contained"
-                  fullWidth
-                  size="large"
-                  sx={{ mt: 2, mb: 2 }}
-                  onClick={()=>setEdit(false)}
-                >
-                  Cancle
-                </Button>
+              ) : (
+                <>
+                  <Button
+                    variant="contained"
+                    fullWidth
+                    size="large"
+                    sx={{ mt: 2 }}
+                    onClick={handleSubmit}
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    variant="contained"
+                    fullWidth
+                    size="large"
+                    sx={{ mt: 2, mb: 2 }}
+                    onClick={() => setEdit(false)}
+                  >
+                    Cancel
+                  </Button>
+                </>
               )}
             </Box>
           </Box>
