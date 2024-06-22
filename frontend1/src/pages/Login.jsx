@@ -113,7 +113,12 @@ const Login = () => {
     <>
       {/* {loader && <Loader />} */}
 
-      <Grid container sx={{ height: "100vh" }} height={"100vh"} backgroundColor={"background.default"}>
+      <Grid
+        container
+        sx={{ height: "100vh" }}
+        height={"100vh"}
+        backgroundColor={"background.default"}
+      >
         <Grid
           item
           xl={2}
@@ -128,7 +133,7 @@ const Login = () => {
           <Box
             component={"img"}
             sx={{
-              width: "250px",
+              width: "150px",
               height: "auto",
               mt: "30px",
               color: "red",
@@ -189,24 +194,31 @@ const Login = () => {
                 width: "100%",
               }}
             >
-              <Typography component="h6" variant="h4" mb={2}>
-                Sign in to MTS Blog
-              </Typography>
-              <Typography variant="body1" textAlign={"start"} mb={2}>
-                Do not have an account yet?{" "}
-                <strong>
-                  <Link
-                    to={"/signup"}
-                    style={{
-                      textDecoration: "none",
-                      color: theme.palette.primary.main,
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Sign up
-                  </Link>
-                </strong>
-              </Typography>
+              <Box textAlign={"center"} width={"100%"}>
+                <Typography
+                  component="h6"
+                  variant="h4"
+                  fontWeight={"bold"}
+                  mb={2}
+                >
+                  Sign in to MTS Blog
+                </Typography>
+                <Typography variant="body1" textAlign={"center"} mb={2}>
+                  Do not have an account yet?{" "}
+                  <strong>
+                    <Link
+                      to={"/signup"}
+                      style={{
+                        textDecoration: "none",
+                        color: theme.palette.primary.main,
+                        fontWeight: "bold",
+                      }}
+                    >
+                      Sign up
+                    </Link>
+                  </strong>
+                </Typography>
+              </Box>
 
               <TextField
                 margin="normal"
@@ -278,7 +290,7 @@ const Login = () => {
                   }}
                 >
                   {" "}
-                  <strong>Forgot your password</strong>
+                  {/* <strong>Forgot your password</strong> */}
                 </Link>
               </Typography>
               <Button

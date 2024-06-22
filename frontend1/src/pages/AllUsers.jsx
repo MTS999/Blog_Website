@@ -23,8 +23,8 @@ const columns = [
   { id: "index", label: "#", minWidth: 50, align: "center" },
   { id: "action", label: "Action", minWidth: 170, align: "center" },
   { id: "image", label: "image", minWidth: 170, align: "center" },
-  { id: "first_name", label: "First Name", minWidth: 170 },
-  { id: "last_name", label: "Last Name", minWidth: 170 },
+  { id: "first_name", label: "First Name", minWidth: 170, align: "center" },
+  { id: "last_name", label: "Last Name", minWidth: 170 , align: "center"},
   { id: "email", label: "Email", minWidth: 170, align: "center" },
   { id: "role", label: "role", minWidth: 170, align: "center" },
   { id: "blog", label: "blog", minWidth: 170, align: "center" },
@@ -37,7 +37,7 @@ const columns = [
 export default function AllUsers() {
   const [loader, setLoader] = React.useState(false);
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(8);
+  const [rowsPerPage, setRowsPerPage] = React.useState(6);
   const [totalCount, settotalCount] = React.useState(0);
   const [allUserData, setAllUserData] = React.useState([]);
   const [allBlogData, setAllBlogData] = React.useState([]);
@@ -121,9 +121,10 @@ export default function AllUsers() {
   return (
     <>
       {loader && <Loader />}
-      <Paper m sx={{ width: "100%", overflow: "hidden", marginTop: "100px" }}>
+      <Paper m sx={{ width: "100%", overflow: "hidden", marginTop: "64px" }}>
         <Typography variant="h3" mt={3} fontWeight={"bold"}>All Uesrs</Typography>
-        <TableContainer sx={{ maxHeight: 600 }}>
+        {/* <hr /> */}
+        <TableContainer sx={{ maxHeight: 595 }}>
           <Box mb={3} textAlign={"center"}></Box>
           <Table stickyHeader aria-label="sticky table">
             <TableHead>
@@ -207,7 +208,7 @@ export default function AllUsers() {
                       {user.first_name}
                     </TableCell>
                     <TableCell
-                      align="left"
+                      align="center"
                       style={{
                         minWidth: columns[1].minWidth,
                         fontSize: "18px",
@@ -288,7 +289,7 @@ export default function AllUsers() {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[4, 8, 100]}
+          rowsPerPageOptions={[6, 8, 100]}
           component="div"
           count={totalCount}
           rowsPerPage={rowsPerPage}

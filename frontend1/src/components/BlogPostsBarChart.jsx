@@ -52,7 +52,7 @@ const BlogPostsBarChart = ({ allBlogData }) => {
                 xAxis={[{ data: weeks, scaleType: 'band' }]}
                 margin={{ top: 10, bottom: 30, left: 40, right: 10 }}
             />
-            <Typography variant="h3">Blog Chart</Typography>
+            <Typography variant="h4" fontWeight={"bold"}>Blog Chart</Typography>
         </>
     );
 };

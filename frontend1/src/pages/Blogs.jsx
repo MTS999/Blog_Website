@@ -83,7 +83,7 @@ const Blogs = () => {
 
   const fetchData = async () => {
     try {
-      let url = `http://localhost:5003/blogs`;
+      let url = `http://localhost:5004/blogs`;
       if (params.blog) {
         url += `/${params.blog}`;
       } else {
@@ -91,16 +91,15 @@ const Blogs = () => {
       }
 
       const queryParams = new URLSearchParams();
+      queryParams.append("page", page);
+      queryParams.append("limit", rowsPerPage);
+      queryParams.append("sort", SortBy === "most_liked" ? "likes" : "recent");
 
-      console.log(url, page, rowsPerPage);
-      queryParams.append("page", page); // assuming you have 'page' state for the current page number
-      queryParams.append("limit", rowsPerPage); // assuming you have 'limit' state for the number of blogs per page
-
-      if (SortBy === "most_liked") {
-        queryParams.append("sort", "likes");
-      } else {
-        queryParams.append("sort", "recent");
+      if (Search) {
+        queryParams.append("searchBy", SearchBy);
+        queryParams.append("search", Search);
       }
+
       url += `?${queryParams.toString()}`;
 
       const response = await axios.post(
@@ -112,7 +111,6 @@ const Blogs = () => {
           },
         }
       );
-      console.log(response.data);
       setBlogs(response.data.result);
       setTotalBlogs(response.data.totalCount);
     } catch (error) {
@@ -125,7 +123,7 @@ const Blogs = () => {
   useEffect(() => {
     setLoader(true);
     fetchData();
-  }, [params, page, rowsPerPage, SortBy]);
+  }, [params, page, rowsPerPage, SortBy, Search, SearchBy]);
 
   useEffect(() => {
     fetchData();
@@ -286,7 +284,9 @@ const Blogs = () => {
         />
       ))
     ) : (
-      <Typography variant="h6">No Blogs Available</Typography>
+     < Box height={"400px"} width={"100%"} textAlign={"center"} sx={{display:"flex",alignItems:"center",justifyContent:"center"}} >
+      <Typography  variant="h3" fontWeight={"bold"}>No  Available</Typography>
+     </Box>
     );
 
   return (
@@ -356,7 +356,7 @@ const Blogs = () => {
               />
             </RadioGroup>
           </FormControl> */}
-          <FormControl>
+          <FormControl >
             <InputLabel id="search-by-label">Search</InputLabel>
             <Select
               labelId="search-by-label"
@@ -442,17 +442,19 @@ const Blogs = () => {
             ) : (
               BlogData
             )}
-            <Box display={"block"} textAlign={"end"}>
-              <TablePagination
-                rowsPerPageOptions={[4, 8, 20]}
-                component="div"
-                count={totalBlogs}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-              />
-            </Box>
+            { BlogData.length>0 &&
+              <Box display={"block"} textAlign={"end"} width={"100%"}>
+                <TablePagination
+                  rowsPerPageOptions={[4, 8, 20]}
+                  component="div"
+                  count={totalBlogs}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+              </Box>
+            }
           </Grid>
 
           <Divider />
@@ -472,7 +474,7 @@ const Blogs = () => {
             xs={12}
             lg={4}
           >
-            <Typography variant="h3" mb={3}>
+            <Typography variant="h4" fontWeight={"bold"} mb={3}>
               Recent Posts
             </Typography>
             <Box

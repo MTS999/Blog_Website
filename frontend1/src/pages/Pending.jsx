@@ -16,9 +16,9 @@ import { Chip, Typography, Box } from '@mui/material';
 const columns = [
     { id: 'index', label: '#', minWidth: 50, align: 'center' },
     // { id: 'action', label: 'Action', minWidth: 170, align: 'center' },
-    { id: 'first_name', label: 'First Name', minWidth: 170 },
-    { id: 'last_name', label: 'Last Name', minWidth: 170 },
-    { id: 'email', label: 'Email', minWidth: 170 },
+    { id: 'first_name', label: 'First Name', minWidth: 170 , align: 'center'},
+    { id: 'last_name', label: 'Last Name', minWidth: 170, align: 'center' },
+    { id: 'email', label: 'Email', minWidth: 170 , align: 'center'},
 
     { id: 'createdAt', label: 'Created At', minWidth: 230, align: 'center' },
     { id: 'updatedAt', label: 'Updated At', minWidth: 230, align: 'center' },
@@ -146,7 +146,7 @@ const Pending = () => {
                     >
 
 
-                        <Typography variant="h4"  mt={20}>No Request here</Typography>
+                        <Typography variant="h4" fontWeight={"bold "} mt={20}>No Request here</Typography>
                     </Box>
 
                     :
@@ -178,9 +178,9 @@ const Pending = () => {
                                             {/* <TableCell align="center" style={{ minWidth: columns[9].minWidth, fontSize: "18px" }}>
                                                 <Dialog1 userId={user.user._id} setRefreshTable={setRefreshTable} userData={user} />
                                             </TableCell> */}
-                                            <TableCell align="left" style={{ minWidth: columns[0].minWidth, fontSize: "18px" }}>{user.first_name}</TableCell>
-                                            <TableCell align="left" style={{ minWidth: columns[1].minWidth, fontSize: "18px" }}>{user.last_name}</TableCell>
-                                            <TableCell align="left" style={{ minWidth: columns[2].minWidth, fontSize: "18px" }}>{user.email}</TableCell>
+                                            <TableCell align="center" style={{ minWidth: columns[0].minWidth, fontSize: "18px" }}>{user.first_name}</TableCell>
+                                            <TableCell align="center" style={{ minWidth: columns[1].minWidth, fontSize: "18px" }}>{user.last_name}</TableCell>
+                                            <TableCell align="center" style={{ minWidth: columns[2].minWidth, fontSize: "18px" }}>{user.email}</TableCell>
 
 
 

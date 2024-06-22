@@ -198,13 +198,13 @@ const AddNewUser = () => {
             >
               <Typography
                 component="h6"
-                variant="h4"
-                mb={2}
+                variant="h3"
+                mb={4}
                 fontWeight={"bold"}
                 alignContent={"center"}
                 margin={"auto"}
               >
-                Add new user{" "}
+                Add New User{" "}
               </Typography>
 
               <TextField

@@ -178,7 +178,6 @@ const Signup = () => {
             <Grid container sx={{ height: "100vh" }}   backgroundColor={"background.default"}>
 
                 <Grid item xl={2} lg={2} md={2} sm={3} sx={{
-                    // backgroundColor: "green",
                     display: { xs: 'none', md: 'block' },
                 }} textAlign={"end"}>
                     <Box
@@ -233,11 +232,12 @@ const Signup = () => {
                                 width: "100%"
                             }}
                         >
+                       <Box textAlign={"center"} width={"100%"}>
 
                             <Typography component="h6" variant="h4" mb={2} fontWeight={"bold"}>
-                            Sign in to MTS Blog
+                            Sign up to MTS Blog
                             </Typography>
-                            <Typography variant="body1" textAlign={"start"}>
+                            <Typography variant="body1" textAlign={"center"}>
                                 Already has an Account?
                                 {/* <span style={{ color: theme.palette.primary.main }}
                                 ><Link style={{ textDecoration: "none" }} to={"/login"}>Login</Link></span> */}
@@ -245,6 +245,7 @@ const Signup = () => {
                                     <Link style={{ textDecoration: "none", color: theme.palette.primary.main }} to={"/login"}>Login</Link>
                                 </span>
                             </Typography>
+                                </Box>
 
                             <TextField
                                 margin='normal'

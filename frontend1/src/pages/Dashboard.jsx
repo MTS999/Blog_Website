@@ -11,6 +11,8 @@ import Paper from '@mui/material/Paper';
 // import Loader from '../Loader';.
 import BlogPostsBarChart from '../components/BlogPostsBarChart';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+
 import { useNavigate } from 'react-router-dom';
 const Dashboard = () => {
 
@@ -260,7 +262,7 @@ const Dashboard = () => {
                                     maxWidth: 370,
                                     width: "100%",
                                     height: 220,
-                                    backgroundColor: "#FFE7D9"
+                                    backgroundColor: "#E9FCD4"
                                 },
                             }}
                         >
@@ -297,7 +299,7 @@ const Dashboard = () => {
                                     maxWidth: 370,
                                     width: "100%",
                                     height: 220,
-                                    backgroundColor: "#FFE7D9"
+                                    backgroundColor: "#D0F2FF"
                                 },
                             }}
                         >
@@ -307,7 +309,7 @@ const Dashboard = () => {
                                 justifyContent: "center",
                                 flexDirection: "column"
                             }} >
-                                <GroupIcon sx={{ marginBottom: "20px" , color:"black" }} />
+                                <ThumbDownIcon sx={{ marginBottom: "20px" , color:"black" }} />
                                 <Typography variant="h4" color="initial" style={{ fontWeight: 'bold' }}>
                                     {totalDisLikes}
 

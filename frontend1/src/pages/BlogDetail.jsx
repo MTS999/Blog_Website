@@ -384,6 +384,7 @@ export const BlogDetail = () => {
                         >
                             <Box maxWidth={700}
                                 // border={"2px solid red"}
+                                borderRadius={"5px"}
                                 backgroundColor="#202837"
 
                                 sx={{
@@ -479,7 +480,9 @@ export const BlogDetail = () => {
                                                 top: "100px",// This adds space at the top
                                                 height: 'calc(100% - 100px)',
                                                 // width:"50px"// Adjusts height if necessary
-                                                width : {sm:"400px"}
+                                                width : {sm:"400px"},
+                                                // backgroundColor:"green",
+                                                borderRadius:"10px"
                                             }
                                         }}
                                         anchor={state} open={open} onClose={toggleDrawer(false)}>
@@ -514,7 +517,7 @@ export const BlogDetail = () => {
                                                         variant='contained' size='small' onClick={handleAddComment}>Add </Button>
                                                 </Box>
                                             </Box>
-                                            <Typography variant="h6" > All Comments ({comments.length})</Typography>
+                                            <Typography variant="h6" mb={3} > All Comments ({comments.length})</Typography>
                                             {comments.length > 0 &&
                                                 <Box key={"12"} sx={{ width: "100%" }} border={"2px solid #EAEAEA"} borderRadius={3} p={2}>
 
@@ -540,9 +543,7 @@ export const BlogDetail = () => {
                                                                         {userId === comment.authorId &&
                                                                             <>
                                                                                 <IconButton onClick={() => handleDelete(comment._id)}><DeleteIcon /></IconButton>
-                                                                                {/* <Button variant='contained' onClick={() => handleEdit(comment._id)} >Edit</Button>
 
-              {/* edit content is pending */}
                                                                             </>
 
                                                                         }
@@ -585,6 +586,7 @@ export const BlogDetail = () => {
                                     recentBlogs.map((blog) => {
                                         return (
                                             <Card key={blog._id} sx={{
+                                                borderRadius:"5px",
 
                                                 width: "100%", maxWidth: 300, marginBottom: "20px", minWidth: 200,
                                                 padding: "15px",

@@ -142,21 +142,17 @@ app.get("/getalluserdata", async (request, response) => {
   }
 });
 
-app.get("/getallblogdata", async(request,response)=>{
-
-
-  response
+app.get("/getallblogdata", async (request, response) => {
+  response;
   try {
-    
-    const allblogs=await BlogPost.find();
-     console.log(allblogs);
-    response.json( allblogs );
+    const allblogs = await BlogPost.find();
+    console.log(allblogs);
+    response.json(allblogs);
   } catch (error) {
     console.error("Error fetching blogs:", error);
     response.status(500).json({ message: "Internal server error" });
   }
-
-})
+});
 
 app.get("/userdata/:userId", async (req, res) => {
   try {
@@ -421,8 +417,7 @@ app.post("/blogs/:blog", async (request, response) => {
           { $limit: limit },
           ]);
         console.log(totalCount);
- 
-   
+
       if (result.length > 0) {
         return response.send({ totalCount, result });
       } else {
@@ -526,6 +521,153 @@ app.get("/recent-blogs", async (request, response) => {
   }
 });
 
+// app.post("/blogs/:blog", async (request, response) => {
+//   try {
+//     let query = {};
+//     let page = parseInt(request.query.page, 10);
+//     if (isNaN(page) || page < 0) {
+//       page = 0; // Adjusted to zero-based index for skip
+//     }
+//     const limit = parseInt(request.query.limit, 10);
+//     const skip = page * limit;
+
+//     const sort = request.query.sort || "recent";
+//     let sortOption = { createdAt: -1 }; // Default sort by recent
+
+//     if (sort === "likes") {
+//       sortOption = { likesCount: -1 };
+//     }
+
+//     const searchBy = request.query.searchBy;
+//     const search = request.query.search;
+//     console.log("mtssss");
+//     console.log(query);
+//     console.log(search);
+
+//     if (search && searchBy) {
+//       if (searchBy === "title") {
+//         query.title = { $regex: search, $options: "i" };
+//       } else if (searchBy === "user_name") {
+//         const user = await Users.find({
+//           user_name: { $regex: search, $options: "i" },
+//         });
+//         if (user) {
+//           console.log(user, "sdjk,cdskc");
+//           query.authorId = new ObjectId(user._id);
+//         } else {
+//           return response.send({ totalCount: 0, result: [] });
+//         }
+//       }
+//     }
+
+//     if (request.params.blog === "myblog") {
+//       const id = request.body.userId;
+//       query.authorId = new ObjectId(id);
+
+//       let totalCount = await BlogPost.countDocuments(query);
+//       let result = await BlogPost.aggregate([
+//         { $match: query },
+//         { $addFields: { likesCount: { $size: "$likes" } } },
+//         { $sort: sortOption },
+//         { $skip: skip },
+//         { $limit: limit },
+//       ]);
+//       if (result.length > 0) {
+//         return response.send({ totalCount, result });
+//       } else {
+//         return response.send("No blogs found");
+//       }
+//     } else if (request.params.blog === "reading-list") {
+//       const userId = request.body.userId;
+//       const currentUser = await Users.findById(userId);
+
+//       if (!currentUser) {
+//         return response.status(404).json({ message: "User not found" });
+//       }
+
+//       const readingList = currentUser.reading_list;
+//       query._id = { $in: readingList };
+
+//       let totalCount = await BlogPost.countDocuments(query);
+//       const result = await BlogPost.aggregate([
+//         { $match: query },
+//         { $addFields: { likesCount: { $size: "$likes" } } },
+//         { $sort: sortOption },
+//         { $skip: skip },
+//         { $limit: limit },
+//       ]);
+
+//       return response.send({ result, totalCount });
+//     } else if (request.params.blog === "following") {
+//       const userId = request.body.userId;
+//       const currentUser = await Users.findById(userId);
+
+//       if (!currentUser) {
+//         return response.status(404).json({ message: "User not found" });
+//       }
+
+//       const followingUsers = currentUser.following;
+//       query.authorId = { $in: followingUsers };
+
+//       let totalCount = await BlogPost.countDocuments(query);
+//       const result = await BlogPost.aggregate([
+//         { $match: query },
+//         { $addFields: { likesCount: { $size: "$likes" } } },
+//         { $sort: sortOption },
+//         { $skip: skip },
+//         { $limit: limit },
+//       ]);
+
+//       return response.send({ totalCount, result });
+
+
+//     } else if (request.params.blog === "all") {
+//       let totalCount = await BlogPost.countDocuments(query);
+//       let result = await BlogPost.aggregate([
+//         { $match: query },
+//         { $addFields: { likesCount: { $size: "$likes" } } },
+//         { $sort: sortOption },
+//         { $skip: skip },
+//         { $limit: limit },
+//       ]);
+//       if (result.length > 0) {
+//         // console.log(result);
+//         console.log(totalCount);
+//         return response.send({ totalCount, result });
+//       } else {
+//         return response.send("No blogs found");
+//       }
+//     } else {
+//       query.category = request.params.blog;
+//     }
+
+//     let totalCount = await BlogPost.countDocuments(query);
+
+//     let result = await BlogPost.aggregate([
+//       { $match: query },
+//       { $addFields: { likesCount: { $size: "$likes" } } },
+//       { $sort: sortOption },
+//       { $skip: skip },
+//       { $limit: limit },
+//     ]);
+
+
+//     if (result.length > 0) {
+//       response.send({ totalCount, result });
+//     } else {
+//       response.send("No blogs found");
+//     }
+//   } catch (error) {
+//     console.error("Error fetching Blogs:", error);
+//     response.status(500).send("Internal Server Error");
+//   }
+// });
+
+const PORT = process.env.PORT || 5003;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+
 app.post("/search", async (request, response) => {
   try {
     const searchData = request.body;
@@ -589,12 +731,10 @@ app.post("/like/:postId", verifyToken, async (request, response) => {
     // Fetch the updated blog post after saving changes
     const updatedBlogPost = await BlogPost.findById(postId);
 
-    response
-      .status(200)
-      .json({
-        message: "Post updated successfully",
-        blogPost: updatedBlogPost,
-      });
+    response.status(200).json({
+      message: "Post updated successfully",
+      blogPost: updatedBlogPost,
+    });
   } catch (error) {
     console.error("Error liking blog post:", error);
     response.status(500).json({ message: "Internal server error" });
@@ -627,12 +767,10 @@ app.post("/dislike/:postId", verifyToken, async (request, response) => {
     await blogPost.save();
     const updatedBlogPost = await BlogPost.findById(postId);
 
-    response
-      .status(200)
-      .json({
-        message: "Post updated successfully",
-        blogPost: updatedBlogPost,
-      });
+    response.status(200).json({
+      message: "Post updated successfully",
+      blogPost: updatedBlogPost,
+    });
     // response.status(200).json({ message: "Post updated successfully" });
   } catch (error) {
     console.error("Error liking blog post:", error);
@@ -694,31 +832,33 @@ app.put("/update/:id", verifyToken, async (request, response) => {
   }
 });
 app.post("/addblog", verifyToken, async (request, response) => {
-    try {
-      const userRole = request.user.role;
-      const userId = request.user.id;
-      const userName=request.user.user_name
-      if (userRole !== "author") {
-        return response.status(403).json({ message: "You are not authorized to add a blog post." });
-      }
-  
-      const newBlogPost = new BlogPost({
-        ...request.body,
-        user_name:userName,
-        authorId: userId,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      });
-  
-      const savedBlogPost = await newBlogPost.save();
-  
-      response.status(201).json(savedBlogPost);
-    } catch (error) {
-      // Handle errors
-      console.error("Error adding blog post :", error);
-      response.status(500).json({ message: "Internal server error" });
+  try {
+    const userRole = request.user.role;
+    const userId = request.user.id;
+    const userName = request.user.user_name;
+    if (userRole !== "author") {
+      return response
+        .status(403)
+        .json({ message: "You are not authorized to add a blog post." });
     }
-  });
+
+    const newBlogPost = new BlogPost({
+      ...request.body,
+      user_name: userName,
+      authorId: userId,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    const savedBlogPost = await newBlogPost.save();
+
+    response.status(201).json(savedBlogPost);
+  } catch (error) {
+    // Handle errors
+    console.error("Error adding blog post :", error);
+    response.status(500).json({ message: "Internal server error" });
+  }
+});
 app.delete("/deleteblog/:id", verifyToken, async (request, response) => {
   try {
     const role = request.user.role;
@@ -738,12 +878,10 @@ app.delete("/deleteblog/:id", verifyToken, async (request, response) => {
         result,
       });
     } else {
-      return response
-        .status(403)
-        .json({
-          message:
-            "Unauthorized - You are not authorized to delete this blog post",
-        });
+      return response.status(403).json({
+        message:
+          "Unauthorized - You are not authorized to delete this blog post",
+      });
     }
   } catch (error) {
     console.error("Error deleting blog post:", error);
@@ -916,6 +1054,6 @@ app.post("/reading-list/:id", verifyToken, async (request, response) => {
 });
 
 // app.listen(5003)
-app.listen(5003, () => {
+app.listen(5004, () => {
   console.log("Server is running on port 5003");
 });
