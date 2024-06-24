@@ -35,7 +35,7 @@ const BlogCard = ({
   handle_reading_list,
   setRefresh,
 }) => {
-  // console.log(blog);
+  // console.log(userData);
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const [BlogId,setBlogId]=React.useState(null)
@@ -51,7 +51,6 @@ const BlogCard = ({
         }
       );
       setRefresh((pre) => !pre);
-      alert("blog delete successfully")
       // console.log(response.data);
     } catch (error) {
       console.error("Error deleting  blog:", error);
@@ -242,11 +241,12 @@ const BlogCard = ({
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {/* {"Use Google's location service?"} */}
+          {"Use Google's location service?"}
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-           Do you want to delete?
+            Let Google help apps determine location. This means sending
+            anonymous location data to Google, even when no apps are running.
           </DialogContentText>
         </DialogContent>
         <DialogActions>

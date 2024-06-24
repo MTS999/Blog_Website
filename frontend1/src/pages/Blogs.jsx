@@ -45,13 +45,13 @@ const Blogs = () => {
   const navigate = useNavigate();
   let params = useParams();
   // console.log("mtsss", params.blog);
-  console.log(SortBy);
+  // console.log(SortBy);
 
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("userId");
   // console.log(userId);
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(4);
+  const [rowsPerPage, setRowsPerPage] = React.useState(6);
   const [totalBlogs, setTotalBlogs] = React.useState(0);
 
   const handleChangePage = (event, newPage) => {
@@ -83,7 +83,7 @@ const Blogs = () => {
 
   const fetchData = async () => {
     try {
-      let url = `http://localhost:5004/blogs`;
+      let url = `http://localhost:5003/blogs`;
       if (params.blog) {
         url += `/${params.blog}`;
       } else {
@@ -101,7 +101,7 @@ const Blogs = () => {
       }
 
       url += `?${queryParams.toString()}`;
-
+      console.log(params);
       const response = await axios.post(
         url,
         { userId: userId },
@@ -113,6 +113,8 @@ const Blogs = () => {
       );
       setBlogs(response.data.result);
       setTotalBlogs(response.data.totalCount);
+      console.log(response.data.totalCount);
+      console.log(response.data.result);
     } catch (error) {
       console.error("Error fetching Blogs:", error);
     } finally {
@@ -123,15 +125,16 @@ const Blogs = () => {
   useEffect(() => {
     setLoader(true);
     fetchData();
-  }, [params, page, rowsPerPage, SortBy, Search, SearchBy]);
+  }, [params, page, rowsPerPage, SortBy, Search, SearchBy, ]);
 
   useEffect(() => {
+    // setLoader(true);
     fetchData();
   }, [refresh]);
 
   useEffect(() => {
     setPage(0);
-    setRowsPerPage(4);
+    setRowsPerPage(6);
   }, [params]);
   // fetch user data
   useEffect(() => {
@@ -174,7 +177,7 @@ const Blogs = () => {
         setRecentBlogs(response.data);
       } catch (error) {
         console.error("Error fetching recent blogs:", error);
-        setBlogs([]); // Optionally handle error state
+        // setBlogs([]); // Optionally handle error state
       }
     };
 
@@ -193,7 +196,7 @@ const Blogs = () => {
           },
         });
         setUserRole(response.data);
-        console.log(response.data);
+        // console.log(response.data);
       } catch (error) {
         console.error("Error fetching user role:", error);
       }
@@ -225,7 +228,7 @@ const Blogs = () => {
           }
         );
 
-        console.log(response.data);
+        // console.log(response.data);
         setBlogs(response.data.result);
         setTotalBlogs(response.data.totalCount);
       } catch (error) {
@@ -284,9 +287,16 @@ const Blogs = () => {
         />
       ))
     ) : (
-     < Box height={"400px"} width={"100%"} textAlign={"center"} sx={{display:"flex",alignItems:"center",justifyContent:"center"}} >
-      <Typography  variant="h3" fontWeight={"bold"}>No  Available</Typography>
-     </Box>
+      <Box
+        height={"400px"}
+        width={"100%"}
+        textAlign={"center"}
+        sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+      >
+        <Typography variant="h3" fontWeight={"bold"}>
+          No Available
+        </Typography>
+      </Box>
     );
 
   return (
@@ -356,7 +366,7 @@ const Blogs = () => {
               />
             </RadioGroup>
           </FormControl> */}
-          <FormControl >
+          <FormControl>
             <InputLabel id="search-by-label">Search</InputLabel>
             <Select
               labelId="search-by-label"
@@ -442,10 +452,10 @@ const Blogs = () => {
             ) : (
               BlogData
             )}
-            { BlogData.length>0 &&
+            {BlogData.length > 0 && (
               <Box display={"block"} textAlign={"end"} width={"100%"}>
                 <TablePagination
-                  rowsPerPageOptions={[4, 8, 20]}
+                  rowsPerPageOptions={[6, 8, 20]}
                   component="div"
                   count={totalBlogs}
                   rowsPerPage={rowsPerPage}
@@ -454,7 +464,7 @@ const Blogs = () => {
                   onRowsPerPageChange={handleChangeRowsPerPage}
                 />
               </Box>
-            }
+            )}
           </Grid>
 
           <Divider />

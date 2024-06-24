@@ -81,7 +81,7 @@ function ResponsiveDrawer(props) {
           },
         }
       );
-      console.log(response);
+      // console.log(response);
       setPendingUsers(response.data.pendingUsers);
     } catch (error) {
       console.error(error);
@@ -128,7 +128,7 @@ function ResponsiveDrawer(props) {
           },
         });
         setUserRole(response.data);
-        console.log(response.data);
+        // console.log(response.data);
       } catch (error) {
         console.error("Error fetching user role:", error);
       }
@@ -431,7 +431,6 @@ function ResponsiveDrawer(props) {
               }}
             >
               <MenuItem onClick={profileAction}>Profile</MenuItem>
-              <MenuItem onClick={handleClose}>My account</MenuItem>
               <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
           </div>

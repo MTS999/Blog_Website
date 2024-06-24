@@ -21,17 +21,18 @@ export const AddBlog = () => {
   const [message, setMessage] = useState({ text: "", type: "" });
 
   const [error, setError] = useState(null);
+  const location = useLocation();
   const [blogData, setBlogData] = useState({
-    title: "",
-    category: "Technology",
+    title: location.state?.title || "",
+    category: location.state?.category || "Technology",
     image: "https://picsum.photos/seed/picsum8/800/400",
     content: "",
   });
-  const location = useLocation();
   const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (location.state) {
+      // console.log(location.state);
       setBlogData({
         title: location.state.title || "",
         category: location.state.category || "Technology",
@@ -179,7 +180,7 @@ export const AddBlog = () => {
                 id="title"
                 name="title"
                 label="Title"
-                value={blogData.title}
+                value={blogData?.title}
                 onChange={handleChange}
                 fullWidth
               />
@@ -190,7 +191,7 @@ export const AddBlog = () => {
               fullWidth
               id="category"
               name="category"
-              value={blogData.category}
+              value={blogData?.category}
               onChange={handleChange}
               select
               label="Category"
@@ -251,23 +252,27 @@ export const AddBlog = () => {
               Content
             </Typography>
             <Box mb={5}>
-
-            <ReactQuill
-            
-            id="content"
-            value={blogData.content}
-            onChange={(value) => setBlogData({ ...blogData, content: value })}
-            modules={modules}
-            formats={formats}
-            style={{ height: "400px", borderRadius: "10px", color: "yellow" }}
-            />
+              <ReactQuill
+                id="content"
+                value={blogData.content}
+                onChange={(value) =>
+                  setBlogData({ ...blogData, content: value })
+                }
+                modules={modules}
+                formats={formats}
+                style={{
+                  height: "400px",
+                  borderRadius: "10px",
+                  color: "yellow",
+                }}
+              />
             </Box>
           </Grid>
 
           {message.text && (
-            <Grid item xs={12} textAlign="center" >
+            <Grid item xs={12} textAlign="center">
               {message.text && (
-                <Box mb={1} >
+                <Box mb={1}>
                   <Alert textAlign="center" severity={message.type}>
                     {message.text}
                   </Alert>
@@ -276,7 +281,7 @@ export const AddBlog = () => {
             </Grid>
           )}
           <Grid item xs={12} textAlign="center" mb={2}>
-            <Button variant="contained" fullWidth onClick={handleAdd} >
+            <Button variant="contained" fullWidth onClick={handleAdd}>
               {location.state ? "Update" : "Add"}
             </Button>
           </Grid>

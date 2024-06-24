@@ -43,6 +43,7 @@ const Profile = () => {
             Authorization: `Bearer ${token}`,
           },
         });
+        console.log(response.data);
         setUserRole(response.data);
       } catch (error) {
         console.error("Error fetching user role:", error);
@@ -398,7 +399,7 @@ const Profile = () => {
                   <Alert severity={message.type}>{message.text}</Alert>
                 </Box>
               )}
-              {userRole === "reader" &&
+              {userData?.role === "reader" &&
                 <Button
                   sx={{ mt: 2, mb: 2 }}
                   variant="contained"

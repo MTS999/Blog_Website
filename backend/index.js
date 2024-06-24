@@ -384,6 +384,8 @@ app.get("/followijng-blogs", verifyToken, async (request, response) => {
 
 app.post("/blogs/:blog", async (request, response) => {
   try {
+
+    console.log("smdkvcklds",request.params);
     let query = {};
     let page = parseInt(request.query.page, 10);
     if (isNaN(page) || page < 0) {
@@ -394,7 +396,7 @@ app.post("/blogs/:blog", async (request, response) => {
 
     const sort = request.query.sort || "recent";
     let sortOption = { createdAt: -1 }; // Default sort by recent
-
+   
     if (sort === "likes") {
       sortOption = { likesCount: -1 };
     }
@@ -405,6 +407,7 @@ app.post("/blogs/:blog", async (request, response) => {
     //     query.authorId = id;
     // }
     if (request.params.blog === "myblog") {
+
       const id = request.body.userId;
       query.authorId =new ObjectId(id);
 
@@ -416,8 +419,8 @@ app.post("/blogs/:blog", async (request, response) => {
           { $skip: skip },
           { $limit: limit },
           ]);
-        console.log(totalCount);
-
+        // console.log(totalCount);
+            
       if (result.length > 0) {
         return response.send({ totalCount, result });
       } else {
@@ -663,10 +666,7 @@ app.get("/recent-blogs", async (request, response) => {
 //   }
 // });
 
-const PORT = process.env.PORT || 5003;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+
 
 app.post("/search", async (request, response) => {
   try {
@@ -864,13 +864,16 @@ app.delete("/deleteblog/:id", verifyToken, async (request, response) => {
     const role = request.user.role;
     const blogId = request.params.id;
     const userId = request.user.id;
-
     const blogPost = await BlogPost.findById(blogId);
-
+    
     if (!blogPost) {
       return response.status(404).json({ messege: "blog not found" });
-    }
-    if (role === "admin" || userId === blogPost.authorId) {
+      }
+
+      console.log(blogPost);
+      console.log(userId);
+      if (role === "admin" || userId == blogPost.authorId) {
+      console.log("how are you");
       const result = await BlogPost.findByIdAndDelete(blogId);
 
       return response.json({
@@ -1054,6 +1057,6 @@ app.post("/reading-list/:id", verifyToken, async (request, response) => {
 });
 
 // app.listen(5003)
-app.listen(5004, () => {
+app.listen(5003, () => {
   console.log("Server is running on port 5003");
 });
