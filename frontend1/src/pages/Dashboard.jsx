@@ -12,6 +12,7 @@ import Paper from '@mui/material/Paper';
 import BlogPostsBarChart from '../components/BlogPostsBarChart';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 
 import { useNavigate } from 'react-router-dom';
 const Dashboard = () => {
@@ -234,7 +235,7 @@ const Dashboard = () => {
                                 justifyContent: "center",
                                 flexDirection: "column"
                             }} >
-                                <GroupIcon sx={{ marginBottom: "20px" , color:"black" }} />
+                                <AutoStoriesIcon sx={{ marginBottom: "20px" , color:"black" }} />
                                 <Typography variant="h4" color="initial" style={{ fontWeight: 'bold' }}>
                                     {allBlogData.length}
 

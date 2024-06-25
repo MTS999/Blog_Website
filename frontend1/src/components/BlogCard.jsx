@@ -1,8 +1,8 @@
 // components/BlogCard.jsx
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Snackbar from '@mui/material/Snackbar';
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Snackbar from "@mui/material/Snackbar";
 import * as React from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -26,7 +26,6 @@ import Like_Dislike from "./Like_Dislike";
 import { useNavigate } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
 
-
 const BlogCard = ({
   blog,
   userData,
@@ -38,7 +37,7 @@ const BlogCard = ({
   // console.log(blog);
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-  const [BlogId,setBlogId]=React.useState(null)
+  const [BlogId, setBlogId] = React.useState(null);
   const DeleteBlog = async (blogId) => {
     try {
       console.log("how are you");
@@ -51,7 +50,7 @@ const BlogCard = ({
         }
       );
       setRefresh((pre) => !pre);
-      alert("blog delete successfully")
+      alert("blog delete successfully");
       // console.log(response.data);
     } catch (error) {
       console.error("Error deleting  blog:", error);
@@ -61,7 +60,7 @@ const BlogCard = ({
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = (id) => {
-    setBlogId(id)
+    setBlogId(id);
     setOpen(true);
   };
 
@@ -70,8 +69,15 @@ const BlogCard = ({
   };
   function confirmDelete() {
     DeleteBlog(BlogId);
-    handleClose()
+    handleClose();
   }
+
+
+
+  const handleReadClick = (blogId) => {
+    window.scrollTo(0, 0);
+    navigate(`/blog/${blogId}`);
+  };
   return (
     <>
       <Card
@@ -127,6 +133,7 @@ const BlogCard = ({
               </Box>
               <Box display={{ sm: "none", xs: "block" }} ml={"auto"}>
                 <CloseIcon
+                  onClick={() => handleClickOpen(blog._id)}
                   sx={{
                     marginBottom: "20px",
                     ml: "auto",
@@ -182,7 +189,7 @@ const BlogCard = ({
                   <Button
                     size="small"
                     variant="contained"
-                    onClick={() => navigate(`/blog/${blog._id}`)}
+                    onClick={() => handleReadClick(blog._id)}
                   >
                     Read
                   </Button>
@@ -212,7 +219,7 @@ const BlogCard = ({
                 // <Button variant="outlined" onClick={handleClickOpen}>
                 <CloseIcon
                   // onClick={() => DeleteBlog(blog._id)}
-                  onClick={()=>handleClickOpen(blog._id)}
+                  onClick={() => handleClickOpen(blog._id)}
                   sx={{
                     marginBottom: "20px",
                     ml: "auto",
@@ -234,7 +241,7 @@ const BlogCard = ({
           </Box>
         </Box>
       </Card>
-    
+
       <Dialog
         open={open}
         onClose={handleClose}
@@ -246,7 +253,7 @@ const BlogCard = ({
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-           Do you want to delete?
+            Do you want to delete?
           </DialogContentText>
         </DialogContent>
         <DialogActions>

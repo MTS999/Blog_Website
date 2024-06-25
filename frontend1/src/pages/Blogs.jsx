@@ -54,7 +54,44 @@ const Blogs = () => {
   const [rowsPerPage, setRowsPerPage] = React.useState(6);
   const [totalBlogs, setTotalBlogs] = React.useState(0);
 
+  // useEffect(() => {
+
+  //   const fetchBlogs = async () => {
+  //     let body;
+  //     if (SearchBy === "" || SearchBy === "title") {
+  //       body = { title: Search };
+  //     } else if (SearchBy === "user_name") {
+  //       body = { user_name: Search };
+  //     }
+  //     try {
+  //       const queryParams = new URLSearchParams();
+  //       queryParams.append("page", page); // assuming you have 'page' state for the current page number
+  //       queryParams.append("limit", rowsPerPage);
+  //       const response = await axios.post(
+  //         "http://localhost:5003/search",
+  //         body,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+
+  //       console.log(response.data);
+  //       setBlogs(response.data.result);
+  //       setTotalBlogs(response.data.totalCount);
+  //     } catch (error) {
+  //       console.log("mts", error);
+  //     }
+  //   };
+
+  //   fetchBlogs();
+  // }, [Search, token, SearchBy]);
+
+
   const handleChangePage = (event, newPage) => {
+    window.scrollTo(0, 0); // Scroll to the top when page changes
+
     setPage(newPage);
   };
 
@@ -81,7 +118,52 @@ const Blogs = () => {
     }
   };
 
+  // const fetchData = async () => {
+  //   setUnderline(params.blog==="following"?false:true)
+  //   try {
+  //     let url = `http://localhost:5003/blogs`;
+  //     if (params.blog) {
+  //       url += `/${params.blog}`;
+  //     } else {
+  //       console.log("how are you");
+  //       url += `/all`;
+  //     }
+
+  //     const queryParams = new URLSearchParams();
+  //     queryParams.append("page", page);
+  //     queryParams.append("limit", rowsPerPage);
+  //     queryParams.append("sort", SortBy === "most_liked" ? "likes" : "recent");
+
+  //     if (Search) {
+  //       queryParams.append("searchBy", SearchBy);
+  //       queryParams.append("search", Search);
+  //     }
+
+  //     url += `?${queryParams.toString()}`;
+  //     console.log(params);
+  //     const response = await axios.post(
+  //       url,
+  //       { userId: userId },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+  //     setBlogs(response.data.result);
+  //     setTotalBlogs(response.data.totalCount);
+  //     // console.log(response.data.totalCount);
+  //     // console.log(response.data.result);
+  //   } catch (error) {
+  //     console.error("Error fetching Blogs:", error);
+  //   } finally {
+  //     setLoader(false);
+  //   }
+  // };
+
+
   const fetchData = async () => {
+    setUnderline(params.blog === "following" ? false : true);
     try {
       let url = `http://localhost:5003/blogs`;
       if (params.blog) {
@@ -89,19 +171,18 @@ const Blogs = () => {
       } else {
         url += `/all`;
       }
-
+ 
       const queryParams = new URLSearchParams();
       queryParams.append("page", page);
       queryParams.append("limit", rowsPerPage);
       queryParams.append("sort", SortBy === "most_liked" ? "likes" : "recent");
-
+ 
       if (Search) {
         queryParams.append("searchBy", SearchBy);
         queryParams.append("search", Search);
       }
-
+ 
       url += `?${queryParams.toString()}`;
-      console.log(params);
       const response = await axios.post(
         url,
         { userId: userId },
@@ -113,19 +194,17 @@ const Blogs = () => {
       );
       setBlogs(response.data.result);
       setTotalBlogs(response.data.totalCount);
-      console.log(response.data.totalCount);
-      console.log(response.data.result);
     } catch (error) {
-      console.error("Error fetching Blogs:", error);
+      console.error("Error fetching blogs:", error);
     } finally {
       setLoader(false);
     }
   };
-
+ 
   useEffect(() => {
     setLoader(true);
     fetchData();
-  }, [params, page, rowsPerPage, SortBy, Search, SearchBy, ]);
+  }, [params, page, rowsPerPage, SortBy,Search,SearchBy]);
 
   useEffect(() => {
     // setLoader(true);
@@ -206,38 +285,7 @@ const Blogs = () => {
     }
   }, [userRole]);
   //    apply search functionality
-  useEffect(() => {
-    const fetchBlogs = async () => {
-      let body;
-      if (SearchBy === "" || SearchBy === "title") {
-        body = { title: Search };
-      } else if (SearchBy === "user_name") {
-        body = { user_name: Search };
-      }
-      try {
-        const queryParams = new URLSearchParams();
-        queryParams.append("page", page); // assuming you have 'page' state for the current page number
-        queryParams.append("limit", rowsPerPage);
-        const response = await axios.post(
-          "http://localhost:5003/search",
-          body,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        // console.log(response.data);
-        setBlogs(response.data.result);
-        setTotalBlogs(response.data.totalCount);
-      } catch (error) {
-        console.log("mts", error);
-      }
-    };
-
-    fetchBlogs();
-  }, [Search, token, SearchBy]);
+ 
 
   // handle reading list functionality
   async function handle_reading_list(postId) {

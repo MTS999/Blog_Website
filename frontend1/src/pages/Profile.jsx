@@ -53,34 +53,34 @@ const Profile = () => {
       fetchUserRole();
     }
   }, [token]);
-
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5003/userdata/${params.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setUserData(response.data);
+      setFormData({
+        first_name: response.data.first_name || "",
+        last_name: response.data.last_name || "",
+        email: response.data.email || "",
+        user_name: response.data.user_name || "",
+        role: response.data.role || "",
+        image_url: response.data.image_url || "",
+      });
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoader(false);
+    }
+  };
   useEffect(() => {
     setLoader(true);
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:5003/userdata/${params.id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setUserData(response.data);
-        setFormData({
-          first_name: response.data.first_name || "",
-          last_name: response.data.last_name || "",
-          email: response.data.email || "",
-          user_name: response.data.user_name || "",
-          role: response.data.role || "",
-          image_url: response.data.image_url || "",
-        });
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setLoader(false);
-      }
-    };
+   
     if (token) {
       fetchData();
     }
@@ -220,6 +220,8 @@ const Profile = () => {
         type: "success",
       });
       setUserRole(response.data.role); // Update the user role in the frontend
+      fetchData(); // Call fetchData to refresh user data
+
     } catch (error) {
       setMessage({ text: "Error submitting pending request", type: "error" });
       console.error("Error submitting pending request:", error);

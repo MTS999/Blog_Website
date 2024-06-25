@@ -45,16 +45,53 @@ const Blogs = () => {
   const navigate = useNavigate();
   let params = useParams();
   // console.log("mtsss", params.blog);
-  console.log(SortBy);
+  // console.log(SortBy);
 
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("userId");
   // console.log(userId);
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(4);
+  const [rowsPerPage, setRowsPerPage] = React.useState(6);
   const [totalBlogs, setTotalBlogs] = React.useState(0);
 
+  useEffect(() => {
+
+    const fetchBlogs = async () => {
+      let body;
+      if (SearchBy === "" || SearchBy === "title") {
+        body = { title: Search };
+      } else if (SearchBy === "user_name") {
+        body = { user_name: Search };
+      }
+      try {
+        const queryParams = new URLSearchParams();
+        queryParams.append("page", page); // assuming you have 'page' state for the current page number
+        queryParams.append("limit", rowsPerPage);
+        const response = await axios.post(
+          "http://localhost:5003/search",
+          body,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        console.log(response.data);
+        setBlogs(response.data.result);
+        setTotalBlogs(response.data.totalCount);
+      } catch (error) {
+        console.log("mts", error);
+      }
+    };
+
+    fetchBlogs();
+  }, [Search, token, SearchBy]);
+
+
   const handleChangePage = (event, newPage) => {
+    window.scrollTo(0, 0); // Scroll to the top when page changes
+
     setPage(newPage);
   };
 
@@ -82,27 +119,28 @@ const Blogs = () => {
   };
 
   const fetchData = async () => {
+    setUnderline(params.blog==="following"?false:true)
     try {
       let url = `http://localhost:5003/blogs`;
       if (params.blog) {
         url += `/${params.blog}`;
       } else {
+        console.log("how are you");
         url += `/all`;
       }
 
       const queryParams = new URLSearchParams();
+      queryParams.append("page", page);
+      queryParams.append("limit", rowsPerPage);
+      queryParams.append("sort", SortBy === "most_liked" ? "likes" : "recent");
 
-      console.log(url, page, rowsPerPage);
-      queryParams.append("page", page); // assuming you have 'page' state for the current page number
-      queryParams.append("limit", rowsPerPage); // assuming you have 'limit' state for the number of blogs per page
-
-      if (SortBy === "most_liked") {
-        queryParams.append("sort", "likes");
-      } else {
-        queryParams.append("sort", "recent");
+      if (Search) {
+        queryParams.append("searchBy", SearchBy);
+        queryParams.append("search", Search);
       }
-      url += `?${queryParams.toString()}`;
 
+      url += `?${queryParams.toString()}`;
+      console.log(params);
       const response = await axios.post(
         url,
         { userId: userId },
@@ -112,9 +150,10 @@ const Blogs = () => {
           },
         }
       );
-      console.log(response.data);
       setBlogs(response.data.result);
       setTotalBlogs(response.data.totalCount);
+      // console.log(response.data.totalCount);
+      // console.log(response.data.result);
     } catch (error) {
       console.error("Error fetching Blogs:", error);
     } finally {
@@ -128,12 +167,13 @@ const Blogs = () => {
   }, [params, page, rowsPerPage, SortBy]);
 
   useEffect(() => {
+    // setLoader(true);
     fetchData();
   }, [refresh]);
 
   useEffect(() => {
     setPage(0);
-    setRowsPerPage(4);
+    setRowsPerPage(6);
   }, [params]);
   // fetch user data
   useEffect(() => {
@@ -176,7 +216,7 @@ const Blogs = () => {
         setRecentBlogs(response.data);
       } catch (error) {
         console.error("Error fetching recent blogs:", error);
-        setBlogs([]); // Optionally handle error state
+        // setBlogs([]); // Optionally handle error state
       }
     };
 
@@ -195,7 +235,7 @@ const Blogs = () => {
           },
         });
         setUserRole(response.data);
-        console.log(response.data);
+        // console.log(response.data);
       } catch (error) {
         console.error("Error fetching user role:", error);
       }
@@ -205,38 +245,7 @@ const Blogs = () => {
     }
   }, [userRole]);
   //    apply search functionality
-  useEffect(() => {
-    const fetchBlogs = async () => {
-      let body;
-      if (SearchBy === "" || SearchBy === "title") {
-        body = { title: Search };
-      } else if (SearchBy === "user_name") {
-        body = { user_name: Search };
-      }
-      try {
-        const queryParams = new URLSearchParams();
-        queryParams.append("page", page); // assuming you have 'page' state for the current page number
-        queryParams.append("limit", rowsPerPage);
-        const response = await axios.post(
-          "http://localhost:5003/search",
-          body,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        console.log(response.data);
-        setBlogs(response.data.result);
-        setTotalBlogs(response.data.totalCount);
-      } catch (error) {
-        console.log("mts", error);
-      }
-    };
-
-    fetchBlogs();
-  }, [Search, token, SearchBy]);
+ 
 
   // handle reading list functionality
   async function handle_reading_list(postId) {
@@ -286,7 +295,16 @@ const Blogs = () => {
         />
       ))
     ) : (
-      <Typography variant="h6">No Blogs Available</Typography>
+      <Box
+        height={"400px"}
+        width={"100%"}
+        textAlign={"center"}
+        sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+      >
+        <Typography variant="h3" fontWeight={"bold"}>
+          No Available
+        </Typography>
+      </Box>
     );
 
   return (
@@ -442,17 +460,19 @@ const Blogs = () => {
             ) : (
               BlogData
             )}
-            <Box display={"block"} textAlign={"end"}>
-              <TablePagination
-                rowsPerPageOptions={[4, 8, 20]}
-                component="div"
-                count={totalBlogs}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-              />
-            </Box>
+            {BlogData.length > 0 && (
+              <Box display={"block"} textAlign={"end"} width={"100%"}>
+                <TablePagination
+                  rowsPerPageOptions={[6, 8, 20]}
+                  component="div"
+                  count={totalBlogs}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+              </Box>
+            )}
           </Grid>
 
           <Divider />
@@ -472,7 +492,7 @@ const Blogs = () => {
             xs={12}
             lg={4}
           >
-            <Typography variant="h3" mb={3}>
+            <Typography variant="h4" fontWeight={"bold"} mb={3}>
               Recent Posts
             </Typography>
             <Box

@@ -8,7 +8,10 @@ import Like_Dislike from './Like_Dislike';
 
 const RecentBlogCard = ({ blog, userId, blogParam, setRefresh }) => {
     const navigate = useNavigate();
-
+    const handleReadClick = (blogId) => {
+        window.scrollTo(0, 0);
+        navigate(`/blog/${blogId}`);
+      };
     return (
         <Card key={blog._id} sx={{
             borderRadius:"8px",
@@ -45,7 +48,11 @@ const RecentBlogCard = ({ blog, userId, blogParam, setRefresh }) => {
             </CardContent>
             <CardActions>
                 <Like_Dislike blog={blog} setRefresh={setRefresh} />
-                <Button size="small" variant="contained" onClick={() => navigate(`/blog/${blog._id}`)}>Read</Button>
+                <Button size="small" variant="contained" 
+                // onClick={() => navigate(`/blog/${blog._id}`)}
+                onClick={() => handleReadClick(blog._id)}
+
+                >Read</Button>
                 {/* {userId === blog.authorId && blogParam && (
                     <Button size="small" variant="contained" onClick={() => navigate(`/addblog`, { state: blog })}>
                         Edit

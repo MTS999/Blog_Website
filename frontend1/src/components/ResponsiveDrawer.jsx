@@ -284,13 +284,12 @@ function ResponsiveDrawer(props) {
                 <ListItemText primary={"Bookmarks"} />
               </ListItemButton>
             </ListItem>
-            <Divider variant="fullWidth" orientation="horizontal" />
             {userRole === "author" && (
               <ListItem
-                key={"add-blog"}
-                selected={selectedItem === "addblog"}
-                onClick={() => handleListItemClick("addblog")}
-                disablePadding
+              key={"add-blog"}
+              selected={selectedItem === "addblog"}
+              onClick={() => handleListItemClick("addblog")}
+              disablePadding
               >
                 <ListItemButton onClick={() => navigate(`/addblog`)}>
                   <ListItemIcon>
@@ -302,6 +301,7 @@ function ResponsiveDrawer(props) {
             )}
                  </>
         }
+      <Divider variant="fullWidth" orientation="horizontal" />
             <ListItem
               key={"add"}
               // selected={selectedItem === 'addblog'}
