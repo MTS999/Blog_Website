@@ -593,7 +593,7 @@ export const BlogDetail = () => {
                                     {comment.content}
                                   </Typography>
                                   <Box mt={2}>
-                                    {(userId === comment.authorId ||userData.role==="admin") && (
+                                    {(userId == comment.authorId ||userData.role==="admin") && (
                                       <>
                                         <IconButton
                                           onClick={() =>
