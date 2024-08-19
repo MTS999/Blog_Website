@@ -19,6 +19,7 @@ import AskLoginSignup from "./components/AskLoginSignup";
 import AdminUserprofile from "./pages/AdminUserprofile";
 import AllDataOfUser from "./pages/AllDataOfUser";
 import ArslanChart from "./components/ArslanChart";
+import Counter from "./pages/Counter";
 
 const Routess = () => {
   return (
@@ -40,7 +41,7 @@ const Routess = () => {
 
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
-      {/* <Route path="/mts" element={<ArslanChart />} /> */}
+      <Route path="/mts" element={<Counter />} />
     </Routes>
   );
 };

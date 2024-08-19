@@ -314,7 +314,9 @@ function ResponsiveDrawer(props) {
               </ListItemIcon> */}
                 <ListItemText
                   primary={"Category"}
-                  sx={{ color: "blue", fontWeight: "900", fontSize: "50px" }}
+                  fontSize="100px"
+
+                  sx={{ color: "blue", fontWeight: "bold", fontSize: "80px" }}
                 />
               </ListItemButton>
             </ListItem>

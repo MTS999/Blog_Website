@@ -1,0 +1,24 @@
+/* quill-custom.css */
+.ql-toolbar .ql-stroke {
+    stroke: white !important;
+  }
+  .ql-toolbar .ql-fill {
+    fill: white !important;
+  }
+  .ql-toolbar .ql-picker {
+    color: white !important;
+  }
+  .ql-toolbar .ql-picker-label {
+    color: white !important;
+  }
+  .ql-toolbar .ql-picker-options {
+    background-color: black !important;
+    border: 1px solid white !important;
+  }
+  .ql-toolbar .ql-picker-item {
+    color: white !important;
+  }
+  .ql-toolbar button svg {
+    width: 20px !important; /* Adjust this value for desired size */
+    height: 20px !important; /* Adjust this value for desired size */
+  }

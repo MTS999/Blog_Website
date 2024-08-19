@@ -524,7 +524,7 @@ app.get("/recent-blogs", async (request, response) => {
   }
 });
 
-
+//latest
 app.post("/blogs/:blog", async (request, response) => {
   try {
     let query = {};

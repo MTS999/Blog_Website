@@ -10,7 +10,7 @@ import { useLocation } from "react-router-dom";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import Alert from "@mui/material/Alert";
-
+import "../css/quill_custom.css"
 import Loader from "../components/Loader";
 
 export const AddBlog = () => {
@@ -263,7 +263,7 @@ export const AddBlog = () => {
                 style={{
                   height: "400px",
                   borderRadius: "10px",
-                  color: "yellow",
+                  color: "white",
                 }}
               />
             </Box>

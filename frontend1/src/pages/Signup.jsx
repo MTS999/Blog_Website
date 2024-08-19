@@ -234,7 +234,7 @@ const Signup = () => {
                         >
                        <Box textAlign={"center"} width={"100%"}>
 
-                            <Typography component="h6" variant="h4" mb={2} fontWeight={"bold"}>
+                            <Typography component="h6" variant="h4" mb={2} fontWeight={"bold"} sx={{ fontFamily: 'Raleway, sans-serif' }}>
                             Sign up to MTS Blog
                             </Typography>
                             <Typography variant="body1" textAlign={"center"}>
