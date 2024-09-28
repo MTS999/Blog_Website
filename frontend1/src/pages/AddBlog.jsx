@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import useCategory from "../CategoryContext";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
@@ -20,7 +20,7 @@ export const AddBlog = () => {
   const [imageUrl, setImageUrl] = useState("");
   const [message, setMessage] = useState({ text: "", type: "" });
 
-  const [error, setError] = useState(null);
+  const [ setError] = useState(null);
   const location = useLocation();
   const [blogData, setBlogData] = useState({
     title: location.state?.title || "",

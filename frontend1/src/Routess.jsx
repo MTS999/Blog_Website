@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import {  Route, Routes } from "react-router-dom";
 // import Layout from './components/Layout'
 import { AddBlog } from "./pages/AddBlog";
 // import { Update } from './pages/Update'
@@ -9,16 +9,13 @@ import Login from "./pages/Login";
 import ResponsiveDrawer from "./components/ResponsiveDrawer";
 import Blogs from "./pages/Blogs";
 import { BlogDetail } from "./pages/BlogDetail";
-// import TemporaryDrawer from './pages/TemporaryDrawer'
 import Profile from "./pages/Profile";
 import Dashboard from "./pages/Dashboard";
 import AllUsers from "./pages/AllUsers";
 import Pending from "./pages/Pending";
 import AddNewUser from "./pages/AddNewUser";
-import AskLoginSignup from "./components/AskLoginSignup";
 import AdminUserprofile from "./pages/AdminUserprofile";
 import AllDataOfUser from "./pages/AllDataOfUser";
-import ArslanChart from "./components/ArslanChart";
 import Counter from "./pages/Counter";
 
 const Routess = () => {

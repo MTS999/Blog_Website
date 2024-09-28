@@ -1,6 +1,6 @@
 import axios from 'axios'
 import React from 'react'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -175,9 +175,7 @@ const Pending = () => {
                                     {pendingUsers.map((user, index) => (
                                         <TableRow hover role="checkbox" tabIndex={-1} key={index}>
                                             <TableCell align="center" style={{ minWidth: columns[0].minWidth, fontSize: "18px" }}>{index + 1}</TableCell>
-                                            {/* <TableCell align="center" style={{ minWidth: columns[9].minWidth, fontSize: "18px" }}>
-                                                <Dialog1 userId={user.user._id} setRefreshTable={setRefreshTable} userData={user} />
-                                            </TableCell> */}
+                                           
                                             <TableCell align="center" style={{ minWidth: columns[0].minWidth, fontSize: "18px" }}>{user.first_name}</TableCell>
                                             <TableCell align="center" style={{ minWidth: columns[1].minWidth, fontSize: "18px" }}>{user.last_name}</TableCell>
                                             <TableCell align="center" style={{ minWidth: columns[2].minWidth, fontSize: "18px" }}>{user.email}</TableCell>

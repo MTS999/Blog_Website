@@ -17,6 +17,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Paper from "@mui/material/Paper";
 import Draggable from "react-draggable";
 
+// eslint-disable-next-line react-refresh/only-export-components
 function PaperComponent(props) {
   return (
     <Draggable

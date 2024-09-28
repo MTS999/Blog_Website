@@ -4,6 +4,7 @@ import { createContext, useState, useContext } from 'react';
 const CategoryContext = createContext();
 
 // Create a provider component
+// eslint-disable-next-line react/prop-types
 export const CategoryProvider = ({ children }) => {
   const [category, setCategory] = useState(["Technology", "Healthcare", "Environment", "Arts and Culture", "Food", "Education"]);
   
@@ -19,4 +20,5 @@ export const CategoryProvider = ({ children }) => {
 
 // Custom hook to use the category context
  const useCategory = () => useContext(CategoryContext);
+ // eslint-disable-next-line react-refresh/only-export-components
  export default useCategory

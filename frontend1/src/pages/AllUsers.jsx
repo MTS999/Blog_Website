@@ -17,7 +17,7 @@ import Loader from "../components/Loader";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
-import UserProfileAvatar from "../components/UserProfileAvatar";
+// import UserProfileAvatar from "../components/UserProfileAvatar";
 
 const columns = [
   { id: "index", label: "#", minWidth: 50, align: "center" },

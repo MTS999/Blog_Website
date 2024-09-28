@@ -2,13 +2,13 @@ import React from "react";
 import { useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import { Box, Container, Avatar, Typography } from "@mui/material";
+import { Box, Avatar, Typography } from "@mui/material";
 import BlogCard from "../components/BlogCard";
 const AllDataOfUser = () => {
   const [userDadta, setUserData] = React.useState({});
   const [userblogs, setUserBlogs] = React.useState([]);
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(4);
+  const [page] = React.useState(0);
+  const [rowsPerPage] = React.useState(4);
   const [refresh, setRefresh] = React.useState(true);
 
   const token = localStorage.getItem("token");

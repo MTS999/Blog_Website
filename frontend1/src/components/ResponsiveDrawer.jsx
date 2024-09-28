@@ -11,7 +11,6 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import MailIcon from "@mui/icons-material/Mail";
 import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -43,7 +42,7 @@ function ResponsiveDrawer(props) {
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [isClosing, setIsClosing] = React.useState(false);
-  const { category, setCategory } = useCategory();
+  const { category } = useCategory();
   const [userRole, setUserRole] = React.useState("");
   const [userData, setUserData] = React.useState(null);
   const [pendingUsers, setPendingUsers] = React.useState([]);
@@ -309,9 +308,7 @@ function ResponsiveDrawer(props) {
               disablePadding
             >
               <ListItemButton>
-                {/* <ListItemIcon>
-                <BookmarkAddIcon />
-              </ListItemIcon> */}
+             
                 <ListItemText
                   primary={"Category"}
                   fontSize="100px"
@@ -533,17 +530,7 @@ function ResponsiveDrawer(props) {
           {drawer}
         </Drawer>
       </Box>
-      {/* <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          p: 3,
-          width: { sm: `calc(100% - ${drawerWidth}px)` }
-        }}
-      >
-        <Toolbar />
-      </Box> */}
-      {/* <Toolbar /> */}
+
 
       <Outlet />
     </Box>

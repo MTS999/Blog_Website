@@ -1,12 +1,11 @@
 // components/RecentBlogCard.jsx
 
-import React from 'react';
 import PropTypes from 'prop-types';
 import { Card, Box, Typography, CardContent, CardActions, Button, Chip } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import Like_Dislike from './Like_Dislike';
 
-const RecentBlogCard = ({ blog, userId, blogParam, setRefresh }) => {
+const RecentBlogCard = ({ blog,  setRefresh }) => {
     const navigate = useNavigate();
     const handleReadClick = (blogId) => {
         window.scrollTo(0, 0);
@@ -49,15 +48,10 @@ const RecentBlogCard = ({ blog, userId, blogParam, setRefresh }) => {
             <CardActions>
                 <Like_Dislike blog={blog} setRefresh={setRefresh} />
                 <Button size="small" variant="contained" 
-                // onClick={() => navigate(`/blog/${blog._id}`)}
                 onClick={() => handleReadClick(blog._id)}
 
                 >Read</Button>
-                {/* {userId === blog.authorId && blogParam && (
-                    <Button size="small" variant="contained" onClick={() => navigate(`/addblog`, { state: blog })}>
-                        Edit
-                    </Button>
-                )} */}
+             
             </CardActions>
         </Card>
     );

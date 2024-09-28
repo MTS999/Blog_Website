@@ -10,9 +10,12 @@ import BlogPost from "./db/BlogPost.js";
 import CommentPost from "./db/Comments.js";
 import User from "./db/Users.js";
 import("./db/config.js");
+import dotenv from "dotenv";
 
-// const ObjectId = mongoose.Types.ObjectId; // Import ObjectId from mongoose
-const secretKey = "mts999";
+// Load environment variables
+dotenv.config();
+
+const secretKey = process.env.SECRET_KEY;
 
 const app = express();
 app.use(express.json());
@@ -40,10 +43,8 @@ const verifyToken = (request, response, next) => {
     request.user = decoded;
     // console.log(request.user);
 
-    // Proceed to next middleware or route handler
     next();
   } catch (error) {
-    // If verification fails, respond with an error message
     response
       .status(401)
       .json({ message: "Unauthorized   - Invalid JWT token" });
@@ -115,15 +116,17 @@ app.post("/login", async (request, response) => {
   }
 });
 
-app.get("/getalluserdata", async (request, response) => {
+app.get("/getalluserdata",verifyToken ,async (request, response) => {
   try {
     const page = parseInt(request.query.page);
     const limit = parseInt(request.query.limit);
 
-    // const role = request.user.role;
-    // if (role !== "admin") {
-    //     return response.status(403).json({ message: "Unauthorized - You do not have permission to access this resource" })
-    // }
+    const role = request.user.role;
+    console.log();
+    
+    if (role !== "admin") {
+        return response.status(403).json({ message: "Unauthorized - You do not have permission to access this resource" })
+    }
 
     // Count total number of users
     const totalCount = await Users.countDocuments();
@@ -146,7 +149,7 @@ app.get("/getallblogdata", async (request, response) => {
   response;
   try {
     const allblogs = await BlogPost.find();
-    console.log(allblogs);
+    // console.log(allblogs);
     response.json(allblogs);
   } catch (error) {
     console.error("Error fetching blogs:", error);
@@ -170,39 +173,13 @@ app.get("/userdata/:userId", async (req, res) => {
   }
 });
 
-// app.get("/pending-request", verifyToken, async (request, response) => {
 
-//     try {
-//         const role = request.user.role
-//         if (role !== "admin") {
-//             return response.status(403).json({ message: "Unauthorized - You do not have permission to access this resource" })
-//         }
-//         // const page = parseInt(request.query.page)||1 ;
-//         let page = parseInt(request.query.page, 10);
-//         if (isNaN(page) || page < 0) {
-//             page = 1;
-//         }
-//         const limit = parseInt(request.query.limit) || 4;
-//         const skip = (page - 1) * limit;
-
-//         totalCount = await Users.countDocuments({ role: "pending" })
-//         pendingUsers = await Users.find({ role: "pending" }).skip(skip).limit(limit)
-
-//         response.json({ pendingUsers, totalCount })
-//     }
-
-//     catch (error) {
-//         console.log("Error fetching pending po:", error);
-//         response.status(500).json({ message: "Internal server error" });
-//     }
-
-// })
 app.get("/pending-request", verifyToken, async (request, response) => {
   try {
     const role = request.user.role;
-    // if (role !== "admin") {
-    //     return response.status(403).json({ message: "Unauthorized - You do not have permission to access this resource" });
-    // }
+    if (role !== "admin") {
+        return response.status(403).json({ message: "Unauthorized - You do not have permission to access this resource" });
+    }
 
     let page = parseInt(request.query.page, 10);
     if (isNaN(page) || page < 0) {
